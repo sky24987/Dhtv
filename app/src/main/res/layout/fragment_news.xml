@@ -1,16 +1,39 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="cn.dhtv.mobile.NewsFragment">
+    android:layout_height="match_parent" tools:context="cn.dhtv.mobile.NewsFragment"
+    android:orientation="vertical">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="获取新闻"
+        android:id="@+id/test"/>
+
+    <com.viewpagerindicator.TabPageIndicator
+        android:id="@+id/news_category"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:padding="10dip"
+        android:background="@drawable/custom_tab_indicator"
+        android:textColor="#FF555555"
+        android:textSize="16sp"
+        android:showDividers="middle"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:fadingEdge="horizontal"
+        android:fadingEdgeLength="8dp"
+        android:divider="@drawable/custom_tab_indicator_divider"
+        android:dividerPadding="10dp"        />
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/view_pager_news">
-        <android.support.v4.view.PagerTabStrip
+        <!--<android.support.v4.view.PagerTitleStrip
             android:layout_width="match_parent"
             android:layout_height="@dimen/abc_action_button_min_height_material"
             android:layout_gravity="top"
-            android:id="@+id/pager_tab_news"></android.support.v4.view.PagerTabStrip>
+            android:id="@+id/pager_tab_news"></android.support.v4.view.PagerTitleStrip>-->
     </android.support.v4.view.ViewPager>
 
-</FrameLayout>
+</LinearLayout>

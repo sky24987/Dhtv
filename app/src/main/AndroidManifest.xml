@@ -7,13 +7,6 @@
         android:targetSdkVersion="21" >
     </uses-sdk>
 
-    <android:uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
-    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <android:uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
@@ -35,6 +28,13 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
+
+        <service
+            android:name=".NewsService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

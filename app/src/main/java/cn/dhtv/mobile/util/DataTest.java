@@ -21,10 +21,25 @@ public class DataTest {
         newsTypeList.add("国际");
         newsTypeList.add("要闻");
         newsTypeList.add("温州");
+        newsTypeList.add("国际");
+        newsTypeList.add("要闻");
+        newsTypeList.add("温州");
 
         newsListMap.put(newsTypeList.get(0),new ArrayList<String>(Arrays.asList(guoji)));
         newsListMap.put(newsTypeList.get(1),new ArrayList<String>(Arrays.asList(guonei)));
         newsListMap.put(newsTypeList.get(2),new ArrayList<String>(Arrays.asList(wenzhou)));
+newsListMap.put(newsTypeList.get(3),new ArrayList<String>(Arrays.asList(guoji)));
+        newsListMap.put(newsTypeList.get(4),new ArrayList<String>(Arrays.asList(guonei)));
+        newsListMap.put(newsTypeList.get(5),new ArrayList<String>(Arrays.asList(wenzhou)));
+
+    }
+
+    public static void main(String[] args){
+        String s1 = "aaa";
+        String s2 = "aaa";
+        ArrayList arrayList = new ArrayList();
+        arrayList.add(s1);
+        System.out.print(arrayList.contains(s2));
 
     }
 }
