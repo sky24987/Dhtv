@@ -24,10 +24,8 @@ public class NewsManager {
 
     private ArrayList<NewsCat> newsCats = new ArrayList<>();
     private HashMap<Integer,ArrayList<NewsOverview>> newsOverviewHashMap = new HashMap<>();
-    private boolean fetching = false;//是否正在获取数据
-    private Context context;
-    //private boolean dataLocking = false;
-
+    private boolean processing = false;//是否正在获取数据
+    private int process = 0;
 
     private NewsManager(){
         NewsCat newsCat1 = new NewsCat();
@@ -48,26 +46,6 @@ public class NewsManager {
         }
     }
 
-    public int getCatCount(){
-        return newsCats.size();
-    }
-
-    public NewsCat getCat(int position){
-        return newsCats.get(position);
-    }
-
-    public int getCatPostion(NewsCat cat){
-        return newsCats.indexOf(cat);
-    }
-
-    public boolean isFetching() {
-        return fetching;
-    }
-
-    public void setFetching(boolean fetching) {
-        this.fetching = fetching;
-    }
-
     public static NewsManager getInstance(){
         //NewsManager instance = NewsManager.instance;
         if(instance == null){
@@ -76,12 +54,34 @@ public class NewsManager {
         return instance;
     }
 
-    public static String makeRequestURL(NewsCat cat,int page){
-        return NewsCat.NEWS_URL+"?"+"catid="+cat.getCatid()+"&page="+page+"&size="+PAGE_SIZE;
+    public int getCatCount(){
+        return newsCats.size();
     }
 
-    public void refreshNews(Handler handler){
+    public int getCatPostion(NewsCat cat){
+        return newsCats.indexOf(cat);
+    }
+
+    public NewsCat getCat(int position){
+        return newsCats.get(position);
+    }
+
+    public NewsCat findCat(int id){
+        for(NewsCat cat : newsCats){
+            if(cat.getCatid() == id){
+                return cat;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<NewsOverview> getNewsList(NewsCat cat){
+        return newsOverviewHashMap.get(cat);
+    }
+
+    public void refreshNews(NewsCat cat){
         //TODO:complete
+
     }
 
     public void appendEnd(int cat){
@@ -100,18 +100,25 @@ public class NewsManager {
         }
     }
 
-
-
-
-
     public ArrayList<NewsOverview> getNewsList(int cat){
         return newsOverviewHashMap.get(cat);
     }
 
 
 
-
     private void init(){
 
+    }
+
+    public static String makeRequestURL(NewsCat cat,int page){
+        return NewsCat.NEWS_URL+"?"+"catid="+cat.getCatid()+"&page="+page+"&size="+PAGE_SIZE;
+    }
+
+    public boolean isProcessing() {
+        return processing;
+    }
+
+    public void setProcessing(boolean processing) {
+        this.processing = processing;
     }
 }

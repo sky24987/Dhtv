@@ -32,6 +32,7 @@ import cn.dhtv.mobile.adapter.NewsListAdapter;
 import cn.dhtv.mobile.adapter.NewsPagerAdapter;
 import cn.dhtv.mobile.entity.NewsCat;
 import cn.dhtv.mobile.entity.NewsOverview;
+import cn.dhtv.mobile.network.BitmapCache;
 import cn.dhtv.mobile.util.DataTest;
 import cn.dhtv.mobile.util.NewsManager;
 
@@ -39,6 +40,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
@@ -85,54 +87,15 @@ public class NewsFragment extends SectionFragment {
 
     private NewsManager newsManager = NewsManager.getInstance();
     private RequestQueue mNewsRequestQueue;
+    private ImageLoader mImageLoader;
     private Handler mNewsHandler;
     private ObjectMapper mObjectMapper = new ObjectMapper();
 
     private NewsPagerAdapter.EventsListener newsPagerListener;
     private OnFragmentInteractionListener mListener;
 
-
-
-
-
     public NewsFragment() {
         //mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-
-        mNewsHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                JSONObject jsonObject = (JSONObject) msg.obj;
-                ArrayList<NewsOverview> newsList = null;
-                try {
-                    newsList = mObjectMapper.readValue(jsonObject.getJSONObject("data").getJSONArray("list").toString(),new TypeReference<List<NewsOverview>>(){});
-                    Log.d("NewsFragment",newsList.toString());
-                    newsManager.appendFront(msg.arg1,newsList);
-                    mNewsPagerAdapter.notifyNewsListChange(newsManager.getCat(1));
-
-                }catch (Exception e){
-                    e.printStackTrace();
-                    Log.e("NewsFragment",e.getMessage());
-                }
-
-
-
-                Log.d("NewsFragment",((JSONObject)msg.obj).toString());
-            }
-        };
-
-        newsPagerListener = new NewsPagerAdapter.EventsListener() {
-            @Override
-            public void onPullDown(NewsCat cat) {
-
-            }
-
-            @Override
-            public void onPullUp(NewsCat cat) {
-
-            }
-        };
-
     }
 
     public void updateNews(final NewsCat cat){
@@ -142,8 +105,9 @@ public class NewsFragment extends SectionFragment {
                 Message msg = new Message();
                 //Bundle data = new Bundle();
                 //data.put
+                msg.what = 1;
                 msg.obj = response;
-                msg.arg1 = 260;
+                msg.arg1 = cat.getCatid();
                 mNewsHandler.sendMessage(msg);
             }
         };
@@ -151,7 +115,11 @@ public class NewsFragment extends SectionFragment {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Message msg = new Message();
+                msg.what = -1;
+                msg.arg1 = cat.getCatid();
+                mNewsHandler.sendMessage(msg);
+                Log.e("NewsFragment", error.toString());
             }
         };
         String requestString = NewsManager.makeRequestURL(cat,1);
@@ -180,12 +148,26 @@ public class NewsFragment extends SectionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNewsRequestQueue = Volley.newRequestQueue(getActivity());
-        mNewsRequestQueue.start();
+        initField();
+
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mNewsRequestQueue.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mNewsRequestQueue.stop();
+        mNewsRequestQueue.cancelAll(getActivity());
     }
 
     /**
@@ -195,7 +177,6 @@ public class NewsFragment extends SectionFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mNewsRequestQueue.stop();
         mNewsRequestQueue = null;
     }
 
@@ -213,7 +194,7 @@ public class NewsFragment extends SectionFragment {
                 updateNews(newsManager.getCat(1));
             }
         });
-        mNewsPagerAdapter = new NewsPagerAdapter(getActivity(), newsPagerListener);
+        mNewsPagerAdapter = new NewsPagerAdapter(getActivity(), newsPagerListener,mImageLoader);
         mViewPager.setAdapter(mNewsPagerAdapter);
         initPagerIndicator();
         return view;
@@ -241,6 +222,64 @@ public class NewsFragment extends SectionFragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void initField(){
+        mNewsHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                if(msg.what == -1){
+                    NewsCat cat = newsManager.findCat(msg.arg1);
+                    mNewsPagerAdapter.notifyNewsListChange(cat);
+                    return;
+                }
+                if(msg.what == 1) {
+                    NewsCat cat = newsManager.findCat(msg.arg1);
+                    if (cat == null) {
+                        return;
+                    }
+                    JSONObject jsonObject = (JSONObject) msg.obj;
+                    ArrayList<NewsOverview> newsList = null;
+                    try {
+                        newsList = mObjectMapper.readValue(jsonObject.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<NewsOverview>>() {
+                        });
+                        Log.d("NewsFragment", newsList.toString());
+                        newsManager.appendFront(msg.arg1, newsList);
+                        mNewsPagerAdapter.notifyNewsListChange(cat);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("NewsFragment", e.getMessage());
+                    }
+                    Log.d("NewsFragment", ((JSONObject) msg.obj).toString());
+                    return;
+                }
+            }
+        };
+
+        newsPagerListener = new NewsPagerAdapter.EventsListener() {
+            @Override
+            public void onPullDown(NewsCat cat) {
+
+            }
+
+            @Override
+            public void onPullUp(NewsCat cat) {
+
+            }
+
+            @Override
+            public void onRefresh(NewsCat cat) {
+                updateNews(cat);
+            }
+        };
+
+        mNewsRequestQueue = Volley.newRequestQueue(getActivity());
+        mImageLoader =  new ImageLoader(mNewsRequestQueue,new BitmapCache());
+    }
+
+    private void initFunction(){
+
     }
 
     /**
