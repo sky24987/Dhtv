@@ -1,6 +1,7 @@
 package cn.dhtv.mobile;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -127,6 +128,14 @@ public class NewsFragment extends SectionFragment {
         mNewsRequestQueue.add(jsonObjectRequest);
     }
 
+    public void updateNews(){
+        int catCount = newsManager.getCatCount();
+        for(int i = 0;i<catCount;++i){
+            NewsCat cat = newsManager.getCat(i);
+            updateNews(cat);
+        }
+    }
+
     /*public void appendNewsToEnd(NewsCat cat){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -188,12 +197,6 @@ public class NewsFragment extends SectionFragment {
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager_news);
         //mPagerTitleStrip = (PagerTitleStrip) view.findViewById(R.id.pager_tab_news);
         mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.news_category);
-        view.findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateNews(newsManager.getCat(1));
-            }
-        });
         mNewsPagerAdapter = new NewsPagerAdapter(getActivity(), newsPagerListener,mImageLoader);
         mViewPager.setAdapter(mNewsPagerAdapter);
         initPagerIndicator();
@@ -270,7 +273,7 @@ public class NewsFragment extends SectionFragment {
 
             @Override
             public void onRefresh(NewsCat cat) {
-                updateNews(cat);
+                updateNews();
             }
         };
 

@@ -1,6 +1,7 @@
 package cn.dhtv.mobile.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
@@ -68,7 +70,7 @@ public class NewsListAdapter extends BaseAdapter {
             holder.imageView = (NetworkImageView) convertView.findViewById(R.id.news_image);
             holder.title = (TextView) convertView.findViewById(R.id.news_title);
             holder.summary = (TextView) convertView.findViewById(R.id.news_summary);
-            holder.imageView.setImageUrl(item.getPic()[0].getSrc(),mImageLoader);
+            holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX+item.getPic()[0].getSrc(),mImageLoader);
             holder.title.setText(item.getTitle());
             holder.summary.setText(item.getSummary());
             Log.v(LOG_TAG,"summary"+item.getSummary());

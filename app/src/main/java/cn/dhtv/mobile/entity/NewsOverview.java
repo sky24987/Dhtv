@@ -151,6 +151,7 @@ public class NewsOverview {
     }*/
 
     public static class Pic {
+        public static final String PIC_URL_PREFEX = "http://img.dhtv.cn/app/";
         private String src;
         private int thumb;
 

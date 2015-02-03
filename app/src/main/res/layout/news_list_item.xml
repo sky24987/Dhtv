@@ -20,6 +20,7 @@
             android:id="@+id/news_title"
             android:layout_width="match_parent"
             android:layout_height="20dp"
+            android:textColor="@android:color/black"
             />
         <TextView
             android:paddingTop="1dp"
