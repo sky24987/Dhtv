@@ -55,6 +55,7 @@ public class NewsService extends Service {
 
     //private Timer updateTimer;//更新新闻列表定时器;
     private Handler updateHandler;
+    private Handler fetchHandler;
     public NewsService() {
 
     }
@@ -75,17 +76,21 @@ public class NewsService extends Service {
                         try {
                             newsList = mObjectMapper.readValue(jsonObject.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<NewsOverview>>() {
                             });
+
                             Log.d(LOG_TAG, newsList.toString());
-                            if(mNewsDataManager.refreshData(cat,newsList)){
-                            }
+                            mNewsDataManager.refreshData(cat,newsList);
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.e(LOG_TAG, e.getMessage());
                         }finally {
                             processCount--;
+                            Log.d(LOG_TAG,"processcount: "+processCount);
                             if(processCount == 0){
                                 if(mCallBacks != null){
+                                    Log.d(LOG_TAG,"onNewsUpdate");
                                     mCallBacks.onNewsUpdate(0);//TODO:参数0暂时无用，占位
+                                }else {
+                                    Log.d(LOG_TAG,"service callbacks is null");
                                 }
                                 processing = false;//processCount == 0时所有操作都已完成
                             }
@@ -110,6 +115,36 @@ public class NewsService extends Service {
             }
         };
 
+        fetchHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if(msg.what == APPEND_SUCCESS){
+                    NewsCat cat = mNewsDataManager.getNewsCat(msg.arg1);
+                    if(cat == null){
+
+                    }else {
+                        JSONObject jsonObject = (JSONObject) msg.obj;
+                        ArrayList<NewsOverview> newsList = null;
+                        try{
+                            newsList = mObjectMapper.readValue(jsonObject.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<NewsOverview>>() {
+                            });
+                            Log.d(LOG_TAG, newsList.toString());
+                            mNewsDataManager.appendNews(cat,newsList);
+                        }catch (Exception e){
+                            Log.d(LOG_TAG,e.toString());
+                        }finally {
+                            if(mCallBacks != null){
+                                mCallBacks.onNewsAppend(cat,true,0);//TODO:0暂无意义，占位
+                            }else {
+                                Log.d(LOG_TAG,"service callbacks is null");
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         requestQueue = Volley.newRequestQueue(this);
         requestQueue.start();
     }
@@ -118,7 +153,6 @@ public class NewsService extends Service {
     public void onDestroy() {
         super.onDestroy();
         requestQueue.stop();
-        requestQueue = null;
     }
 
     @Override
@@ -134,6 +168,7 @@ public class NewsService extends Service {
         processing = true;
 
         for(final NewsCat cat : mNewsDataManager.getNewsCats()){
+            final int catId = cat.getCatid();
             processCount++;
 
             Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
@@ -142,7 +177,7 @@ public class NewsService extends Service {
                     Message msg = new Message();
                     msg.what = UPDATE_SUCCESS;
                     msg.obj = response;
-                    msg.arg1 = cat.getCatid();
+                    msg.arg1 = catId;
                     updateHandler.sendMessage(msg);
                 }
             };
@@ -152,7 +187,7 @@ public class NewsService extends Service {
                 public void onErrorResponse(VolleyError error) {
                     Message msg = new Message();
                     msg.what = UPDATE_FAIL;
-                    msg.arg1 = cat.getCatid();
+                    msg.arg1 = catId;
                     updateHandler.sendMessage(msg);
                 }
             };
@@ -162,8 +197,38 @@ public class NewsService extends Service {
         }
     }
 
-    private void requestMoreNews(NewsCat cat){
+    private void requestMoreNews(final NewsCat cat){
+        final int catId = cat.getCatid();
+        if(processing == true){
+            mCallBacks.onNewsUpdageFails(REQUEST_FAIL_PROCESSING);
+            return;
+        }
         processing = true;
+
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Message msg = new Message();
+                msg.what = APPEND_SUCCESS;
+                msg.obj = response;
+                msg.arg1 = catId;
+                fetchHandler.sendMessage(msg);
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Message msg = new Message();
+                msg.what = APPEND_FAIL;
+                msg.arg1 = catId;
+                fetchHandler.sendMessage(msg);
+            }
+        };
+
+        String requestString = mNewsDataManager.makeRequestURL(cat,1);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,requestString,null,responseListener,errorListener);
+        requestQueue.add(jsonObjectRequest);
     }
 
     public boolean isProcessing() {

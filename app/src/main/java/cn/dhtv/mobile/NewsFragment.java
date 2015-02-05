@@ -2,10 +2,15 @@ package cn.dhtv.mobile;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
@@ -18,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +41,7 @@ import cn.dhtv.mobile.entity.NewsCat;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.BitmapCache;
 import cn.dhtv.mobile.util.DataTest;
+import cn.dhtv.mobile.util.NewsDataManager;
 import cn.dhtv.mobile.util.NewsManager;
 
 import com.android.volley.Request;
@@ -67,7 +74,7 @@ import org.json.JSONObject;
  * Use the {@link NewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends SectionFragment {
+public class NewsFragment extends SectionFragment implements NewsService.CallBacks, ServiceConnection{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -79,80 +86,24 @@ public class NewsFragment extends SectionFragment {
     private String mParam1;
     private String mParam2;
 
+
     private ViewPager mViewPager;
-    private PagerTitleStrip mPagerTitleStrip;
     private TabPageIndicator mTabPageIndicator;
     private NewsPagerAdapter mNewsPagerAdapter;
-    private ArrayList<String> mNewsTypeList;
     private TypeReference<List<NewsOverview>> typeReference = new TypeReference<List<NewsOverview>>() { };
 
-    private NewsManager newsManager = NewsManager.getInstance();
+    private NewsDataManager mNewsDataManager = NewsDataManager.getInstance();
     private RequestQueue mNewsRequestQueue;
     private ImageLoader mImageLoader;
-    private Handler mNewsHandler;
     private ObjectMapper mObjectMapper = new ObjectMapper();
+    private NewsService.LocalBinder newsService;
 
     private NewsPagerAdapter.EventsListener newsPagerListener;
     private OnFragmentInteractionListener mListener;
 
     public NewsFragment() {
-        //mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+
     }
-
-    public void updateNews(final NewsCat cat){
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Message msg = new Message();
-                //Bundle data = new Bundle();
-                //data.put
-                msg.what = 1;
-                msg.obj = response;
-                msg.arg1 = cat.getCatid();
-                mNewsHandler.sendMessage(msg);
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Message msg = new Message();
-                msg.what = -1;
-                msg.arg1 = cat.getCatid();
-                mNewsHandler.sendMessage(msg);
-                Log.e("NewsFragment", error.toString());
-            }
-        };
-        String requestString = NewsManager.makeRequestURL(cat,1);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,requestString,null,responseListener,errorListener);
-        mNewsRequestQueue.add(jsonObjectRequest);
-    }
-
-    public void updateNews(){
-        int catCount = newsManager.getCatCount();
-        for(int i = 0;i<catCount;++i){
-            NewsCat cat = newsManager.getCat(i);
-            updateNews(cat);
-        }
-    }
-
-    /*public void appendNewsToEnd(NewsCat cat){
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        };
-
-
-    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -170,13 +121,24 @@ public class NewsFragment extends SectionFragment {
     public void onResume() {
         super.onResume();
         mNewsRequestQueue.start();
+        Intent bindIntent = new Intent(getActivity(),NewsService.class);
+        getActivity().bindService(bindIntent,this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mNewsRequestQueue.stop();
+        mNewsRequestQueue.cancelAll(getActivity());
+        if(newsService != null){
+            newsService.setCallbacks(null);
+            getActivity().unbindService(this);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mNewsRequestQueue.stop();
-        mNewsRequestQueue.cancelAll(getActivity());
     }
 
     /**
@@ -186,7 +148,6 @@ public class NewsFragment extends SectionFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mNewsRequestQueue = null;
     }
 
     @Override
@@ -195,8 +156,9 @@ public class NewsFragment extends SectionFragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_news, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager_news);
-        //mPagerTitleStrip = (PagerTitleStrip) view.findViewById(R.id.pager_tab_news);
+        mViewPager.setEnabled(false);
         mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.news_category);
+        mTabPageIndicator.setEnabled(false);
         mNewsPagerAdapter = new NewsPagerAdapter(getActivity(), newsPagerListener,mImageLoader);
         mViewPager.setAdapter(mNewsPagerAdapter);
         initPagerIndicator();
@@ -227,38 +189,38 @@ public class NewsFragment extends SectionFragment {
         mListener = null;
     }
 
-    private void initField(){
-        mNewsHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                if(msg.what == -1){
-                    NewsCat cat = newsManager.findCat(msg.arg1);
-                    mNewsPagerAdapter.notifyNewsListChange(cat);
-                    return;
-                }
-                if(msg.what == 1) {
-                    NewsCat cat = newsManager.findCat(msg.arg1);
-                    if (cat == null) {
-                        return;
-                    }
-                    JSONObject jsonObject = (JSONObject) msg.obj;
-                    ArrayList<NewsOverview> newsList = null;
-                    try {
-                        newsList = mObjectMapper.readValue(jsonObject.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<NewsOverview>>() {
-                        });
-                        Log.d("NewsFragment", newsList.toString());
-                        newsManager.appendFront(msg.arg1, newsList);
-                        mNewsPagerAdapter.notifyNewsListChange(cat);
+    @Override
+    public void onNewsUpdate(int flag) {
+        Log.d(LOG_TAG,"onNewsUpdate");
+        if(mNewsDataManager.isUpdated()){
+            Log.d(LOG_TAG,"mNewsPagerAdapter.notifyRefreshNews()");
+            mNewsPagerAdapter.notifyRefreshNews();
+            mNewsDataManager.setUpdated(false);
+        }else {
+            Toast.makeText(getActivity(),"没有更新的内容",Toast.LENGTH_SHORT).show();
+        }
+    }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("NewsFragment", e.getMessage());
-                    }
-                    Log.d("NewsFragment", ((JSONObject) msg.obj).toString());
-                    return;
-                }
-            }
-        };
+    @Override
+    public void onNewsUpdageFails(int flag) {
+        switch (flag){
+            case NewsService.REQUEST_FAIL_PROCESSING:
+                Toast.makeText(getActivity(),"正在获取新闻...",Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public void onNewsAppend(NewsCat cat, Boolean hasMore, int flag) {
+
+    }
+
+    @Override
+    public void onNewsAppendFails(NewsCat cat, int flag) {
+
+    }
+
+    private void initField(){
 
         newsPagerListener = new NewsPagerAdapter.EventsListener() {
             @Override
@@ -273,13 +235,31 @@ public class NewsFragment extends SectionFragment {
 
             @Override
             public void onRefresh(NewsCat cat) {
-                updateNews();
+                if(newsService != null){
+                    newsService.updateNews();
+                }
             }
         };
 
         mNewsRequestQueue = Volley.newRequestQueue(getActivity());
         mImageLoader =  new ImageLoader(mNewsRequestQueue,new BitmapCache());
     }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        newsService = (NewsService.LocalBinder)service;
+        newsService.setCallbacks(this);
+        mViewPager.setEnabled(true);
+        mTabPageIndicator.setEnabled(true);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        newsService = null;
+        mViewPager.setEnabled(false);
+        mTabPageIndicator.setEnabled(false);
+    }
+
 
     private void initFunction(){
 

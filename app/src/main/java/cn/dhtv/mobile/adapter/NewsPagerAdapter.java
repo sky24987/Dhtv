@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
@@ -29,6 +30,7 @@ import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.entity.NewsCat;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.util.DataTest;
+import cn.dhtv.mobile.util.NewsDataManager;
 import cn.dhtv.mobile.util.NewsManager;
 
 /**
@@ -41,13 +43,13 @@ public class NewsPagerAdapter extends PagerAdapter{
     private EventsListener listener;
     private ArrayList<Page> pages = new ArrayList<>();
     private LayoutInflater inflater;
-    private NewsManager newsManager = NewsManager.getInstance();
+    private NewsDataManager mNewsDataManager = NewsDataManager.getInstance();
     private ImageLoader mImageLoader;
 
 
     @Override
     public int getCount() {
-        return newsManager.getCatCount();
+        return mNewsDataManager.getNewsCats().size();
     }
 
     @Override
@@ -59,18 +61,19 @@ public class NewsPagerAdapter extends PagerAdapter{
     @Override
     public int getItemPosition(Object object) {
         NewsCat cat = ((Page)object).getCat();
-        int postion = newsManager.getCatPostion(cat);
+        int postion = mNewsDataManager.getNewsCats().indexOf(cat);
         if(postion >= 0){
             return postion;
         }else {
             return POSITION_NONE;
         }
+
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
 
-        NewsCat newsCat = newsManager.getCat(position);
+        NewsCat newsCat = mNewsDataManager.getNewsCats().get(position);
         Log.v(LOG_TAG,"init page view "+position+"："+newsCat.getCatname());
         Page page = new Page(newsCat);
         pages.add(page);
@@ -80,7 +83,7 @@ public class NewsPagerAdapter extends PagerAdapter{
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        NewsCat newsCat = newsManager.getCat(position);
+        NewsCat newsCat = mNewsDataManager.getNewsCats().get(position);
         Log.v(LOG_TAG,"destroy page view "+position+"："+newsCat.getCatname());
 
         ((Page) object).setRefreshing(false);
@@ -92,7 +95,7 @@ public class NewsPagerAdapter extends PagerAdapter{
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return newsManager.getCat(position).getCatname();
+        return mNewsDataManager.getNewsCats().get(position).getCatname();
     }
 
     public NewsPagerAdapter(Context context,EventsListener listener,ImageLoader imageLoader) {
@@ -129,6 +132,16 @@ public class NewsPagerAdapter extends PagerAdapter{
                 page.setRefreshing(false);
                 break;
             }
+        }
+    }
+
+    /**
+     * 通知更新所有页面
+     */
+    public void notifyRefreshNews(){
+        for(Page page:pages){
+            page.notifyDataSetChange();
+            page.setRefreshing(false);
         }
     }
 

@@ -57,11 +57,15 @@ public class NewsDataManager {
             }
         }
         if(i >= 0){//至少有一条更新
-            oldNewsList.addAll(0,newsList.subList(0,i));
+            oldNewsList.addAll(0,newsList.subList(0,i+1));
             updated = true;
             return true;
         }
         return false;
+    }
+
+    public boolean appendNews(NewsCat cat,ArrayList<NewsOverview> newsList){
+        return newsDataHashMap.get(cat).appendNews(newsList);
     }
 
     private NewsDataManager(){
@@ -89,6 +93,14 @@ public class NewsDataManager {
         return instance;
     }
 
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
+    }
+
     public ArrayList<NewsCat> getNewsCats() {
         return newsCats;
     }
@@ -106,7 +118,48 @@ public class NewsDataManager {
     }
 
     public class NewsData{
+        private boolean hasNew = false;//是否有新内容添加
+        private boolean hasMore = true;//是否有更多页
+        private int page = 0;//分页
+
         private ArrayList<NewsOverview> newsList = new ArrayList<NewsOverview>();
+
+        public void resetState(){
+            hasNew = false;
+            hasMore = true;
+            page = 0;
+        }
+
+        /**
+         *
+         * @param list
+         * @return 是否有新内容添加
+         */
+        public boolean appendNews(ArrayList<NewsOverview> list){
+            if(list.size() < PAGE_SIZE){
+                hasMore = false;
+            }
+            if(newsList.size() <= 0){
+                hasNew = true;
+                newsList.addAll(list);
+                return true;
+            }
+            NewsOverview lastNews = newsList.get(newsList.size()-1);
+            int i = 0;
+            for(;i<list.size();++i){
+                if(list.get(i).getAaid() < lastNews.getAaid()){
+                    break;
+                }
+            }
+            if(i < list.size()){//至少有一条更新
+                newsList.addAll(list.subList(i,list.size()));
+                hasNew = true;
+                return true;
+            }
+            return false;
+        }
+
+
 
         public ArrayList<NewsOverview> getNewsList() {
             return newsList;
