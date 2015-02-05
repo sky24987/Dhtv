@@ -13,10 +13,13 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.android.volley.toolbox.ImageLoader;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -145,6 +148,12 @@ public class NewsPagerAdapter extends PagerAdapter{
         }
     }
 
+    public void  setRefreshState(boolean b){
+        for(Page page:pages){
+            page.setRefreshing(false);
+        }
+    }
+
     //刷新新闻方法，当Page需要刷新时由Page调用
     public void refreshPage(NewsCat cat){
         Log.v(LOG_TAG,"refreshPage:"+cat.getCatname());
@@ -162,11 +171,11 @@ public class NewsPagerAdapter extends PagerAdapter{
     /**
      * 新闻列表页类
      */
-    public class Page implements SwipeRefreshLayout.OnRefreshListener{
+    public class Page implements PullToRefreshBase.OnRefreshListener{
         //private String type;
         private NewsCat cat;
-        private SwipeRefreshLayout pageView;//页面视图
-        private ListView newsList;
+        private View pageView;//页面视图
+        private PullToRefreshListView newsList;
         private BaseAdapter listAdapter;
 
 
@@ -185,10 +194,11 @@ public class NewsPagerAdapter extends PagerAdapter{
         private Page(NewsCat cat) {
             this.cat = cat;
             this.listAdapter = new NewsListAdapter(context,cat,mImageLoader);
-            pageView = (SwipeRefreshLayout) inflater.inflate(R.layout.news_page,null);
-            newsList = (ListView) pageView.findViewById(R.id.news_list);
-            pageView.setOnRefreshListener(this);
+            pageView = (LinearLayout) inflater.inflate(R.layout.news_page,null);
+            newsList = (PullToRefreshListView) pageView.findViewById(R.id.news_list);
+            newsList.setOnRefreshListener(this);
             newsList.setAdapter(listAdapter);
+
         }
 
         public void notifyDataSetChange(){
@@ -196,12 +206,13 @@ public class NewsPagerAdapter extends PagerAdapter{
         }
 
         public void setRefreshing(Boolean b){
-            pageView.setRefreshing(b);
+            if(b == false) {
+                newsList.onRefreshComplete();
+            }
         }
 
         @Override
-        public void onRefresh() {
-            pageView.setRefreshing(false);//TODO:测试用，记得删除
+        public void onRefresh(PullToRefreshBase refreshView) {
             refreshPage(cat);
         }
     }

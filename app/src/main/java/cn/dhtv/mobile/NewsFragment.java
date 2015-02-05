@@ -195,8 +195,9 @@ public class NewsFragment extends SectionFragment implements NewsService.CallBac
         if(mNewsDataManager.isUpdated()){
             Log.d(LOG_TAG,"mNewsPagerAdapter.notifyRefreshNews()");
             mNewsPagerAdapter.notifyRefreshNews();
-            mNewsDataManager.setUpdated(false);
+            mNewsDataManager.setUpdated(false);//更新新闻页面后将背后新闻数据设置为非更新状态
         }else {
+            mNewsPagerAdapter.setRefreshState(false);
             Toast.makeText(getActivity(),"没有更新的内容",Toast.LENGTH_SHORT).show();
         }
     }
@@ -205,6 +206,8 @@ public class NewsFragment extends SectionFragment implements NewsService.CallBac
     public void onNewsUpdageFails(int flag) {
         switch (flag){
             case NewsService.REQUEST_FAIL_PROCESSING:
+
+                mNewsPagerAdapter.setRefreshState(false);
                 Toast.makeText(getActivity(),"正在获取新闻...",Toast.LENGTH_SHORT).show();
                 break;
         }
