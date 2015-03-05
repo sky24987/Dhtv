@@ -1,23 +1,23 @@
-package cn.dhtv.mobile;
+package cn.dhtv.mobile.activity;
 
 import android.app.Activity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+
+import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
+import cn.dhtv.mobile.fragment.NewsFragment;
+import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.fragment.SectionFragment;
 
 
 public class HomeActivity extends ActionBarActivity

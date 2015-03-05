@@ -1,4 +1,4 @@
-package cn.dhtv.mobile;
+package cn.dhtv.mobile.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -21,12 +21,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 import cn.dhtv.mobile.entity.NewsCat;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.util.NewsDataManager;
-import cn.dhtv.mobile.util.NewsManager;
 
 public class NewsService extends Service {
     public static final String LOG_TAG = "NewsService";

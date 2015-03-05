@@ -1,5 +1,6 @@
 package cn.dhtv.mobile.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
@@ -15,11 +16,12 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.ListView;
+
+import cn.dhtv.mobile.widget.FooterRefreshListView;
+import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +37,9 @@ import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.util.DataTest;
 import cn.dhtv.mobile.util.NewsDataManager;
 import cn.dhtv.mobile.util.NewsManager;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
  * Created by Jack on 2014/12/30.
@@ -154,7 +159,7 @@ public class NewsPagerAdapter extends PagerAdapter{
         }
     }
 
-    //刷新新闻方法，当Page需要刷新时由Page调用
+    //刷新新闻方法，当Page需要刷新时由Page内部调用
     public void refreshPage(NewsCat cat){
         Log.v(LOG_TAG,"refreshPage:"+cat.getCatname());
         listener.onRefresh(cat);
@@ -171,12 +176,15 @@ public class NewsPagerAdapter extends PagerAdapter{
     /**
      * 新闻列表页类
      */
-    public class Page implements PullToRefreshBase.OnRefreshListener{
+    public class Page implements OnRefreshListener{
         //private String type;
         private NewsCat cat;
-        private View pageView;//页面视图
-        private PullToRefreshListView newsList;
+        private ViewGroup pageView;//页面视图
+        private PullToRefreshLayout refreshLayout;//页面视图
+        private FooterRefreshListView newsList;
+        private View emptyView;
         private BaseAdapter listAdapter;
+
 
 
         /*public String getType() {
@@ -191,12 +199,28 @@ public class NewsPagerAdapter extends PagerAdapter{
             return cat;
         }
 
-        private Page(NewsCat cat) {
+        private Page(final NewsCat cat) {
             this.cat = cat;
             this.listAdapter = new NewsListAdapter(context,cat,mImageLoader);
-            pageView = (LinearLayout) inflater.inflate(R.layout.news_page,null);
-            newsList = (PullToRefreshListView) pageView.findViewById(R.id.news_list);
-            newsList.setOnRefreshListener(this);
+            pageView =  (ViewGroup)inflater.inflate(R.layout.news_page,null);
+            refreshLayout = (PullToRefreshLayout)pageView.findViewById(R.id.refresh_view);
+            newsList = (FooterRefreshListView) pageView.findViewById(R.id.news_list);
+            ActionBarPullToRefresh.from((Activity) context).theseChildrenArePullable(newsList).listener(this).setup(refreshLayout);
+
+
+//            TODO:test
+            emptyView = new TextView(context);
+            ((TextView)emptyView).setText("empty");
+            emptyView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    refreshPage(cat);
+                }
+            });
+            ((TextView)emptyView).setVisibility(View.GONE);
+            pageView.addView(emptyView);
+            newsList.setEmptyView(emptyView);
+
             newsList.setAdapter(listAdapter);
 
         }
@@ -207,12 +231,12 @@ public class NewsPagerAdapter extends PagerAdapter{
 
         public void setRefreshing(Boolean b){
             if(b == false) {
-                newsList.onRefreshComplete();
+                refreshLayout.setRefreshing(false);
             }
         }
 
         @Override
-        public void onRefresh(PullToRefreshBase refreshView) {
+        public void onRefreshStarted(View view) {
             refreshPage(cat);
         }
     }

@@ -20,12 +20,13 @@
         android:maxSdkVersion="18" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".activity.WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
@@ -36,18 +37,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeActivity"
+            android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
 
         <service
-            android:name=".NewsService"
+            android:name=".service.NewsService"
             android:enabled="true"
             android:exported="false" >
         </service>
 
         <activity
-            android:name=".WebViewActivity"
+            android:name=".activity.WebViewActivity"
             android:label="@string/title_activity_web_view" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"></action>

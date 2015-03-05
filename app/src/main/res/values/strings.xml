@@ -14,5 +14,11 @@
     <string name="title_activity_web">WebActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_web_view">WebViewActivity</string>
+    
+    <string name="refresh_footer_default"></string>
+    <string name="refresh_footer_refreshing">正在加载...</string>
+    <string name="refresh_footer_no_more">没有更多内容了</string>
+    <string name="refresh_footer_clickable">点击加载更多</string>
+    <string name="refresh_footer_auto"></string>
 
 </resources>

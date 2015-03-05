@@ -2,31 +2,24 @@ package cn.dhtv.mobile.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.android.volley.Response;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import cn.dhtv.mobile.R;
-import cn.dhtv.mobile.WebViewActivity;
+import cn.dhtv.mobile.activity.WebViewActivity;
 import cn.dhtv.mobile.entity.NewsCat;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.util.NewsDataManager;
-import cn.dhtv.mobile.util.NewsManager;
 
 /**
  * Created by Jack on 2014/12/31.

@@ -32,6 +32,8 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.+'
     //compile 'com.fasterxml.jackson.core:jackson-core:2.4.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
-    compile project(':pulltorefreshlibrary')
+    //compile project(':pulltorefreshlibrary')
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abc:+'
     //compile 'cn.trinea.android.common:trinea-android-common:4.2.15@aar'
+    compile project(':dhtv-andoird-library')
 }
