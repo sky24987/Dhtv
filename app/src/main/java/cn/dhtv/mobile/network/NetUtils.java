@@ -45,6 +45,7 @@ public class NetUtils {
     public static void setup(Context context){
         if(mRequestQueue == null){
             mRequestQueue = Volley.newRequestQueue(context);
+            mRequestQueue.start();
         }
 
         if(mImageLoader == null){

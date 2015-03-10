@@ -1,4 +1,4 @@
-package cn.dhtv.mobile.model.base;
+package cn.dhtv.mobile.model;
 
 import java.util.ArrayList;
 
@@ -12,20 +12,20 @@ public class DataList<C extends Category,I> {
     public static final int PAGE_SIZE = 10;
 
 
-    private C mCategory;
-    private ArrayList<I> mDataList = new ArrayList<>();
+    protected C mCategory;
+    protected ArrayList<I> mDataList = new ArrayList<>();
 
 
-    private boolean newData = false;
-    private boolean hasMore = true;
-    private int currentPage = 0;
-    private int updateTime = 0;
+    protected boolean newData = false;
+    protected boolean hasMore = true;
+    protected int currentPage = 0;
+    protected int updateTime = 0;
 
     public DataList(C catagory){
         mCategory = catagory;
     }
 
-    public void reserState(){
+    public void resetState(){
         newData = false;
         hasMore = true;
         currentPage = 0;

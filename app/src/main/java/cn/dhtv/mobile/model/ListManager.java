@@ -1,8 +1,9 @@
-package cn.dhtv.mobile.model.base;
+package cn.dhtv.mobile.model;
 
 import android.content.Context;
 
 import com.android.volley.RequestQueue;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ public abstract class ListManager<C extends Category,L extends DataList> {
     public static final int PAGE_SIZE = 10;
 
     protected RequestQueue mRequestQueue;
+    protected ObjectMapper mObjectMapper = new ObjectMapper();
 
     protected ArrayList<C> mCategories = new ArrayList<>();
     protected HashMap<C,L> mDataListMap = new HashMap<>();
@@ -54,6 +56,14 @@ public abstract class ListManager<C extends Category,L extends DataList> {
 
     public void setCallBacks(CallBacks<C> mCallBacks) {
         this.mCallBacks = mCallBacks;
+    }
+
+    public boolean isProcessing(C category){
+        return mProcessingList.contains(category);
+    }
+
+    public boolean isProcessing(){
+        return !mProcessingList.isEmpty();
     }
 
     public abstract void refresh(C category,int flag);
