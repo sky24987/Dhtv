@@ -14,17 +14,35 @@ import cn.dhtv.mobile.network.BitmapCache;
 public class NetUtils {
     private static RequestQueue mRequestQueue;
     private static ImageLoader mImageLoader;
+
+    public static RequestQueue getRequestQueue(){
+        if(mRequestQueue == null){
+            throw new NotSetupException();
+        }
+
+        return mRequestQueue;
+    }
+
+    public static ImageLoader getImageLoader(){
+        if(mImageLoader == null){
+            throw new NotSetupException();
+        }
+
+        return mImageLoader;
+    }
+
     public static RequestQueue getRequestQueue(Context context){
-        init(context);
+        setup(context);
         return mRequestQueue;
     }
 
     public static ImageLoader getImageLoader(Context context){
-        init(context);
+        setup(context);
         return mImageLoader;
     }
 
-    public static void init(Context context){
+
+    public static void setup(Context context){
         if(mRequestQueue == null){
             mRequestQueue = Volley.newRequestQueue(context);
         }
@@ -40,5 +58,9 @@ public class NetUtils {
             mRequestQueue = null;
             mImageLoader = null;
         }
+    }
+
+    public static class NotSetupException extends Error{
+
     }
 }
