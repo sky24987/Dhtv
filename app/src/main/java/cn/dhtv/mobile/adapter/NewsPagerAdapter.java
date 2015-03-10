@@ -2,20 +2,12 @@ package cn.dhtv.mobile.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.database.DataSetObserver;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 
 import cn.dhtv.mobile.widget.FooterRefreshListView;
 import android.widget.TextView;
@@ -24,19 +16,10 @@ import com.android.volley.toolbox.ImageLoader;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.zip.Inflater;
 
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.entity.NewsCat;
-import cn.dhtv.mobile.entity.NewsOverview;
-import cn.dhtv.mobile.util.DataTest;
 import cn.dhtv.mobile.util.NewsDataManager;
-import cn.dhtv.mobile.util.NewsManager;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;

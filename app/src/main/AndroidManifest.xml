@@ -51,15 +51,25 @@
             android:name=".activity.WebViewActivity"
             android:label="@string/title_activity_web_view" >
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
-                <category android:name="android.intent.category.browsable"></category>
-                <data android:scheme="http"
-                    android:mimeType="text/html" />
-                <data android:scheme="https"
-                    android:mimeType="text/html" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.browsable" />
+
+                <data
+                    android:mimeType="text/html"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="text/html"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".service.VideoService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

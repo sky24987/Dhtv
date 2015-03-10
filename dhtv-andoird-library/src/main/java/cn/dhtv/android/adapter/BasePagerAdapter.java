@@ -1,4 +1,4 @@
-package cn.dhtv.mobile.adapter;
+package cn.dhtv.android.adapter;
 
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
@@ -16,6 +16,13 @@ public class BasePagerAdapter extends PagerAdapter {
     private PageFactory mPageFactory;
     private PageHolder mPageHolder;
 
+    /**
+     *
+     * @param pageFactory
+     * 页面提供者
+     * @param PageHolder
+     * 页面保存者,若空，则使用默认的
+     */
     BasePagerAdapter(PageFactory pageFactory,PageHolder PageHolder){
         mPageFactory = pageFactory;
         if(PageHolder != null){
