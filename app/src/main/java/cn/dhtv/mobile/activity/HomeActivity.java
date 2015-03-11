@@ -15,9 +15,8 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
-import cn.dhtv.mobile.fragment.NewsFragment;
 import cn.dhtv.mobile.R;
-import cn.dhtv.mobile.fragment.NewsFragment2;
+import cn.dhtv.mobile.fragment.NewsFragment;
 import cn.dhtv.mobile.fragment.SectionFragment;
 
 
@@ -66,7 +65,7 @@ public class HomeActivity extends ActionBarActivity
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();*/
         if(position == 0){
-            fragmentManager.beginTransaction().replace(R.id.container,new NewsFragment2()).commit();
+            fragmentManager.beginTransaction().replace(R.id.container,new NewsFragment()).commit();
         }else{
             fragmentManager.beginTransaction()
                     .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))

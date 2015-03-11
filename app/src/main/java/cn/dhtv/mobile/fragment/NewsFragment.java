@@ -1,38 +1,32 @@
 package cn.dhtv.mobile.fragment;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 
-import java.util.List;
-
-import cn.dhtv.mobile.R;
-import cn.dhtv.mobile.adapter.NewsPagerAdapter;
-import cn.dhtv.mobile.entity.NewsCat;
-import cn.dhtv.mobile.entity.NewsOverview;
-import cn.dhtv.mobile.network.BitmapCache;
-import cn.dhtv.mobile.service.NewsService;
-import cn.dhtv.mobile.util.NewsDataManager;
-
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.viewpagerindicator.TabPageIndicator;
 
+import cn.dhtv.android.adapter.BasePagerAdapter;
+import cn.dhtv.mobile.MyApplication;
+import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.adapter.NewsListAdapter;
+import cn.dhtv.mobile.entity.NewsCat;
+import cn.dhtv.mobile.model.ListManager;
+import cn.dhtv.mobile.model.NewsDataList;
+import cn.dhtv.mobile.model.NewsListManager;
+import cn.dhtv.mobile.network.NetUtils;
+import cn.dhtv.mobile.widget.FooterRefreshListView;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,43 +36,60 @@ import com.viewpagerindicator.TabPageIndicator;
  * Use the {@link NewsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends SectionFragment implements NewsService.CallBacks, ServiceConnection{
+public class NewsFragment extends SectionFragment implements BasePagerAdapter.PageFactory,ListManager.CallBacks<NewsCat>{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String LOG_TAG = "NewsFragment";
-    public  final String title = "新闻";
+
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-
+    public  final String title = "新闻";
     private ViewPager mViewPager;
     private TabPageIndicator mTabPageIndicator;
-    private NewsPagerAdapter mNewsPagerAdapter;
-    private TypeReference<List<NewsOverview>> typeReference = new TypeReference<List<NewsOverview>>() { };
+    private BasePagerAdapter mPagerAdapter;
+    private BasePagerAdapter.PageHolder mPageHolder;
+    //private LayoutInflater mInflater;
 
-    private NewsDataManager mNewsDataManager = NewsDataManager.getInstance();
-    private RequestQueue mNewsRequestQueue;
+    private NewsListManager mNewsListManager;
     private ImageLoader mImageLoader;
-    private ObjectMapper mObjectMapper = new ObjectMapper();
-    private NewsService.LocalBinder newsService;
 
-    private NewsPagerAdapter.EventsListener newsPagerListener;
     private OnFragmentInteractionListener mListener;
 
-    public NewsFragment() {
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment NewsFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static NewsFragment newInstance(String param1, String param2) {
+        NewsFragment fragment = new NewsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
+    public NewsFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initField();
-
-
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -86,50 +97,21 @@ public class NewsFragment extends SectionFragment implements NewsService.CallBac
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mNewsRequestQueue.start();
-        Intent bindIntent = new Intent(getActivity(),NewsService.class);
-        getActivity().bindService(bindIntent,this, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mNewsRequestQueue.stop();
-        mNewsRequestQueue.cancelAll(getActivity());
-        if(newsService != null){
-            newsService.setCallbacks(null);
-            getActivity().unbindService(this);
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    /**
-     * Called when the fragment is no longer in use.  This is called
-     * after {@link #onStop()} and before {@link #onDetach()}.
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        mNewsListManager = ((MyApplication)getActivity().getApplication()).getNewsListManager();
+        mImageLoader = NetUtils.getImageLoader(getActivity());
+
         View view =  inflater.inflate(R.layout.fragment_news, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager_news);
-        mViewPager.setEnabled(false);
         mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.news_category);
-        mTabPageIndicator.setEnabled(false);
-        mNewsPagerAdapter = new NewsPagerAdapter(getActivity(), newsPagerListener,mImageLoader);
-        mViewPager.setAdapter(mNewsPagerAdapter);
-        initPagerIndicator();
+        mPagerAdapter = new BasePagerAdapter(this,null);
+        mPageHolder = mPagerAdapter.getPageHolder();
+        mViewPager.setAdapter(mPagerAdapter);
+        mTabPageIndicator.setViewPager(mViewPager);
+
+
+
         return view;
     }
 
@@ -158,100 +140,103 @@ public class NewsFragment extends SectionFragment implements NewsService.CallBac
     }
 
     @Override
-    public void onNewsUpdate(int flag) {
-        Log.d(LOG_TAG,"onNewsUpdate");
-        if(mNewsDataManager.isUpdated()){
-            Log.d(LOG_TAG,"mNewsPagerAdapter.notifyRefreshNews()");
-            mNewsPagerAdapter.notifyRefreshNews();
-            mNewsDataManager.setUpdated(false);//更新新闻页面后将背后新闻数据设置为非更新状态
-        }else {
-            mNewsPagerAdapter.setRefreshState(false);
-            Toast.makeText(getActivity(),"没有更新的内容",Toast.LENGTH_SHORT).show();
+    public int pageCount() {
+        return mNewsListManager.getCategoryCount();
+    }
+
+    @Override
+    public BasePagerAdapter.Page generatePage(int position) {
+        NewsCat cat = mNewsListManager.getCategories().get(position);
+        NewsDataList newsDataList = mNewsListManager.getDataList(cat);
+        mNewsListManager.setCallBacks(this);
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.news_page,null);
+        NewsPage page = new NewsPage(cat.getCatname(),view);
+        page.cat = cat;
+        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
+        page.newsList = (FooterRefreshListView) view.findViewById(R.id.news_list);
+        page.newsList.setFooterRefreshListener(page);
+        page.listAdapter = new NewsListAdapter(cat, newsDataList, mImageLoader, getActivity());
+        ActionBarPullToRefresh.from(getActivity()).theseChildrenArePullable(page.newsList).listener(page).setup(page.mPullToRefreshLayout);
+        page.newsList.setAdapter(page.listAdapter);
+        return page;
+    }
+
+    @Override
+    public String getPageTitle(int position) {
+        return mNewsListManager.getCategories().get(position).getCatname();
+    }
+
+    @Override
+    public int getPagePosition(String title) {
+        return 0;
+    }
+
+    @Override
+    public void onRefresh(NewsCat category, int flag) {
+        NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
         }
+
+        page.listAdapter.notifyDataSetChanged();
+        page.mPullToRefreshLayout.setRefreshing(false);
     }
 
     @Override
-    public void onNewsUpdageFails(int flag) {
-        switch (flag){
-            case NewsService.REQUEST_FAIL_PROCESSING:
-
-                mNewsPagerAdapter.setRefreshState(false);
-                Toast.makeText(getActivity(),"正在获取新闻...",Toast.LENGTH_SHORT).show();
-                break;
+    public void onAppend(NewsCat category, int flag) {
+        NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
         }
+
+        page.listAdapter.notifyDataSetChanged();
+        page.newsList.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
+
     }
 
     @Override
-    public void onNewsAppend(NewsCat cat, Boolean hasMore, int flag) {
+    public void onRefreshFails(NewsCat category, int flag) {
+        NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.mPullToRefreshLayout.setRefreshing(false);
+        Toast.makeText(getActivity(), "获取新闻失败...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onNewsAppendFails(NewsCat cat, int flag) {
+    public void onAppendFails(NewsCat category, int flag) {
+        NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.newsList.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
+        Toast.makeText(getActivity(), "添加新闻失败...", Toast.LENGTH_SHORT).show();
     }
 
-    private void initField(){
+    private class NewsPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshListView.FooterRefreshListener{
+        public NewsCat cat;
+        public PullToRefreshLayout mPullToRefreshLayout;
+        public FooterRefreshListView newsList;
+        public View emptyView;
+        public BaseAdapter listAdapter;
+        NewsPage(String title, View pageView) {
+            super(title, pageView);
+        }
 
-        newsPagerListener = new NewsPagerAdapter.EventsListener() {
-            @Override
-            public void onPullDown(NewsCat cat) {
+        @Override
+        public void onRefreshStarted(View view) {
+            mNewsListManager.refresh(cat,0);
+        }
 
-            }
-
-            @Override
-            public void onPullUp(NewsCat cat) {
-
-            }
-
-            @Override
-            public void onRefresh(NewsCat cat) {
-                if(newsService != null){
-                    newsService.updateNews();
-                }
-            }
-        };
-
-        mNewsRequestQueue = Volley.newRequestQueue(getActivity());
-        mImageLoader =  new ImageLoader(mNewsRequestQueue,new BitmapCache());
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        newsService = (NewsService.LocalBinder)service;
-        newsService.setCallbacks(this);
-        mViewPager.setEnabled(true);
-        mTabPageIndicator.setEnabled(true);
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        newsService = null;
-        mViewPager.setEnabled(false);
-        mTabPageIndicator.setEnabled(false);
-    }
-
-
-    private void initFunction(){
-
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NewsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NewsFragment newInstance(String param1, String param2) {
-        NewsFragment fragment = new NewsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        @Override
+        public void onFooterRefreshing() {
+            mNewsListManager.append(cat,0);
+        }
     }
 
     /**
@@ -269,12 +254,4 @@ public class NewsFragment extends SectionFragment implements NewsService.CallBac
         public void onFragmentInteraction(Uri uri);
     }
 
-    private void initPagerIndicator(){
-        mTabPageIndicator.setViewPager(mViewPager);
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
-    }
 }

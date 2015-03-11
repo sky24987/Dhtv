@@ -13,56 +13,50 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
-import java.util.ArrayList;
-
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.WebViewActivity;
 import cn.dhtv.mobile.entity.NewsCat;
 import cn.dhtv.mobile.entity.NewsOverview;
-import cn.dhtv.mobile.util.NewsDataManager;
+import cn.dhtv.mobile.model.NewsDataList;
 
 /**
- * Created by Jack on 2014/12/31.
+ * Created by Jack on 2015/3/11.
  */
 public class NewsListAdapter extends BaseAdapter implements View.OnClickListener{
-    private static final String LOG_TAG = "NewsListAdapter";
 
-    private ArrayList<NewsOverview> mNewsList;
-    private Context context;
-    private NewsCat cat;
-    private LayoutInflater inflater;
-    private NewsDataManager newsDataManager = NewsDataManager.getInstance();
+    private NewsCat mNewsCat;
+    private NewsDataList mNewsDataList;
     private ImageLoader mImageLoader;
+    private Context context;
 
-    public NewsListAdapter(Context context,NewsCat cat,ImageLoader imageLoader){
+    public NewsListAdapter(NewsCat mNewsCat, NewsDataList mNewsDataList, ImageLoader mImageLoader, Context context) {
+        this.mNewsCat = mNewsCat;
+        this.mNewsDataList = mNewsDataList;
+        this.mImageLoader = mImageLoader;
         this.context = context;
-        this.cat = cat;
-        mNewsList = newsDataManager.getNewsDataHashMap().get(cat).getNewsList();
-        this.inflater = LayoutInflater.from(context);
-        mImageLoader = imageLoader;
     }
 
     @Override
     public int getCount() {
-        return mNewsList.size();
+        return mNewsDataList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return mNewsDataList.getItem(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return mNewsList.get(position).getAaid();
+        return  mNewsDataList.getItem(position).getAaid();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        NewsOverview item = mNewsList.get(position);
+        NewsOverview item = mNewsDataList.getItem(position);
         if(convertView == null){
-            convertView = inflater.inflate(R.layout.news_list_item,null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.news_list_item, null);
             holder = new ViewHolder();
             holder.imageView = (NetworkImageView) convertView.findViewById(R.id.news_image);
             holder.title = (TextView) convertView.findViewById(R.id.news_title);
@@ -71,7 +65,6 @@ public class NewsListAdapter extends BaseAdapter implements View.OnClickListener
             holder.title.setText(item.getTitle());
             holder.summary.setText(item.getSummary());
             holder.url = item.getUrl();
-            Log.v(LOG_TAG,"summary"+item.getSummary());
             convertView.setTag(holder);
             convertView.setOnClickListener(this);
         }else {
