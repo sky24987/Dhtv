@@ -72,6 +72,8 @@ public abstract class ListManager<C extends Category,L extends DataList> {
 
     public abstract void release();
 
+    public abstract void setUp();
+
 
     public static interface CallBacks<C2 extends Category>{
         void onRefresh(C2 category,int flag);

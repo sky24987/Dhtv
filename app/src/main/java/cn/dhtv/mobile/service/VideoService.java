@@ -99,13 +99,13 @@ public class VideoService extends Service {
             }
         };
 
-        ..........
+        //TODO..........
     }
 
     private void init(){
         MyApplication application = (MyApplication)getApplication();
-        requestQueue = application.getRequestQueue();
-        mVideoDataManager = application.getVideoDataManager();
+        //TODO..........requestQueue = application.getRequestQueue();
+        //TODO..........mVideoDataManager = application.getVideoDataManager();
 
         updateHandler = new Handler(){
             @Override

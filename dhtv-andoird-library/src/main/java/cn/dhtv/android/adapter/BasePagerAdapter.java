@@ -23,7 +23,7 @@ public class BasePagerAdapter extends PagerAdapter {
      * @param PageHolder
      * 页面保存者,若空，则使用默认的
      */
-    BasePagerAdapter(PageFactory pageFactory,PageHolder PageHolder){
+    public BasePagerAdapter(PageFactory pageFactory,PageHolder PageHolder){
         mPageFactory = pageFactory;
         if(PageHolder != null){
             mPageHolder = PageHolder;
@@ -88,7 +88,7 @@ public class BasePagerAdapter extends PagerAdapter {
         private View pageView;
         private int id;
 
-        Page(String title,View pageView){
+        public Page(String title,View pageView){
             this.title = title;
             this.pageView = pageView;
         }
@@ -125,7 +125,7 @@ public class BasePagerAdapter extends PagerAdapter {
             }
 
             for(int i = 0;i < mPageList.size();++i){
-                if(mPageList.get(i).title == title){
+                if(mPageList.get(i).title.equals(title)){
                     return i;
                 }
             }

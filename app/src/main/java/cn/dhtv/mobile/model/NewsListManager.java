@@ -36,6 +36,27 @@ public class NewsListManager extends ListManager<NewsCat,NewsDataList> {
     }
 
     @Override
+    public void setUp(){
+        NewsCat newsCat1 = new NewsCat();
+        newsCat1.setCatname("时政");
+        newsCat1.setCatid(256);
+        NewsCat newsCat2 = new NewsCat();
+        newsCat2.setCatname("社会");
+        newsCat2.setCatid(260);
+        NewsCat newsCat3 = new NewsCat();
+        newsCat3.setCatname("文化");
+        newsCat3.setCatid(263);
+
+        mCategories.add(newsCat1);
+        mCategories.add(newsCat2);
+        mCategories.add(newsCat3);
+        for(NewsCat cat:mCategories){
+            mDataListMap.put(cat,new NewsDataList(cat));
+        }
+
+    }
+
+    @Override
     public void refresh(final NewsCat category, int flag) {
         if(isProcessing()){
             if(mCallBacks != null){
@@ -114,7 +135,6 @@ public class NewsListManager extends ListManager<NewsCat,NewsDataList> {
                         Log.d(LOG_TAG, newsList.toString());
                     }
                     dataList.append(newsList);
-                    dataList.resetState();
                     dataList.setCurrentPage(dataList.nextPage());
                     dataList.setNewData(true);
                     if(mCallBacks != null){
@@ -149,7 +169,8 @@ public class NewsListManager extends ListManager<NewsCat,NewsDataList> {
 
     @Override
     public void release() {
-
+        mCategories.clear();
+        mDataListMap.clear();
     }
 
     private String makeURL(NewsCat category,int page){
