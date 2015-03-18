@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 
 public abstract class SectionFragment extends Fragment {
 
-    private final String title = "title unspecified";
+    protected final String title = "title unspecified";
     abstract public String getTitle();
 
     @Override

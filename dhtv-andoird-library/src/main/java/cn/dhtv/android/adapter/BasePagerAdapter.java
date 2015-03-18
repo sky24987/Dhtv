@@ -13,6 +13,9 @@ import java.util.ArrayList;
  * 开发者也可以使用默认的PageHolder。
  */
 public class BasePagerAdapter extends PagerAdapter {
+    private final static boolean DEBUG = true;
+    private final static String LOG_TAG = "BasePagerAdapter";
+
     private PageFactory mPageFactory;
     private PageHolder mPageHolder;
 
@@ -71,7 +74,7 @@ public class BasePagerAdapter extends PagerAdapter {
 
     @Override
     public int getItemPosition(Object object) {
-        int position =  mPageFactory.getPagePosition(((Page)object).title);
+        int position =  mPageFactory.getPagePosition((Page) object);
         if(position >= 0){
             return position;
         }else {
@@ -109,7 +112,7 @@ public class BasePagerAdapter extends PagerAdapter {
     }
 
     public static class PageHolder{
-        private ArrayList<Page> mPageList = new ArrayList<>();
+        private ArrayList<Page> mPageList = new ArrayList<Page>();
         public Page get(String title){
             int index = indexOf(title);
             if(index >= 0){
@@ -168,6 +171,6 @@ public class BasePagerAdapter extends PagerAdapter {
         int pageCount();
         Page generatePage(int position);
         String getPageTitle(int position);
-        int getPagePosition(String title);
+        int getPagePosition(Page page);
     }
 }

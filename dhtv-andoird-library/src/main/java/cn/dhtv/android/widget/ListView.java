@@ -19,17 +19,21 @@ public class ListView extends android.widget.ListView{
     private ScrollListenerInterceptor mScrollListenerInterceptor;
     private LastItemObserver mLastItemObserver;
 
+    {
+        setScrollListenerInterceptor(new ScrollListenerInterceptor());
+    }
+
     public ListView(Context context) {
         this(context,null);
     }
 
     public ListView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context,attrs);
     }
 
     public ListView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setScrollListenerInterceptor(new ScrollListenerInterceptor());
+
     }
 
 

@@ -20,9 +20,9 @@ public abstract class ListManager<C extends Category,L extends DataList> {
     protected RequestQueue mRequestQueue;
     protected ObjectMapper mObjectMapper = new ObjectMapper();
 
-    protected ArrayList<C> mCategories = new ArrayList<>();
-    protected HashMap<C,L> mDataListMap = new HashMap<>();
-    protected ArrayList<C> mProcessingList = new ArrayList<>();
+    protected ArrayList<C> mCategories = new ArrayList<C>();
+    protected HashMap<C,L> mDataListMap = new HashMap<C, L>();
+    protected ArrayList<C> mProcessingList = new ArrayList<C>();
     protected CallBacks<C> mCallBacks;
 
 

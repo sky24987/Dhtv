@@ -3,7 +3,6 @@ package cn.dhtv.mobile.model;
 import java.util.ArrayList;
 
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.util.DataManager;
 
 /**
  * Created by Jack on 2015/3/10.
@@ -13,7 +12,7 @@ public class DataList<C extends Category,I> {
 
 
     protected C mCategory;
-    protected ArrayList<I> mDataList = new ArrayList<>();
+    protected ArrayList<I> mDataList = new ArrayList<I>();
 
 
     protected boolean newData = false;

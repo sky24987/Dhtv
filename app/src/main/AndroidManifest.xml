@@ -40,13 +40,6 @@
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
-
-        <service
-            android:name=".service.NewsService"
-            android:enabled="true"
-            android:exported="false" >
-        </service>
-
         <activity
             android:name=".activity.WebViewActivity"
             android:label="@string/title_activity_web_view" >
@@ -64,12 +57,6 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".service.VideoService"
-            android:enabled="true"
-            android:exported="false" >
-        </service>
     </application>
 
 </manifest>

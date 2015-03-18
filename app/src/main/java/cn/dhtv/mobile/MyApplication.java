@@ -1,38 +1,47 @@
 package cn.dhtv.mobile;
 
 import android.app.Application;
-import android.content.Intent;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.Volley;
+import android.util.Log;
 
 import cn.dhtv.mobile.model.NewsListManager;
-import cn.dhtv.mobile.network.BitmapCache;
+import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
-import cn.dhtv.mobile.service.NewsService;
-import cn.dhtv.mobile.util.VideoDataManager;
 
 /**
  * Created by Jack on 2015/2/11.
  */
 public class MyApplication extends Application {
+    private  final String LOG_TAG = getClass().getSimpleName();
+    private  final boolean DEBUG = true;
+
     private NewsListManager mNewsListManager;
-    //private VideoDataManager mVideoDataManager;
+    private NewsPageManager mNewsPageManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         NetUtils.setup(this);
-        mNewsListManager = new NewsListManager(this);
-        mNewsListManager.setUp();
+//        mNewsListManager = new NewsListManager(this);
+//        mNewsListManager.setUp();
+        mNewsPageManager = new NewsPageManager();
+        mNewsPageManager.setUp();
+        if(DEBUG){
+            Log.d(LOG_TAG,"onCreate()");
+        }
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
-        mNewsListManager.release();
+//        mNewsListManager.release();
         NetUtils.release();
+        if(DEBUG){
+            Log.d(LOG_TAG,"onTerminate()");
+        }
+    }
+
+    public NewsPageManager getNewsPageManager(){
+        return mNewsPageManager;
     }
 
     public NewsListManager getNewsListManager() {

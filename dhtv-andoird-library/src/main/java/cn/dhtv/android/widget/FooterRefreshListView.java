@@ -15,7 +15,7 @@ import cn.dhtv.android.R;
  * 可设置底部刷新视图的ListView
  */
 public class FooterRefreshListView extends ListView {
-    private static final String LOG_TAG = "'dhtvlib'.FooterRefreshListView";
+    private static final String LOG_TAG = "'dhtvlib'.Footer";
     private static final boolean DEBUG = true;
 
     private View mRefreshFooter;

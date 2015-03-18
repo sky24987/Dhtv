@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -18,11 +19,15 @@ import com.viewpagerindicator.TabPageIndicator;
 import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.adapter.NewsListAdapter;
+import cn.dhtv.mobile.adapter.NewsListAdapter2;
+import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsCat;
-import cn.dhtv.mobile.model.ListManager;
+import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.NewsDataList;
 import cn.dhtv.mobile.model.NewsListManager;
+import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.widget.FooterRefreshListView;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
@@ -32,18 +37,16 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewsFragment.OnFragmentInteractionListener} interface
+ * {@link NewsFragment2.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewsFragment#newInstance} factory method to
+ * Use the {@link NewsFragment2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment extends SectionFragment implements BasePagerAdapter.PageFactory,ListManager.CallBacks<NewsCat>{
+public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -54,9 +57,8 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     private TabPageIndicator mTabPageIndicator;
     private BasePagerAdapter mPagerAdapter;
     private BasePagerAdapter.PageHolder mPageHolder;
-    //private LayoutInflater mInflater;
 
-    private NewsListManager mNewsListManager;
+    private NewsPageManager mNewsPageManager;
     private ImageLoader mImageLoader;
 
     private OnFragmentInteractionListener mListener;
@@ -67,11 +69,11 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NewsFragment.
+     * @return A new instance of fragment NewsFragment2.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewsFragment newInstance(String param1, String param2) {
-        NewsFragment fragment = new NewsFragment();
+    public static NewsFragment2 newInstance(String param1, String param2) {
+        NewsFragment2 fragment = new NewsFragment2();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -79,13 +81,8 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         return fragment;
     }
 
-    public NewsFragment() {
+    public NewsFragment2() {
         // Required empty public constructor
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
     }
 
     @Override
@@ -100,18 +97,16 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mNewsListManager = ((MyApplication)getActivity().getApplication()).getNewsListManager();
+        mNewsPageManager = ((MyApplication)getActivity().getApplication()).getNewsPageManager();
         mImageLoader = NetUtils.getImageLoader(getActivity());
 
-        View view =  inflater.inflate(R.layout.fragment_news, container, false);
-        mViewPager = (ViewPager) view.findViewById(R.id.view_pager_news);
-        mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.news_category);
+        View view =  inflater.inflate(R.layout.page, container, false);
+        mViewPager = (ViewPager) view.findViewById(R.id.pager);
+        mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.pager_title);
         mPagerAdapter = new BasePagerAdapter(this,null);
         mPageHolder = mPagerAdapter.getPageHolder();
         mViewPager.setAdapter(mPagerAdapter);
         mTabPageIndicator.setViewPager(mViewPager);
-
-
 
         return view;
     }
@@ -126,7 +121,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        /*try {
+       /* try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -141,47 +136,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     }
 
     @Override
-    public int pageCount() {
-        return mNewsListManager.getCategoryCount();
-    }
-
-    @Override
-    public BasePagerAdapter.Page generatePage(int position) {
-        NewsCat cat = mNewsListManager.getCategories().get(position);
-        NewsDataList newsDataList = mNewsListManager.getDataList(cat);
-        mNewsListManager.setCallBacks(this);
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.news_page,null);
-        NewsPage page = new NewsPage(cat.getCatname(),view);
-        page.cat = cat;
-        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
-        page.newsList = (FooterRefreshListView) view.findViewById(R.id.news_list);
-        page.newsList.setFooterRefreshListener(page);
-        page.listAdapter = new NewsListAdapter(cat, newsDataList, mImageLoader, getActivity());
-        ActionBarPullToRefresh.from(getActivity()).theseChildrenArePullable(page.newsList).listener(page).setup(page.mPullToRefreshLayout);
-        page.newsList.setAdapter(page.listAdapter);
-        return page;
-    }
-
-    @Override
-    public String getPageTitle(int position) {
-        return mNewsListManager.getCategories().get(position).getCatname();
-    }
-
-    @Override
-    public int getPagePosition(BasePagerAdapter.Page page) {
-        NewsPage newsPage = (NewsPage) page;
-        int position = mNewsListManager.getCategories().indexOf(newsPage);
-        if(position >= 0){
-            return position;
-        }else {
-            return PagerAdapter.POSITION_NONE;
-        }
-    }
-
-    @Override
-    public void onRefresh(NewsCat category, int flag) {
+    public void onRefresh(Category category, AbsPageManager.CallBackFlag flag) {
         NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
         if(page == null){
             return;
@@ -192,7 +147,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     }
 
     @Override
-    public void onAppend(NewsCat category, int flag) {
+    public void onAppend(Category category, AbsPageManager.CallBackFlag flag) {
         NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
         if(page == null){
             return;
@@ -200,11 +155,10 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
         page.listAdapter.notifyDataSetChanged();
         page.newsList.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
-
     }
 
     @Override
-    public void onRefreshFails(NewsCat category, int flag) {
+    public void onRefreshFails(Category category, AbsPageManager.CallBackFlag flag) {
         NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
         if(page == null){
             return;
@@ -215,18 +169,68 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     }
 
     @Override
-    public void onAppendFails(NewsCat category, int flag) {
+    public void onAppendFails(Category category, AbsPageManager.CallBackFlag flag) {
         NewsPage page = (NewsPage) mPageHolder.get(category.getCatname());
         if(page == null){
             return;
         }
 
-        page.newsList.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
+        page.newsList.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
         Toast.makeText(getActivity(), "添加新闻失败...", Toast.LENGTH_SHORT).show();
     }
 
+
+
+
+    @Override
+    public int pageCount() {
+        return mNewsPageManager.getPageCount();
+    }
+
+    @Override
+    public BasePagerAdapter.Page generatePage(int position) {
+        Category category = mNewsPageManager.getCategory(position);
+        AbstractListAdapter.ListViewDataList listViewDataList = mNewsPageManager.getList(category);
+        mNewsPageManager.setCallBacks(this);
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.news_page,null);
+        NewsPage page = new NewsPage(category.getCatname(),view);
+        page.category = category;
+        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
+        page.newsList = (FooterRefreshListView) view.findViewById(R.id.news_list);
+        page.newsList.setFooterRefreshListener(page);
+        page.listAdapter = new NewsListAdapter2(category, listViewDataList, mImageLoader, getActivity());
+        ActionBarPullToRefresh.from(getActivity()).theseChildrenArePullable(page.newsList).listener(page).setup(page.mPullToRefreshLayout);
+        page.newsList.setAdapter(page.listAdapter);
+        return page;
+    }
+
+    @Override
+    public String getPageTitle(int position) {
+        return mNewsPageManager.getCategory(position).getCatname();
+    }
+
+    @Override
+    public int getPagePosition(BasePagerAdapter.Page page) {
+        NewsPage newsPage = (NewsPage) page;
+        Category category = newsPage.category;
+        int position = mNewsPageManager.indexof(category);
+        if(position >= 0){
+            return position;
+        }else {
+            return PagerAdapter.POSITION_NONE;
+        }
+    }
+
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
     private class NewsPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshListView.FooterRefreshListener{
-        public NewsCat cat;
+        public Category category;
         public PullToRefreshLayout mPullToRefreshLayout;
         public FooterRefreshListView newsList;
         public View emptyView;
@@ -237,14 +241,15 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
         @Override
         public void onRefreshStarted(View view) {
-            mNewsListManager.refresh(cat,0);
+            mNewsPageManager.refresh(category);
         }
 
         @Override
         public void onFooterRefreshing() {
-            mNewsListManager.append(cat,0);
+            mNewsPageManager.append(category);
         }
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
