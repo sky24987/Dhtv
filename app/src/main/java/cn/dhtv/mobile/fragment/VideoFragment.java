@@ -21,11 +21,13 @@ import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.adapter.NewsListAdapter2;
+import cn.dhtv.mobile.adapter.VideoListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.NewsPageManager;
-import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.widget.FooterRefreshListView;
+import cn.dhtv.mobile.model.VideoPageManager;
+import cn.dhtv.mobile.network.NetUtils;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
@@ -33,32 +35,23 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NewsFragment2.OnFragmentInteractionListener} interface
+ * {@link VideoFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NewsFragment2#newInstance} factory method to
+ * Use the {@link VideoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class VideoFragment extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks{
 
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public  final String title = "新闻";
+    public  final String title = "视频";
     private ViewPager mViewPager;
     private TabPageIndicator mTabPageIndicator;
     private BasePagerAdapter mPagerAdapter;
     private BasePagerAdapter.PageHolder mPageHolder;
 
-    private NewsPageManager mNewsPageManager;
+    private VideoPageManager mVideoPageManager;
     private ImageLoader mImageLoader;
 
     private OnFragmentInteractionListener mListener;
@@ -67,41 +60,24 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NewsFragment2.
+     *
+     * @return A new instance of fragment VideoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewsFragment2 newInstance(String param1, String param2) {
-        NewsFragment2 fragment = new NewsFragment2();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+    public static VideoFragment newInstance() {
+        VideoFragment fragment = new VideoFragment();
         return fragment;
     }
 
-
-
-    public NewsFragment2() {
+    public VideoFragment() {
         // Required empty public constructor
     }
 
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mNewsPageManager = ((MyApplication)getActivity().getApplication()).getNewsPageManager();
+        mVideoPageManager = ((MyApplication)getActivity().getApplication()).getVideoPageManager();
         mImageLoader = NetUtils.getImageLoader(getActivity());
 
         View view =  inflater.inflate(R.layout.tab_pager, container, false);
@@ -115,18 +91,8 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Activity activity) {
-        if(DEBUG){
-            Log.d(LOG_TAG,"getActivity null? "+(getActivity() == null));
-        }
         super.onAttach(activity);
         /*try {
             mListener = (OnFragmentInteractionListener) activity;
@@ -140,6 +106,11 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
     }
 
     @Override
@@ -159,21 +130,9 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         if(page == null){
             return;
         }
-
         page.listAdapter.notifyDataSetChanged();
-        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
 
-        if(DEBUG) {
-            if (page.listView.getAdapter() == page.listAdapter) {
-                Log.d(LOG_TAG, "page.listView.getAdapter() == page.listAdapter?true");
-            } else {
-                Log.d(LOG_TAG, "page.listView.getAdapter() == page.listAdapter?false");
-            }
-            Log.d(LOG_TAG+"?", "after page:" + page);
-            Log.d(LOG_TAG+"?", "page.listView.getAdapter():" + page.listView.getAdapter());
-            Log.d(LOG_TAG+"?", "page.listAdapter:" + page.listAdapter);
-
-        }
+        page.listView.setRefreshFooterStatus(FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
     }
 
     @Override
@@ -184,7 +143,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         }
 
         page.mPullToRefreshLayout.setRefreshing(false);
-        Toast.makeText(getActivity(), "获取新闻失败...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "获取视频失败...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -194,8 +153,8 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
             return;
         }
 
-        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
-        Toast.makeText(getActivity(), "添加新闻失败...", Toast.LENGTH_SHORT).show();
+        page.listView.setRefreshFooterStatus(FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
+        Toast.makeText(getActivity(), "添加视频失败...", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -203,72 +162,45 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
 
     @Override
     public int pageCount() {
-        return mNewsPageManager.getPageCount();
+        return mVideoPageManager.getCategoryCount();
     }
 
     @Override
     public BasePagerAdapter.Page generatePage(int position) {
-        Category category = mNewsPageManager.getCategory(position);
-        AbstractListAdapter.ListViewDataList listViewDataList = mNewsPageManager.getList(category);
-        mNewsPageManager.setCallBacks(this);
+        Category category = mVideoPageManager.getCategory(position);
+        AbstractListAdapter.ListViewDataList listViewDataList = mVideoPageManager.getList(category);
+        mVideoPageManager.setCallBacks(this);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.news_page,null);
+        View view = inflater.inflate(R.layout.page,null);
         MyPage page = new MyPage(category.getCatname(),view);
         page.category = category;
         page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
-        page.listView = (FooterRefreshListView) view.findViewById(R.id.news_list);
+        page.listView = (FooterRefreshListView) view.findViewById(R.id.list);
         page.listView.setFooterRefreshListener(page);
-        page.listAdapter = new NewsListAdapter2(category, listViewDataList, mImageLoader, getActivity());
+        page.listAdapter = new VideoListAdapter(category, listViewDataList, mImageLoader, getActivity());
         ActionBarPullToRefresh.from(getActivity()).theseChildrenArePullable(page.listView).listener(page).setup(page.mPullToRefreshLayout);
         page.listView.setAdapter(page.listAdapter);
+
         return page;
     }
 
     @Override
     public String getPageTitle(int position) {
-        return mNewsPageManager.getCategory(position).getCatname();
+        return mVideoPageManager.getCategory(position).getCatname();
     }
 
     @Override
     public int getPagePosition(BasePagerAdapter.Page page) {
         MyPage myPage = (MyPage) page;
         Category category = myPage.category;
-        int position = mNewsPageManager.indexof(category);
+        int position = mVideoPageManager.indexof(category);
         if(position >= 0){
             return position;
         }else {
             return PagerAdapter.POSITION_NONE;
         }
     }
-
-
-    @Override
-    public String getTitle() {
-        return title;
-    }
-
-    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshListView.FooterRefreshListener{
-        public Category category;
-        public PullToRefreshLayout mPullToRefreshLayout;
-        public FooterRefreshListView listView;
-        public View emptyView;
-        public BaseAdapter listAdapter;
-        MyPage(String title, View pageView) {
-            super(title, pageView);
-        }
-
-        @Override
-        public void onRefreshStarted(View view) {
-            mNewsPageManager.refresh(category);
-        }
-
-        @Override
-        public void onFooterRefreshing() {
-            mNewsPageManager.append(category);
-        }
-    }
-
 
     /**
      * This interface must be implemented by activities that contain this
@@ -285,4 +217,25 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         public void onFragmentInteraction(Uri uri);
     }
 
+
+    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshListView.FooterRefreshListener{
+        public Category category;
+        public PullToRefreshLayout mPullToRefreshLayout;
+        public FooterRefreshListView listView;
+        public View emptyView;
+        public BaseAdapter listAdapter;
+        MyPage(String title, View pageView) {
+            super(title, pageView);
+        }
+
+        @Override
+        public void onRefreshStarted(View view) {
+            mVideoPageManager.refresh(category);
+        }
+
+        @Override
+        public void onFooterRefreshing() {
+            mVideoPageManager.append(category);
+        }
+    }
 }

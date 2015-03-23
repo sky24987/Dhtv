@@ -15,7 +15,7 @@ import cn.dhtv.mobile.R;
  */
 public class FooterRefreshListView extends cn.dhtv.android.widget.FooterRefreshListView {
     private static final String LOG_TAG = "'app'.FooterRefreshListView";
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     private FooterRefreshListener mFooterRefreshListener;
 

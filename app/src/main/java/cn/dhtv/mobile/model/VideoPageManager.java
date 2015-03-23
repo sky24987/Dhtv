@@ -1,30 +1,33 @@
 package cn.dhtv.mobile.model;
 
-import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsCat;
 
 /**
- * Created by Jack on 2015/3/18.
+ * Created by Jack on 2015/3/20.
  */
-public class NewsPageManager extends AbsPageManager<NewsListCollector> {
+public class VideoPageManager extends AbsPageManager<VideoListCollector> {
     @Override
     public void setUp() {
         Category cat1 = new NewsCat();
-        cat1.setCatname("时政");
-        cat1.setCatid(256);
+        cat1.setCatname("热点");
+        cat1.setCatid(258);
         Category cat2 = new NewsCat();
-        cat2.setCatname("社会");
-        cat2.setCatid(260);
+        cat2.setCatname("生活");
+        cat2.setCatid(262);
         Category cat3 = new NewsCat();
-        cat3.setCatname("文化");
-        cat3.setCatid(263);
+        cat3.setCatname("微电影");
+        cat3.setCatid(264);
+        Category cat4 = new NewsCat();
+        cat4.setCatname("精品");
+        cat4.setCatid(265);
 
         categories.add(cat1);
         categories.add(cat2);
         categories.add(cat3);
+        categories.add(cat4);
         for(Category cat:categories){
-            mListMap.put(cat,new NewsListCollector(cat, this));
+            mListMap.put(cat,new VideoListCollector(cat, this));
         }
     }
 
@@ -32,6 +35,8 @@ public class NewsPageManager extends AbsPageManager<NewsListCollector> {
     public void release() {
 
     }
+
+
 
 
     @Override

@@ -19,6 +19,7 @@ public class WebViewActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         View view = getLayoutInflater().inflate(R.layout.activity_web_view,null);
         mWebView = (WebView) view.findViewById(R.id.web_reader);
+        mWebView.getSettings().setJavaScriptEnabled(true);
         Intent intent = getIntent();
         Uri uri = intent.getData();
         mWebView.loadUrl(uri.toString());

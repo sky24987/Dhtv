@@ -34,7 +34,14 @@ public abstract class AbsListCollector implements AbstractListAdapter.ListViewDa
     public abstract void asyncAppend();
     public abstract void asyncRefresh();
 
+    protected AbsListCollector(){
 
+    }
+
+    protected AbsListCollector(Category category,CallBacks callBacks){
+        this.category = category;
+        this.mCallBacks = callBacks;
+    }
 
 
     protected void resetState(){

@@ -1,27 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/refresh_view"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.viewpagerindicator.TabPageIndicator
-        android:id="@+id/pager_title"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
-    <FrameLayout
+    <cn.dhtv.mobile.widget.FooterRefreshListView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v4.view.ViewPager
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/pager">
-        </android.support.v4.view.ViewPager>
-        <!--<TextView
-            android:id="@+id/prompt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/material_blue_grey_800"
-            android:textSize="30sp"
-            android:text="提示信息"/>-->
-    </FrameLayout>
-
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        />
+</uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout>

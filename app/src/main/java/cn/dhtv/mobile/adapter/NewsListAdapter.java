@@ -61,7 +61,7 @@ public class NewsListAdapter extends BaseAdapter implements View.OnClickListener
             if(DEBUG){
                 Log.d(LOG_TAG,"create list view item");
             }
-            convertView = LayoutInflater.from(context).inflate(R.layout.news_list_item, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_news, null);
             holder = new ViewHolder();
             holder.imageView = (NetworkImageView) convertView.findViewById(R.id.news_image);
             holder.title = (TextView) convertView.findViewById(R.id.news_title);

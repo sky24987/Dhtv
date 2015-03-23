@@ -3,9 +3,7 @@
 
     <string name="app_name">东海网</string>
     <string name="title_activity_home">HomeActivity</string>
-    <string name="title_section1">新闻</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
@@ -20,5 +18,12 @@
     <string name="refresh_footer_no_more">没有更多内容了</string>
     <string name="refresh_footer_clickable">点击加载更多</string>
     <string name="refresh_footer_auto"></string>
+
+
+    <string name="title_section1">新闻</string>
+    <string name="title_section2">视频</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="title_fragment_news">新闻</string>
 
 </resources>

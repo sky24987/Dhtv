@@ -174,6 +174,6 @@ public class NewsListManager extends ListManager<NewsCat,NewsDataList> {
     }
 
     private String makeURL(NewsCat category,int page){
-        return URL+"?"+"catid="+category.getCatid()+"&page="+page+"&size="+PAGE_SIZE;
+        return URL+"?"+"catid="+category.getCatid()+"&tab_pager="+page+"&size="+PAGE_SIZE;
     }
 }

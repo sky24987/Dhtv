@@ -1,9 +1,15 @@
 package cn.dhtv.mobile.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 /**
  * Created by Jack on 2015/3/6.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VideoOverview {
+    public static final String URL = "http://data.wztv.cn/mobile/";
+
     private int avid;
     private int vid;
     private int catid;
@@ -16,6 +22,21 @@ public class VideoOverview {
     private String dateline;
     private String url;
     private String pic;
+    private String dir;
+
+    @JsonSetter(value = "dir")
+    public void jsonSetDir(String dir){
+        this.dir = dir;
+        this.pic = URL+dir+".jpg";
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
+    }
 
     public int getAvid() {
         return avid;

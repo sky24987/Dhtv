@@ -16,15 +16,16 @@ import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.WebViewActivity;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
+import cn.dhtv.mobile.entity.VideoOverview;
 
 /**
- * Created by Jack on 2015/3/17.
+ * Created by Jack on 2015/3/20.
  */
-public class NewsListAdapter2 extends AbstractListAdapter implements View.OnClickListener{
+public class VideoListAdapter extends AbstractListAdapter implements View.OnClickListener{
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = false;
 
-    public NewsListAdapter2(Category category,ListViewDataList dataList,ImageLoader imageLoader, Context context) {
+    public VideoListAdapter(Category category,AbstractListAdapter.ListViewDataList dataList,ImageLoader imageLoader, Context context) {
         this.category = category;
         this.dataList = dataList;
         this.mImageLoader = imageLoader;
@@ -34,23 +35,21 @@ public class NewsListAdapter2 extends AbstractListAdapter implements View.OnClic
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        NewsOverview item = (NewsOverview)dataList.getItem(position);
+        VideoOverview item = (VideoOverview)dataList.getItem(position);
         if(convertView == null){
             if(DEBUG){
                 Log.d(LOG_TAG, "create list view item");
             }
-            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_news, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_video, null);
             holder = new ViewHolder();
-            holder.imageView = (NetworkImageView) convertView.findViewById(R.id.news_image);
-            holder.title = (TextView) convertView.findViewById(R.id.news_title);
-            holder.summary = (TextView) convertView.findViewById(R.id.news_summary);
-            if(item.getPic().length > 0) {
-                holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX + item.getPic()[0].getSrc(), mImageLoader);
-            }else {
-                holder.imageView.setImageUrl(null, mImageLoader);
-            }
+            holder.networkImageView = (NetworkImageView) convertView.findViewById(R.id.image);
+            holder.title = (TextView) convertView.findViewById(R.id.title);
+            holder.durition = (TextView) convertView.findViewById(R.id.duration);
+            holder.networkImageView.setImageUrl(item.getPic(),mImageLoader);
             holder.title.setText(item.getTitle());
-            holder.summary.setText(item.getSummary());
+            holder.dataline = (TextView) convertView.findViewById(R.id.dateline);
+            holder.dataline.setText(item.getDateline());
+            holder.durition.setText(""+item.getDuration());
             holder.url = item.getUrl();
             convertView.setTag(holder);
             convertView.setOnClickListener(this);
@@ -60,15 +59,11 @@ public class NewsListAdapter2 extends AbstractListAdapter implements View.OnClic
             }
             holder = (ViewHolder) convertView.getTag();
             holder.title.setText(item.getTitle());
-            holder.summary.setText(item.getSummary());
-            if(item.getPic().length > 0) {
-                holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX + item.getPic()[0].getSrc(), mImageLoader);
-            }else {
-                holder.imageView.setImageUrl(null, mImageLoader);
-            }
+            holder.dataline.setText(item.getDateline());
+            holder.durition.setText(""+item.getDuration());
+            holder.networkImageView.setImageUrl(item.getPic(),mImageLoader);
             holder.url = item.getUrl();
         }
-
         return convertView;
     }
 
@@ -83,8 +78,9 @@ public class NewsListAdapter2 extends AbstractListAdapter implements View.OnClic
 
     public static class ViewHolder extends BaseViewHolder{
         private String url;
-        public NetworkImageView imageView;
+        public NetworkImageView networkImageView;
         public TextView title;
-        public TextView summary;
+        public TextView dataline;
+        public TextView durition;
     }
 }

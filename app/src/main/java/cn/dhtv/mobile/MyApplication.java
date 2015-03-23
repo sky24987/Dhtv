@@ -3,8 +3,10 @@ package cn.dhtv.mobile;
 import android.app.Application;
 import android.util.Log;
 
+import cn.dhtv.mobile.entity.VideoOverview;
 import cn.dhtv.mobile.model.NewsListManager;
 import cn.dhtv.mobile.model.NewsPageManager;
+import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 
 /**
@@ -16,6 +18,7 @@ public class MyApplication extends Application {
 
     private NewsListManager mNewsListManager;
     private NewsPageManager mNewsPageManager;
+    private VideoPageManager mVideoPageManager;
 
     @Override
     public void onCreate() {
@@ -25,6 +28,8 @@ public class MyApplication extends Application {
 //        mNewsListManager.setUp();
         mNewsPageManager = new NewsPageManager();
         mNewsPageManager.setUp();
+        mVideoPageManager = new VideoPageManager();
+        mVideoPageManager.setUp();
         if(DEBUG){
             Log.d(LOG_TAG,"onCreate()");
         }
@@ -38,13 +43,18 @@ public class MyApplication extends Application {
         if(DEBUG){
             Log.d(LOG_TAG,"onTerminate()");
         }
+
     }
 
     public NewsPageManager getNewsPageManager(){
         return mNewsPageManager;
     }
 
+    public VideoPageManager getVideoPageManager(){return  mVideoPageManager;}
+
     public NewsListManager getNewsListManager() {
         return mNewsListManager;
     }
+
+
 }
