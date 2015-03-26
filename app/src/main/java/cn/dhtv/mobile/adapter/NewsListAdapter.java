@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -15,58 +14,42 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.WebViewActivity;
-import cn.dhtv.mobile.entity.NewsCat;
+import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
-import cn.dhtv.mobile.model.NewsDataList;
 
 /**
- * Created by Jack on 2015/3/11.
+ * Created by Jack on 2015/3/17.
  */
-public class NewsListAdapter extends BaseAdapter implements View.OnClickListener{
-    private static final boolean DEBUG = true;
-    private static final String LOG_TAG = "NewsListAdapter";
+public class NewsListAdapter extends AbstractListAdapter implements View.OnClickListener{
+    private final String LOG_TAG = getClass().getSimpleName();
+    private final boolean DEBUG = false;
 
-    private NewsCat mNewsCat;
-    private NewsDataList mNewsDataList;
-    private ImageLoader mImageLoader;
-    private Context context;
-
-    public NewsListAdapter(NewsCat mNewsCat, NewsDataList mNewsDataList, ImageLoader mImageLoader, Context context) {
-        this.mNewsCat = mNewsCat;
-        this.mNewsDataList = mNewsDataList;
-        this.mImageLoader = mImageLoader;
+    public NewsListAdapter(Category category, ListViewDataList dataList, ImageLoader imageLoader, Context context) {
+        this.category = category;
+        this.dataList = dataList;
+        this.mImageLoader = imageLoader;
         this.context = context;
-    }
-
-    @Override
-    public int getCount() {
-        return mNewsDataList.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return mNewsDataList.getItem(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return  mNewsDataList.getItem(position).getAaid();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        NewsOverview item = mNewsDataList.getItem(position);
+        NewsOverview item = (NewsOverview)dataList.getItem(position);
         if(convertView == null){
             if(DEBUG){
-                Log.d(LOG_TAG,"create list view item");
+                Log.d(LOG_TAG, "create list view item");
             }
             convertView = LayoutInflater.from(context).inflate(R.layout.list_item_news, null);
             holder = new ViewHolder();
             holder.imageView = (NetworkImageView) convertView.findViewById(R.id.news_image);
             holder.title = (TextView) convertView.findViewById(R.id.news_title);
             holder.summary = (TextView) convertView.findViewById(R.id.news_summary);
-            holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX+item.getPic()[0].getSrc(),mImageLoader);
+            holder.imageView.setDefaultImageResId(R.drawable.default_image);
+            if(item.getPic().length > 0) {
+                holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX + item.getPic()[0].getSrc(), mImageLoader);
+            }else {
+                holder.imageView.setImageUrl(null, mImageLoader);
+            }
             holder.title.setText(item.getTitle());
             holder.summary.setText(item.getSummary());
             holder.url = item.getUrl();
@@ -79,9 +62,14 @@ public class NewsListAdapter extends BaseAdapter implements View.OnClickListener
             holder = (ViewHolder) convertView.getTag();
             holder.title.setText(item.getTitle());
             holder.summary.setText(item.getSummary());
-            holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX+item.getPic()[0].getSrc(),mImageLoader);
+            if(item.getPic().length > 0) {
+                holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX + item.getPic()[0].getSrc(), mImageLoader);
+            }else {
+                holder.imageView.setImageUrl(null, mImageLoader);
+            }
             holder.url = item.getUrl();
         }
+
         return convertView;
     }
 
@@ -94,11 +82,10 @@ public class NewsListAdapter extends BaseAdapter implements View.OnClickListener
         context.startActivity(intent);
     }
 
-    static class ViewHolder{
+    public static class ViewHolder extends BaseViewHolder{
         private String url;
         public NetworkImageView imageView;
         public TextView title;
         public TextView summary;
-
     }
 }

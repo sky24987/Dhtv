@@ -3,8 +3,6 @@ package cn.dhtv.mobile;
 import android.app.Application;
 import android.util.Log;
 
-import cn.dhtv.mobile.entity.VideoOverview;
-import cn.dhtv.mobile.model.NewsListManager;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
@@ -16,7 +14,7 @@ public class MyApplication extends Application {
     private  final String LOG_TAG = getClass().getSimpleName();
     private  final boolean DEBUG = true;
 
-    private NewsListManager mNewsListManager;
+    //private NewsListManager mNewsListManager;
     private NewsPageManager mNewsPageManager;
     private VideoPageManager mVideoPageManager;
 
@@ -52,9 +50,9 @@ public class MyApplication extends Application {
 
     public VideoPageManager getVideoPageManager(){return  mVideoPageManager;}
 
-    public NewsListManager getNewsListManager() {
+    /*public NewsListManager getNewsListManager() {
         return mNewsListManager;
-    }
+    }*/
 
 
 }

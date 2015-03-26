@@ -1,7 +1,6 @@
 package cn.dhtv.mobile.model;
 
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.NewsCat;
 
 /**
  * Created by Jack on 2015/3/20.
@@ -9,16 +8,16 @@ import cn.dhtv.mobile.entity.NewsCat;
 public class VideoPageManager extends AbsPageManager<VideoListCollector> {
     @Override
     public void setUp() {
-        Category cat1 = new NewsCat();
+        Category cat1 = new Category();
         cat1.setCatname("热点");
         cat1.setCatid(258);
-        Category cat2 = new NewsCat();
+        Category cat2 = new Category();
         cat2.setCatname("生活");
         cat2.setCatid(262);
-        Category cat3 = new NewsCat();
+        Category cat3 = new Category();
         cat3.setCatname("微电影");
         cat3.setCatid(264);
-        Category cat4 = new NewsCat();
+        Category cat4 = new Category();
         cat4.setCatname("精品");
         cat4.setCatid(265);
 

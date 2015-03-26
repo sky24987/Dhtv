@@ -35,9 +35,17 @@ public class BasePagerAdapter extends PagerAdapter {
         }
     }
 
+    public void setPageFactory(PageFactory pageFactory){
+        this.mPageFactory = pageFactory;
+    }
+
     @Override
     public int getCount() {
-        return mPageFactory.pageCount();
+        if(mPageFactory != null) {
+            return mPageFactory.pageCount();
+        }else {
+            return 0;
+        }
     }
 
     @Override

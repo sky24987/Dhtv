@@ -1,8 +1,6 @@
 package cn.dhtv.mobile.model;
 
-import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.NewsCat;
 
 /**
  * Created by Jack on 2015/3/18.
@@ -10,13 +8,13 @@ import cn.dhtv.mobile.entity.NewsCat;
 public class NewsPageManager extends AbsPageManager<NewsListCollector> {
     @Override
     public void setUp() {
-        Category cat1 = new NewsCat();
+        Category cat1 = new Category();
         cat1.setCatname("时政");
         cat1.setCatid(256);
-        Category cat2 = new NewsCat();
+        Category cat2 = new Category();
         cat2.setCatname("社会");
         cat2.setCatid(260);
-        Category cat3 = new NewsCat();
+        Category cat3 = new Category();
         cat3.setCatname("文化");
         cat3.setCatid(263);
 
