@@ -15,27 +15,27 @@ import java.util.List;
 
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.NewsOverview;
+import cn.dhtv.mobile.entity.Program;
 import cn.dhtv.mobile.entity.VideoOverview;
 
 /**
- * Created by Jack on 2015/3/20.
+ * Created by Jack on 2015/3/26.
  */
-public class VideoListCollector extends AbsListCollector {
-    private static final String URL_VIDEO = "http://api.dhtv.cn/mobile/video/";
+public class ProgramCollector extends AbsListCollector {
+
 
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
-    private ArrayList<VideoOverview> videoOverviews = new ArrayList<>();
+    private ArrayList<Program> programs = new ArrayList<>();
 
-    public VideoListCollector(Category category,CallBacks callBacks) {
+    public ProgramCollector(Category category, CallBacks callBacks) {
         super(category, callBacks);
     }
 
     @Override
     public void clear() {
-        videoOverviews.clear();
+        programs.clear();
     }
 
     @Override
@@ -50,17 +50,17 @@ public class VideoListCollector extends AbsListCollector {
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                ArrayList<VideoOverview> list;
+                ArrayList<Program> list;
                 if(DEBUG){
-                    Log.d(LOG_TAG, "append request json:"+response);
+                    Log.d(LOG_TAG, "append request json:" + response);
                 }
                 try {
-                    list = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<VideoOverview>>() {
+                    list = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("children").toString(), new TypeReference<List<Program>>() {
                     });
                     if(DEBUG){
                         Log.d(LOG_TAG, list.toString());
                     }
-                    videoOverviews.addAll(list);
+                    programs.addAll(list);
                     onAppend(null);
                 } catch (Exception e) {
                     onAppendFails(null);
@@ -80,7 +80,7 @@ public class VideoListCollector extends AbsListCollector {
             }
         };
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeVideoURL(nextPage()), null,responseListener,errorListener);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeProgramURL(nextPage()), null,responseListener,errorListener);
         jsonObjectRequest.setTag(category);
         mRequestQueue.add(jsonObjectRequest);
     }
@@ -96,15 +96,15 @@ public class VideoListCollector extends AbsListCollector {
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                ArrayList<VideoOverview> list;
+                ArrayList<Program> list;
                 try {
-                    list = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<VideoOverview>>() {
+                    list = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("children").toString(), new TypeReference<List<Program>>() {
                     });
                     if(DEBUG){
                         Log.d(LOG_TAG, list.toString());
                     }
-                    videoOverviews.clear();
-                    videoOverviews.addAll(list);
+                    programs.clear();
+                    programs.addAll(list);
                     onRefresh(null);
                 } catch (Exception e) {
                     onRefreshFails(null);
@@ -124,19 +124,14 @@ public class VideoListCollector extends AbsListCollector {
             }
         };
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeVideoURL(1),null,responseListener,errorListener);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeProgramURL(1),null,responseListener,errorListener);
         jsonObjectRequest.setTag(category);
         mRequestQueue.add(jsonObjectRequest);
     }
 
-
-
-
-
-
     @Override
     public Object getItem(int position) {
-        return videoOverviews.get(position);
+        return programs.get(position);
     }
 
     @Override
@@ -146,15 +141,13 @@ public class VideoListCollector extends AbsListCollector {
 
     @Override
     public int size() {
-        return videoOverviews.size();
+        return programs.size();
     }
 
     @Override
     public int getDataId(int position) {
-        return videoOverviews.get(position).getAvid();
+        return programs.get(position).getCatid();
     }
-
-
 
     private void onRefresh(SyncFlag syncFlag){
         isProcessing = false;
@@ -190,8 +183,7 @@ public class VideoListCollector extends AbsListCollector {
         }
     }
 
-
-    private String makeVideoURL(int page){
-        return URL_VIDEO+"?"+"catid="+category.getCatid()+"&page="+page+"&size="+PAGE_SIZE;
+    private String makeProgramURL(int page){
+        return Category.URL+"?"+"catid="+category.getCatid()+"&page="+page+"&level=1";
     }
 }

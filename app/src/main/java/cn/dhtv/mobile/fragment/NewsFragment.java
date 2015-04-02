@@ -145,6 +145,18 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mNewsPageManager.setCallBacks(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mNewsPageManager.setCallBacks(null);
+    }
+
+    @Override
     public void onRefresh(Category category, AbsPageManager.CallBackFlag flag) {
         MyPage page = (MyPage) mPageHolder.get(category.getCatname());
         if(page == null){
@@ -212,7 +224,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     public BasePagerAdapter.Page generatePage(int position) {
         Category category = mNewsPageManager.getCategory(position);
         AbstractListAdapter.ListViewDataList listViewDataList = mNewsPageManager.getList(category);
-        mNewsPageManager.setCallBacks(this);
+
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.news_page,null);

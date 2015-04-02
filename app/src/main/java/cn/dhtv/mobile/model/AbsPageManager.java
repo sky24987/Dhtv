@@ -21,6 +21,11 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
     public abstract void setUp();
     public abstract void release();
 
+    public void refresh(){
+        for(L l:mListMap.values()){
+            l.asyncRefresh();
+        }
+    }
 
     public void refresh(Category category){
         mListMap.get(category).asyncRefresh();

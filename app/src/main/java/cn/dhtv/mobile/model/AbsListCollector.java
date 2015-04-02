@@ -16,6 +16,12 @@ import cn.dhtv.mobile.network.NetUtils;
 public abstract class AbsListCollector implements AbstractListAdapter.ListViewDataList{
     public static final int PAGE_SIZE = 10;
 
+    public static final int VIEW_TYPE_NONE = -1;
+    public static final int VIEW_TYPE_FOOTER_REFRESH = -2;
+    public static final int VIEW_TYPE_HEADER = -3;
+    public static final int VIEW_TYPE_DEFAULT = 0;
+
+
     protected Category category;
     protected Context context;
     protected RequestQueue mRequestQueue = NetUtils.getRequestQueue();

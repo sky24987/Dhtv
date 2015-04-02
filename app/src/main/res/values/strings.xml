@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
     <string name="app_name">东海网</string>
     <string name="title_activity_home">HomeActivity</string>
 
@@ -12,18 +13,28 @@
     <string name="title_activity_web">WebActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_web_view">WebViewActivity</string>
-    
+
+
+    <!--底部刷新组件提示文本-->
     <string name="refresh_footer_default"></string>
     <string name="refresh_footer_refreshing">正在加载...</string>
     <string name="refresh_footer_no_more">没有更多内容了</string>
     <string name="refresh_footer_clickable">点击加载更多</string>
     <string name="refresh_footer_auto"></string>
+    <!--底部刷新组件提示文本-->
 
 
+    <!--导读fragment标题-->
     <string name="title_section1">新闻</string>
     <string name="title_section2">视频</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section3">点播</string>
+    <string name="title_section4">Section 3</string>
+    <!--导读fragment标题-->
+
+    <!--空视图文本-->
+    <string name="empty_view_hint">没有内容</string>
 
     <string name="title_fragment_news">新闻</string>
+    <string name="title_activity_program_detail">ProgramDetailActivity</string>
 
 </resources>

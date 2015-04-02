@@ -1,9 +1,11 @@
 package cn.dhtv.mobile;
 
 import android.app.Application;
+import android.media.MediaPlayer;
 import android.util.Log;
 
 import cn.dhtv.mobile.model.NewsPageManager;
+import cn.dhtv.mobile.model.ProgramPageManager;
 import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 
@@ -14,20 +16,22 @@ public class MyApplication extends Application {
     private  final String LOG_TAG = getClass().getSimpleName();
     private  final boolean DEBUG = true;
 
-    //private NewsListManager mNewsListManager;
+    private MediaPlayer mMediaPlayer;
+
     private NewsPageManager mNewsPageManager;
     private VideoPageManager mVideoPageManager;
+    private ProgramPageManager mProgramPageManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         NetUtils.setup(this);
-//        mNewsListManager = new NewsListManager(this);
-//        mNewsListManager.setUp();
         mNewsPageManager = new NewsPageManager();
         mNewsPageManager.setUp();
         mVideoPageManager = new VideoPageManager();
         mVideoPageManager.setUp();
+        mProgramPageManager = new ProgramPageManager();
+        mProgramPageManager.setUp();
         if(DEBUG){
             Log.d(LOG_TAG,"onCreate()");
         }
@@ -36,7 +40,6 @@ public class MyApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-//        mNewsListManager.release();
         NetUtils.release();
         if(DEBUG){
             Log.d(LOG_TAG,"onTerminate()");
@@ -44,15 +47,27 @@ public class MyApplication extends Application {
 
     }
 
+    public MediaPlayer getMediaPlayer(){
+        if(mMediaPlayer == null){
+            mMediaPlayer = new MediaPlayer();
+        }
+        mMediaPlayer.reset();
+        return mMediaPlayer;
+    }
+
+    public void releaseMediaPlayer(){
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+    }
+
+
     public NewsPageManager getNewsPageManager(){
         return mNewsPageManager;
     }
 
     public VideoPageManager getVideoPageManager(){return  mVideoPageManager;}
 
-    /*public NewsListManager getNewsListManager() {
-        return mNewsListManager;
-    }*/
-
-
+    public ProgramPageManager getProgramPageManager() {
+        return mProgramPageManager;
+    }
 }

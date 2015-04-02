@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.dhtv.mobile.widget.FooterRefreshView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="3dp"
+    android:id="@+id/refresh_footer">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/refresh_footer_hint"
+        />
+
+    <TextView
+        android:id="@+id/refresh_footer_hint"
+        android:layout_marginLeft="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="22sp"
+        android:text="@string/refresh_footer_clickable"/>
+
+
+</cn.dhtv.mobile.widget.FooterRefreshView>

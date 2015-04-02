@@ -1,15 +1,28 @@
 package cn.dhtv.mobile.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by Jack on 2015/1/21.
  */
-public class Category {
+public class Category implements Serializable {
+    public static final String URL = "http://api.dhtv.cn/category/";
+
     private int upid;
     private String catname;
     private String description;
+    private String name;
     private int level;
     private int topid;
     private int catid;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getCatid() {
         return catid;

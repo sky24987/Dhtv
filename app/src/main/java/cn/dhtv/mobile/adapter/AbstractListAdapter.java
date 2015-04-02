@@ -40,7 +40,7 @@ public abstract class AbstractListAdapter extends BaseAdapter {
 
     public interface ListViewDataList{
         public Object getItem(int position);
-        public ViewType viewType(int position);
+        public int viewType(int position);
         public int size();
         public int getDataId(int position);
     }
@@ -48,10 +48,5 @@ public abstract class AbstractListAdapter extends BaseAdapter {
     public static class BaseViewHolder {
 
     }
-
-    public static enum ViewType{
-
-    }
-
 
 }

@@ -60,8 +60,8 @@ public class NewsListCollector extends AbsListCollector{
     }
 
     @Override
-    public AbstractListAdapter.ViewType viewType(int position) {
-        return null;
+    public int viewType(int position) {
+        return 0;
     }
 
     @Override
