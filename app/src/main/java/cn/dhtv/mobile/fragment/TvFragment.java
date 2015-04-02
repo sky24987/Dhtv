@@ -201,6 +201,10 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
                     Log.d(LOG_TAG,"surfaceCreated");
                 }
                 mMediaPlayer.setDisplay(holder);
+                if(isResumed() && autoPaused == true){
+                    mMediaPlayer.start();
+                    autoPaused = false;
+                }
 
             }
 
@@ -230,10 +234,10 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
             Log.d(LOG_TAG,"onResume");
         }
         super.onResume();
-        if(autoPaused == true){
+        /*if(autoPaused == true){
             mMediaPlayer.start();
             autoPaused = false;
-        }
+        }*/
     }
 
     @Override
