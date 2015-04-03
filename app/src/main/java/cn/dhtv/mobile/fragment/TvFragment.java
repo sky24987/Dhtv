@@ -58,13 +58,19 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
 
     Program mProgram;
     StateDate mStateDate = new StateDate();
+    int mediaBufferPercentage = 0;
     boolean surfacePrepared = false;
     boolean autoPaused = false;
+    boolean playerPrepared = false;
 
     MediaPlayer mMediaPlayer;
     MediaController mMediaController;
     ArrayList<TvOverview> tvList = new ArrayList<>();
     TvListAdapter mTvListAdapter = new TvListAdapter(tvList,mStateDate);
+
+    MediaController.MediaPlayerControl mediaPlayerControl;
+    SurfaceHolder.Callback surfaceHolderCallBack;
+    MediaPlayer.OnBufferingUpdateListener mediaPlayerBufferingUpdateListener;
 
     WeakReference<Activity> a;
 
@@ -102,6 +108,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
         }
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if(DEBUG){
@@ -109,76 +116,8 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
         }
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        mMediaController.setMediaPlayer(new MediaController.MediaPlayerControl() {
-            @Override
-            public void start() {
-                play();
-            }
-
-            @Override
-            public void pause() {
-
-            }
-
-            @Override
-            public int getDuration() {
-                return 0;
-            }
-
-            @Override
-            public int getCurrentPosition() {
-                return 0;
-            }
-
-            @Override
-            public void seekTo(int pos) {
-
-            }
-
-            @Override
-            public boolean isPlaying() {
-                return false;
-            }
-
-            @Override
-            public int getBufferPercentage() {
-                return 0;
-            }
-
-            @Override
-            public boolean canPause() {
-                return false;
-            }
-
-            @Override
-            public boolean canSeekBackward() {
-                return false;
-            }
-
-            @Override
-            public boolean canSeekForward() {
-                return false;
-            }
-
-            @Override
-            public int getAudioSessionId() {
-                return 0;
-            }
-        });
-        mTvListAdapter.setmOnItemClickListener(this);
-       /* if(mMediaPlayer == null){
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer.setOnPreparedListener(this);
-            mMediaPlayer.setOnErrorListener(this);
-        }*/
-
-
-        Intent intent = getActivity().getIntent();
-        mProgram = (Program) intent.getSerializableExtra("program");
+        init();
         asyncRequestProgramList(mProgram,tvList);
-
-
-        a = new WeakReference<Activity>(getActivity());
     }
 
     @Override
@@ -187,80 +126,8 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
         if(DEBUG){
             Log.d(LOG_TAG,"onCreateView");
         }
-        // Inflate the layout for this fragment
-
         View view =  inflater.inflate(R.layout.fragment_video_player, container, false);
-        button = (Button) view.findViewById(R.id.test);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = a.get();
-                if(activity != null){
-                    Log.d(LOG_TAG,"first activity:"+activity.toString());
-                }else {
-                    Log.d(LOG_TAG,"first activity is destroyed");
-                }
-            }
-        });
-        playView = (VideoSurfaceView) view.findViewById(R.id.player);
-        playView.setVideoWidthHeightRatio(16.0f/9);//设置视频宽高比
-        playView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mMediaPlayer.isPlaying()){
-                    pause();
-                }else {
-                    play();
-                }
-
-            }
-        });
-        listView = (RecyclerView) view.findViewById(R.id.list);
-        listView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
-        listView.setAdapter(mTvListAdapter);
-        //mMediaController  = new MediaController(getActivity());
-        playView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                if (DEBUG) {
-                    Log.d(LOG_TAG, "surfaceCreated");
-                }
-                surfacePrepared = true;
-                if (mMediaPlayer != null) {
-                    if (mMediaPlayer.isPlaying()) {
-                        pause();
-                        autoPaused = true;
-                    }
-                    mMediaPlayer.setDisplay(holder);
-
-                    if (isResumed() && autoPaused == true) {
-                        play();
-                        autoPaused = false;
-                    }
-                }
-
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                if (DEBUG) {
-                    Log.d(LOG_TAG, "surfaceDestroyed");
-                }
-                surfacePrepared = false;
-                if (mMediaPlayer != null) {
-                    mMediaPlayer.pause();
-                    autoPaused = true;
-                    mMediaPlayer.setDisplay(null);
-                }
-            }
-        });
-        // mMediaPlayer.setDisplay(holder);
-
+        initView(view);
         return view;
     }
 
@@ -339,38 +206,17 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
             return;
         }
 
+        playerPrepared = true;
+
         if(DEBUG){
             Log.d(LOG_TAG,"onMediaplayerPrepared");
         }
-        if(isResumed() && surfacePrepared == true){
-            play();
+        if(isResumed()){
+            playIfPlayable();
         }
     }
 
-    private void play(){
-        if(DEBUG){
-            Log.d(LOG_TAG,"play video");
-        }
-        try {
-            mMediaPlayer.start();
-        }catch (Exception e){
-            Log.e(LOG_TAG,"play video error:"+e);
-        }
 
-    }
-
-    private void pause(){
-        if(DEBUG){
-            Log.d(LOG_TAG,"pause video");
-        }
-
-        try {
-            mMediaPlayer.pause();
-        }catch (Exception e){
-            Log.e(LOG_TAG,"pause video error:"+e);
-        }
-
-    }
 
 
     @Override
@@ -409,14 +255,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
             Log.d(LOG_TAG,"onDestroyView");
         }
         super.onDestroyView();
-        if(mMediaPlayer != null){
-            mMediaPlayer.setDisplay(null);
-        }
-        listView.setAdapter(null);//取消原Adapter隐含的间接的对Recycler的引用，使Recycler和Recycler关联的activity都能够被GC回收
-        playView = null;
-        listView = null;
-        button = null;
-        surfacePrepared = false;
+        releaseView();
     }
 
     @Override
@@ -447,10 +286,308 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
         mTvListAdapter.notifyDataSetChanged();
     }
 
+    private void resetMediaPlayer(){
+        mediaBufferPercentage = 0;
+        if(mMediaPlayer != null){
+            mMediaPlayer.setOnErrorListener(null);
+            mMediaPlayer.setOnPreparedListener(null);
+            mMediaPlayer.setDisplay(null);
+            mMediaPlayer.release();
+        }
+        mMediaPlayer = new MediaPlayer();
+        mMediaPlayer.setOnPreparedListener(this);
+        mMediaPlayer.setOnErrorListener(this);
+        mMediaPlayer.setOnBufferingUpdateListener(mediaPlayerBufferingUpdateListener);
+    }
+
+    private void setTv2(TvOverview tvOverview){
+        playerPrepared = false;
+
+        resetMediaPlayer();
+
+        try {
+            mMediaPlayer.setDataSource(tvOverview.getTv_url());
+            mMediaPlayer.prepareAsync();
+        } catch (Exception e) {
+            if(DEBUG){
+                Log.d(LOG_TAG,"mMediaPlayer exception");
+            }
+            Log.d(LOG_TAG,e.toString());
+        }
+
+        if(surfacePrepared == true){
+            mMediaPlayer.setDisplay(playView.getHolder());
+        }
+    }
+
+    private boolean isVideoPlayable(){
+        return surfacePrepared && surfacePrepared && mMediaPlayer != null;
+    }
+
+    private void autoPlay(){
+        if(autoPaused == true){
+            play();
+           if( mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+               autoPaused = false;
+           }
+        }
+    }
+
+    private void autoPause(){
+        if(mMediaPlayer != null){
+            pause();
+            autoPaused = true;
+        }
+    }
+
+    private void playIfPlayable(){
+        if(isVideoPlayable() == false){
+            return;
+        }
+
+        play();
+    }
+
+    private void play(){
+        if(DEBUG){
+            Log.d(LOG_TAG,"play video");
+        }
+        try {
+            mMediaPlayer.start();
+        }catch (Exception e){
+            Log.e(LOG_TAG,"play video error:"+e);
+        }
+
+    }
+
+
+    private void pause(){
+        if(mMediaPlayer == null || playerPrepared == false){
+            return;
+        }
+
+        if(DEBUG){
+            Log.d(LOG_TAG,"pause video");
+        }
+
+        try {
+            mMediaPlayer.pause();
+        }catch (Exception e){
+            Log.e(LOG_TAG,"pause video error:"+e);
+        }
+
+    }
+
+    private int mediaBufferPercentage(){
+        return mediaBufferPercentage;
+    }
+
+
+    private void init(){
+        //TODO
+        a = new WeakReference<Activity>(getActivity());
+
+
+        Intent intent = getActivity().getIntent();
+        mProgram = (Program) intent.getSerializableExtra("program");
+        mTvListAdapter.setmOnItemClickListener(this);
+
+        mediaPlayerBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
+            @Override
+            public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                if(mp == mMediaPlayer){
+                    mediaBufferPercentage = percent;
+                }else {
+                    mediaBufferPercentage = 0;
+                }
+            }
+        };
+        mediaPlayerControl = new MediaController.MediaPlayerControl() {
+            @Override
+            public void start() {
+                TvFragment.this.playIfPlayable();
+            }
+
+            @Override
+            public void pause() {
+                TvFragment.this.pause();
+            }
+
+            @Override
+            public int getDuration() {
+                if(playerPrepared){
+                   return mMediaPlayer.getDuration();
+                }else {
+                    return 0;
+                }
+            }
+
+            @Override
+            public int getCurrentPosition() {
+                if(playerPrepared){
+                    return mMediaPlayer.getCurrentPosition();
+                }else {
+                    return 0;
+                }
+            }
+
+            @Override
+            public void seekTo(int pos) {
+                if(playerPrepared) {
+                    mMediaPlayer.seekTo(pos);
+                }
+            }
+
+            @Override
+            public boolean isPlaying() {
+                if(mMediaPlayer == null){
+                    return  false;
+                }else {
+                    return  mMediaPlayer.isPlaying();
+                }
+            }
+
+            @Override
+            public int getBufferPercentage() {
+                return mediaBufferPercentage;
+            }
+
+            @Override
+            public boolean canPause() {
+                return true;
+            }
+
+            @Override
+            public boolean canSeekBackward() {
+                return true;
+            }
+
+            @Override
+            public boolean canSeekForward() {
+                return true;
+            }
+
+            @Override
+            public int getAudioSessionId() {
+                return 0;
+            }
+        };
+        surfaceHolderCallBack = new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                if (DEBUG) {
+                    Log.d(LOG_TAG, "surfaceCreated");
+                }
+
+                surfacePrepared = true;
+                //mMediaController.setAnchorView(playView);
+                autoPause();
+                if(mMediaPlayer != null) {
+                    mMediaPlayer.setDisplay(holder);
+                }
+
+                if (isResumed() && isVideoPlayable()) {
+                   autoPlay();
+                }
+
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                if (DEBUG) {
+                    Log.d(LOG_TAG, "surfaceDestroyed");
+                }
+                surfacePrepared = false;
+                /*if(mMediaController != null){
+                    mMediaController.setAnchorView(null);
+                }*/
+
+                autoPause();
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.setDisplay(null);
+                }
+            }
+        };
+
+    }
+
+    private void initView(View parent){
+        playView = (VideoSurfaceView) parent.findViewById(R.id.player);
+        playView.setVideoWidthHeightRatio(16.0f/9);//设置视频宽高比
+        playView.getHolder().addCallback(surfaceHolderCallBack);
+        /*playView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMediaPlayer.isPlaying()){
+                    pause();
+                }else {
+                    play();
+                }
+
+            }
+        });*/
+        listView = (RecyclerView) parent.findViewById(R.id.list);
+        listView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+        listView.setAdapter(mTvListAdapter);
+        mMediaController = new MediaController(getActivity());
+        mMediaController.setMediaPlayer(mediaPlayerControl);
+        mMediaController.setAnchorView(playView);
+
+
+        button = (Button) parent.findViewById(R.id.test);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Activity activity = a.get();
+                if(mMediaController != null){
+                    mMediaController.show();
+                }
+                if(activity != null){
+                    Log.d(LOG_TAG,"first activity:"+activity.toString());
+                }else {
+                    Log.d(LOG_TAG,"first activity is destroyed");
+                }
+            }
+        });
+    }
+
+    private void releaseView(){
+        if(mMediaPlayer != null){
+            mMediaPlayer.setDisplay(null);
+        }
+
+        mMediaController.setAnchorView(null);
+        mMediaController = null;
+
+        //mMediaController.setMediaPlayer(null);
+
+
+        listView.setAdapter(null);//取消原Adapter隐含的间接的对Recycler的引用，使Recycler和Recycler关联的activity都能够被GC回收
+        playView = null;
+        listView = null;
+        button = null;
+        surfacePrepared = false;
+    }
+
+
+
+
+
+    public class StateDate{
+        public TvOverview firstTv;
+        public TvOverview selectedTv;
+    }
+
     private void setTv(TvOverview tvOverview){
         if(DEBUG){
             Log.d(LOG_TAG,"setTv");
         }
+        playerPrepared = false;
         autoPaused = false;
         if(mMediaPlayer.isPlaying()){
             mMediaPlayer.stop();
@@ -465,35 +602,5 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
             }
             Log.d(LOG_TAG,e.toString());
         }
-    }
-
-    private void setTv2(TvOverview tvOverview){
-        if(mMediaPlayer != null){
-            mMediaPlayer.setOnErrorListener(null);
-            mMediaPlayer.setOnPreparedListener(null);
-            mMediaPlayer.setDisplay(null);
-            mMediaPlayer.release();
-        }
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setOnPreparedListener(this);
-        mMediaPlayer.setOnErrorListener(this);
-        if(surfacePrepared == true){
-            mMediaPlayer.setDisplay(playView.getHolder());
-        }
-        try {
-            mMediaPlayer.setDataSource(tvOverview.getTv_url());
-            mMediaPlayer.prepareAsync();
-        } catch (Exception e) {
-            if(DEBUG){
-                Log.d(LOG_TAG,"mMediaPlayer exception");
-            }
-            Log.d(LOG_TAG,e.toString());
-        }
-    }
-
-
-    public class StateDate{
-        public TvOverview firstTv;
-        public TvOverview selectedTv;
     }
 }
