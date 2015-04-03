@@ -28,17 +28,17 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        Program program = (Program) dataList.getItem(i);
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_program,viewGroup,false);
-        v.setTag(program);
-        v.setOnClickListener(this);
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         Program program = (Program) dataList.getItem(i);
+        viewHolder.itemView.setTag(program);
+        viewHolder.itemView.setOnClickListener(this);
+
         viewHolder.program = program;
         viewHolder.mNetworkImageView.setDefaultImageResId(R.drawable.default_image);
         viewHolder.mNetworkImageView.setImageResource(R.drawable.default_image);

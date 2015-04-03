@@ -38,4 +38,5 @@ dependencies {
     compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abc:+'
     //compile 'cn.trinea.android.common:trinea-android-common:4.2.15@aar'
     compile project(':dhtv-andoird-library')
+    compile project(':ExoPlayerlibrary')
 }

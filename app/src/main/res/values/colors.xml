@@ -8,5 +8,8 @@
     <color name="image_background">#ffc0c0c0</color>
     <color name="title_overlay">#5c000000</color>
 
+    <color name="text_selected">#ffff7367</color>
+    <color name="text_title">#ff000000</color>
+
 
 </resources>

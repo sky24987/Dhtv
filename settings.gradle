@@ -1,2 +1,2 @@
-include ':app', ':android', ':dhtv-andoird-library'
+include ':app', ':android', ':dhtv-andoird-library', ':ExoPlayerlibrary'
 include ':pulltorefreshlibrary'
