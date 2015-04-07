@@ -28,7 +28,8 @@
     <string name="title_section1">新闻</string>
     <string name="title_section2">视频</string>
     <string name="title_section3">点播</string>
-    <string name="title_section4">Section 3</string>
+    <string name="title_section4">广播</string>
+    <string name="title_section5">Section 3</string>
     <!--导读fragment标题-->
 
     <!--空视图文本-->

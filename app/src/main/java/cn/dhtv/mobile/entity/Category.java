@@ -1,10 +1,15 @@
 package cn.dhtv.mobile.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
+
+import cn.dhtv.mobile.entity.inner.Live;
 
 /**
  * Created by Jack on 2015/1/21.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Category implements Serializable {
     public static final String URL = "http://api.dhtv.cn/category/";
 
@@ -15,6 +20,17 @@ public class Category implements Serializable {
     private int level;
     private int topid;
     private int catid;
+    private Live live;//直播
+
+
+
+    public Live getLive() {
+        return live;
+    }
+
+    public void setLive(Live live) {
+        this.live = live;
+    }
 
     public String getName() {
         return name;

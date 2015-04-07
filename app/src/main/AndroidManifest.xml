@@ -62,6 +62,10 @@
             android:hardwareAccelerated="true"
            >
         </activity>
+
+        <service android:name=".service.AudioService">
+
+        </service>
     </application>
 
 </manifest>

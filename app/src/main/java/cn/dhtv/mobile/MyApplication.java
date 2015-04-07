@@ -1,6 +1,7 @@
 package cn.dhtv.mobile;
 
 import android.app.Application;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 
@@ -8,6 +9,7 @@ import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
 import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
+import cn.dhtv.mobile.service.AudioService;
 
 /**
  * Created by Jack on 2015/2/11.
@@ -45,6 +47,16 @@ public class MyApplication extends Application {
             Log.d(LOG_TAG,"onTerminate()");
         }
 
+    }
+
+    public void startAudioService(){
+        Intent intent = new Intent(this, AudioService.class);
+        startService(intent);
+    }
+
+    public void stopAudioService(){
+        Intent intent = new Intent(this, AudioService.class);
+        stopService(intent);
     }
 
     public MediaPlayer getMediaPlayer(){

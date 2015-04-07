@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import cn.dhtv.mobile.fragment.AudioFragment;
 import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
 import cn.dhtv.mobile.R;
 
@@ -72,7 +73,10 @@ public class HomeActivity extends ActionBarActivity
             fragmentManager.beginTransaction().replace(R.id.container, VideoFragment.newInstance()).commit();
         }else if(position == 2){
             fragmentManager.beginTransaction().replace(R.id.container, ProgramFragment.newInstance()).commit();
-        }else{
+        }else if(position == 3){
+            fragmentManager.beginTransaction().replace(R.id.container, AudioFragment.newInstance()).commit();
+        }
+        else{
             fragmentManager.beginTransaction()
                     .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                     .commit();
