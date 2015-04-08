@@ -1,4 +1,4 @@
-package cn.dhtv.mobile.adapter;
+package cn.dhtv.android.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,13 +9,25 @@ import java.util.LinkedList;
 /**
  * Created by Jack on 2015/4/7.
  */
-public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter.ViewHolder> extends RecyclerView.Adapter<VH> implements View.OnClickListener{
+public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter.ViewHolder> extends RecyclerView.Adapter<VH>{
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
     private LinkedList<VH> headerViewList = new LinkedList<>();
     private LinkedList<VH> footerViewList = new LinkedList<>();
     private VH emptyView;
+
+    private OnItemClickListener mOnItemClickListener;
+    private View.OnClickListener mSelfOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(mOnItemClickListener != null){
+                //VH vh = (VH) v.getTag();
+                //mOnItemClickListener.onItemClicked(vh,vh.item,vh.getPosition());
+                mOnItemClickListener.onItemClicked(v);
+            }
+        }
+    };
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -36,19 +48,21 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
 
         return onCreateVH(parent,viewType);
+
+
     }
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
         if(inDataSet(position)){
-            holder.position = position;
+            //holder.position = position;
             onBindVH(holder, position);
-            //holder.itemView.setOnClickListener(this);
+            holder.itemView.setOnClickListener(mSelfOnClickListener);
             return;
         }
 
 
-        holder.onVHbind(holder, position);
+        holder.onVHBind(holder, position);
         return;
     }
 
@@ -85,10 +99,42 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return itemViewType(dataPosition);
     }
 
-    @Override
-    public void onClick(View v) {
-
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
     }
+
+    public void setHeaderView(VH vh){
+       setHeaderView(0,vh);
+    }
+
+    public void setHeaderView(int position,VH vh){
+        headerViewList.set(position, vh);
+    }
+
+    public void removeHeaderView(VH vh){
+        headerViewList.remove(vh);
+    }
+
+    public void setFooterView(VH vh){
+        setFooterView(0,vh);
+    }
+
+    public void setFooterView(int position,VH vh){
+        footerViewList.set(position, vh);
+    }
+
+    public void removeFooterView(VH vh){
+        footerViewList.remove(vh);
+    }
+
+    public void setEmptyView(VH vh){
+        emptyView = vh;
+    }
+
+    public void removeEmptyView(VH vh){
+        emptyView = null;
+    }
+
 
     private boolean inEmpty(int viewPosition){
         if(itemCount() == 0){
@@ -150,7 +196,10 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
 
 
-
+    public interface OnItemClickListener{
+        void onItemClicked(ViewHolder vh,Object item,int position);
+        void onItemClicked(View view);
+    }
 
     public static abstract class ViewHolder extends RecyclerView.ViewHolder{
         public static final int VIEW_TYPE_DEFAULT = 0;
@@ -160,20 +209,22 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
 
 
 
-        public int position;
+        public Object item;
+        //public int position;
         public int viewType;
         private OnBindVHListener mOnBindVHListener;
 
         public ViewHolder(View itemView,int viewType) {
             super(itemView);
             this.viewType = viewType;
+            itemView.setTag(this);
         }
 
         public void setOnBindVHListener(OnBindVHListener onBindVHListener) {
             this.mOnBindVHListener = onBindVHListener;
         }
 
-        public void onVHbind(RecyclerView.ViewHolder holder, int position){
+        public void onVHBind(RecyclerView.ViewHolder holder, int position){
             if(mOnBindVHListener != null){
                 mOnBindVHListener.onBindViewHolder(holder, position);
             }

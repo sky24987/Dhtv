@@ -1,6 +1,5 @@
 package cn.dhtv.mobile.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +9,10 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import java.util.ArrayList;
 
-import cn.dhtv.android.adapter.BasePagerAdapter;
+import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.fragment.AudioFragment;
-import cn.dhtv.mobile.fragment.TvFragment;
 
 /**
  * Created by Jack on 2015/4/7.
@@ -45,8 +43,9 @@ public class FMAdapter extends BaseRecyclerViewAdapter<FMAdapter.ViewHolder> {
     @Override
     public void onBindVH(FMAdapter.ViewHolder holder, int position) {
         Category fm = fmList.get(position);
+        holder.item = fm;
         holder.networkImageView.setDefaultImageResId(R.drawable.default_image);
-        holder.title.setText(fm.getName());
+        holder.title.setText(fm.getCatname());
         if(stateData.selectedFm != null && stateData.selectedFm.getCatid() == fm.getCatid()){
             holder.title.setSelected(true);
         }else {

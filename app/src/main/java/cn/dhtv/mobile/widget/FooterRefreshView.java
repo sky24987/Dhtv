@@ -16,7 +16,7 @@ public class FooterRefreshView extends RelativeLayout {
     private ProgressBar mProgressBar;
     private TextView textHint;
     private OnRefreshingListener mRefreshingListener;
-    private Status status = Status.CLICKABLE;
+    private Status mStatus = Status.CLICKABLE;
 
     public FooterRefreshView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,14 +31,16 @@ public class FooterRefreshView extends RelativeLayout {
     }
 
     public void setStatus(Status status){
+        if(mStatus == status){
+            return;
+        }
+        mStatus = status;
         switch (status){
             case CLICKABLE:
-                status = Status.CLICKABLE;
                 textHint.setText(R.string.refresh_footer_clickable);
                 mProgressBar.setVisibility(GONE);
                 break;
             case REFRESHING:
-                status = Status.REFRESHING;
                 textHint.setText(R.string.refresh_footer_refreshing);
                 mProgressBar.setVisibility(VISIBLE);
                 if(mRefreshingListener != null){
@@ -46,12 +48,10 @@ public class FooterRefreshView extends RelativeLayout {
                 }
                 break;
             case FORCE_CLICK:
-                status = Status.FORCE_CLICK;
                 textHint.setText(R.string.refresh_footer_clickable);
                 mProgressBar.setVisibility(GONE);
                 break;
             case NO_MORE:
-                status = Status.NO_MORE;
                 textHint.setText(R.string.refresh_footer_no_more);
                 mProgressBar.setVisibility(GONE);
                 break;

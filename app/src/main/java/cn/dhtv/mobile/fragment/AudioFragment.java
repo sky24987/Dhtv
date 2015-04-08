@@ -1,6 +1,5 @@
 package cn.dhtv.mobile.fragment;
 
-import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.adapter.FMAdapter;
@@ -41,28 +41,33 @@ import cn.dhtv.mobile.service.AudioService;
 import cn.dhtv.mobile.util.TextUtils;
 
 
-public class AudioFragment extends SectionFragment implements ServiceConnection,AudioService.CallBacks{
+public class AudioFragment extends SectionFragment implements ServiceConnection,AudioService.CallBacks,BaseRecyclerViewAdapter.OnItemClickListener{
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
 
     public  final String title = "新闻";
 
-    private boolean firstSet = false;
     private boolean autoPaused = true;//是否手动暂停
     private boolean audioBound = false;
     private boolean audioPrepared = false;
+    private boolean fmToBeSet = false;//是否有一个频道已经设置
+
+    private boolean playButtonClickable = true;
+    private boolean playButtonOn = false;
 
     private AudioService.LocalBinder mAudioBinder;
     private Category fmCategory;
     private ArrayList<Category> fmProgramList = new ArrayList<>();
     private StateData mStateData = new StateData();
     private FMAdapter mFmAdapter = new FMAdapter(fmProgramList,mStateData);
+    private View.OnClickListener radioButtonClickListener;
 
     private RequestQueue mRequestQueue = NetUtils.getRequestQueue();
     protected ObjectMapper mObjectMapper = new ObjectMapper();
 
     ImageView mImageView;
+    ImageView mPlayButton;
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
 
@@ -77,10 +82,10 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         return fragment;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        init();
         ((MyApplication)(getActivity().getApplication())).startAudioService();
         requestFm();
     }
@@ -124,8 +129,18 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     }
 
     @Override
-    public String getTitle() {
-        return title;
+    public void onItemClicked(BaseRecyclerViewAdapter.ViewHolder vh, Object item, int position) {
+        Category fmCategory = (Category) item;
+        selectFm(fmCategory);
+        mFmAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemClicked(View view) {
+       FMAdapter.ViewHolder viewHolder = (FMAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
+        Category fmCategory =(Category) viewHolder.item;
+        selectFm(fmCategory);
+        mFmAdapter.notifyDataSetChanged();
     }
 
     private void onFmGot(){
@@ -136,34 +151,86 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         Category fm = fmProgramList.get(0);
         if(mStateData.firstTm == null){
             mStateData.firstTm = fm;
-        }
-        if(mStateData.selectedFm == null){
-            mStateData.selectedFm = fm;
-        }
-
-        if(audioBound == true){
-            firstSetFm();
+            selectFm(fm);
         }
         mFmAdapter.notifyDataSetChanged();
     }
 
-    private void firstSetFm(){
-        if(mStateData.selectedFm != null && firstSet == false){
+    private void buttonOn(){
+        playButtonOn = true;
+        refreshButtonState();
+    }
+
+    private void buttonOff(){
+        playButtonOn = false;
+        refreshButtonState();
+    }
+
+    private void selectFm(Category fmCategory){
+        if(mStateData.selectedFm == null || mStateData.selectedFm.getCatid() != fmCategory.getCatid()) {
+            mStateData.selectedFm = fmCategory;
+
+            if(audioBound == true) {
+                setFm();
+                fmToBeSet = false;
+            }else {
+                fmToBeSet = true;
+            }
+        }
+    }
+
+    private void queryAudioPrepared(){
+        if(isAudioPlayable()){
+            audioPrepared();
+        }
+    }
+
+    private void audioPrepared(){
+        if(playButtonOn == true){
+            play();
+        }else {
+            pause();
+        }
+    }
+
+    private void setFm(){
+        if(DEBUG){
+            Log.d(LOG_TAG,"setFm");
+        }
+
+        fmToBeSet = false;
+
+        if(mStateData.selectedFm != null){
             try {
                 setAudio(mStateData.selectedFm.getLive().getM3u8());
-            }catch (IOException ioe){
+            }catch (IOException e){
                 //TODO
             }
 
-            firstSet = true;
+            buttonOn();
+            return;
+        }else if(mStateData.firstTm != null){
+            mStateData.selectedFm = mStateData.firstTm;
+            try{
+                setAudio(mStateData.selectedFm.getLive().getM3u8());
+            }catch (IOException e){
+                //TODO
+            }
+
+            buttonOn();
+            return;
+        }else {
+            return;
         }
     }
 
     private void play(){
+
         mAudioBinder.play();
     }
 
     private void pause(){
+
         mAudioBinder.pause();
     }
 
@@ -195,9 +262,10 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     }
 
     @Override
-    public void OnAudioPrepared() {
+    public void onAudioPrepared() {
         audioPrepared = true;
-        autoPlay();
+        //autoPlay();
+        queryAudioPrepared();
     }
 
     private void requestFm(){
@@ -243,13 +311,37 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         }
 
         audioBound = true;
-        firstSetFm();
+        if(fmToBeSet == true){
+            setFm();
+        }
+
         //autoPlay();
+    }
+
+    private void init(){
+        mFmAdapter.setOnItemClickListener(this);
+        radioButtonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean selected = v.isSelected();
+                if(selected == true){
+                    buttonOff();
+                    refreshButtonState();
+                    refreshPlayState();
+                }else {
+                    buttonOn();
+                    refreshButtonState();
+                    refreshPlayState();
+                }
+            }
+        };
     }
 
     private void initView(View view){
         mLayoutManager =  new GridLayoutManager(getActivity(),3,LinearLayoutManager.VERTICAL,false);
         mImageView = (ImageView) view.findViewById(R.id.fm);
+        mPlayButton = mImageView;
+        mPlayButton.setOnClickListener(radioButtonClickListener);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         mRecyclerView.setAdapter(mFmAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -260,17 +352,43 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     }
 
     private void autoPlay(){
-        if(isAudioPlayable() && autoPaused == true){
+        if(playButtonOn ==true && isAudioPlayable() && autoPaused == true){
             play();
             autoPaused = false;
         }
     }
 
     private void autoPause(){
-        if(isAudioPlayable() && autoPaused == false){
+        if(playButtonOn == false && isAudioPlayable() && autoPaused == false){
             pause();
             autoPaused = true;
         }
+    }
+
+    private void refreshPlayState(){
+        if(playButtonOn == true){
+            if(isAudioPlayable()){
+                play();
+            }
+        }else {
+            if(isAudioPlayable()){
+                pause();
+            }
+        }
+    }
+
+    private void refreshButtonState(){
+        //TODO
+        if(playButtonOn == true){
+            mPlayButton.setSelected(true);
+        }else {
+            mPlayButton.setSelected(false);
+        }
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
     }
 
     public class StateData{

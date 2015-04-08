@@ -32,6 +32,7 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
             mMediaPlayer.release();
         }
         mMediaPlayer = new MediaPlayer();
+
         mMediaPlayer.setDataSource(url);
         mMediaPlayer.setOnPreparedListener(this);
         audioPrepared = false;
@@ -53,7 +54,7 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
     public void onPrepared(MediaPlayer mp) {
         audioPrepared = true;
         if(mCallBack != null){
-            mCallBack.OnAudioPrepared();
+            mCallBack.onAudioPrepared();
         }
     }
 
@@ -89,6 +90,6 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public interface CallBacks {
-        void OnAudioPrepared();
+        void onAudioPrepared();
     }
 }

@@ -3,6 +3,7 @@ package cn.dhtv.mobile.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,9 @@ import cn.dhtv.mobile.model.ProgramCollector;
  * Created by Jack on 2015/3/26.
  */
 public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.ViewHolder> implements View.OnClickListener{
+    private final String LOG_TAG = getClass().getSimpleName();
+    private final boolean DEBUG = true;
+
     private AbstractListAdapter.ListViewDataList dataList;
     private Context mContext;
 
@@ -38,6 +42,26 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.
         Program program = (Program) dataList.getItem(i);
         viewHolder.itemView.setTag(program);
         viewHolder.itemView.setOnClickListener(this);
+
+        //TODO
+        /*if(DEBUG){
+
+
+             viewHolder.itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    TextView textView = (TextView) v.findViewById(R.id.title);
+                    Log.d(LOG_TAG,"attach"+textView.getText());
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    TextView textView = (TextView) v.findViewById(R.id.title);
+                    Log.d(LOG_TAG,"detach"+textView.getText());
+                }
+            });
+        }*/
+
 
         viewHolder.program = program;
         viewHolder.mNetworkImageView.setDefaultImageResId(R.drawable.default_image);

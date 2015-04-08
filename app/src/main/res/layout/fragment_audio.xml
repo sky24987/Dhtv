@@ -6,6 +6,7 @@
 
     <ImageView
         android:id="@+id/fm"
+        android:src="@drawable/radio_button"
         android:layout_width="100dp"
         android:layout_height="100dp" />
     <android.support.v7.widget.RecyclerView
