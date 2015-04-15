@@ -24,6 +24,16 @@ public class VideoOverview {
     private String pic;
     private String dir;
 
+    private boolean checked =false;//是否已经阅读过
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
     @JsonSetter(value = "dir")
     public void jsonSetDir(String dir){
         this.dir = dir;

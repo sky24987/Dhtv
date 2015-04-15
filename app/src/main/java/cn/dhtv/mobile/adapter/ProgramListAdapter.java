@@ -13,6 +13,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.ProgramDetailActivity;
+import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.Program;
 import cn.dhtv.mobile.model.ProgramCollector;
 
@@ -39,7 +40,7 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        Program program = (Program) dataList.getItem(i);
+        Category program = (Category) dataList.getItem(i);
         viewHolder.itemView.setTag(program);
         viewHolder.itemView.setOnClickListener(this);
 
@@ -83,7 +84,7 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public Program program;
+        public Category program;
         public NetworkImageView mNetworkImageView;
         public TextView textViewTitle;
         public ViewHolder(View itemView) {

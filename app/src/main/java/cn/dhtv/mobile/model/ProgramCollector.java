@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.Program;
@@ -27,7 +28,7 @@ public class ProgramCollector extends AbsListCollector {
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
-    private ArrayList<Program> programs = new ArrayList<>();
+    private ArrayList<Category> programs = new ArrayList<>();
 
     public ProgramCollector(Category category, CallBacks callBacks) {
         super(category, callBacks);
@@ -93,7 +94,7 @@ public class ProgramCollector extends AbsListCollector {
         }
 
         isProcessing = false;
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+        /*Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 ArrayList<Program> list;
@@ -126,7 +127,10 @@ public class ProgramCollector extends AbsListCollector {
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeProgramURL(1),null,responseListener,errorListener);
         jsonObjectRequest.setTag(category);
-        mRequestQueue.add(jsonObjectRequest);
+        mRequestQueue.add(jsonObjectRequest);*/
+
+        DataSyncHelper.getInstance().SyncCategoryFirstFromDB(category,mCategorySyncCallBacks);
+
     }
 
     @Override
@@ -182,6 +186,20 @@ public class ProgramCollector extends AbsListCollector {
             mCallBacks.onAppendFails(category,null);
         }
     }
+
+    private DataSyncHelper.CategorySyncCallBacks mCategorySyncCallBacks = new DataSyncHelper.CategorySyncCallBacks() {
+        @Override
+        public void onSync(List<Category> list) {
+            programs.clear();
+            programs.addAll(list);
+            onRefresh(null);
+        }
+
+        @Override
+        public void onError(int flag) {
+
+        }
+    };
 
     private String makeProgramURL(int page){
         return Category.URL+"?"+"catid="+category.getCatid()+"&page="+page+"&level=1";

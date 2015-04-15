@@ -15,6 +15,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.dhtv.mobile.Sync.ArticleSyncHelper;
+import cn.dhtv.mobile.Sync.SyncHelperFactory;
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
@@ -30,7 +32,7 @@ public class NewsListCollector extends AbsListCollector{
     private final boolean DEBUG = true;
 
 
-
+    private ArticleSyncHelper mArticleSyncHelper = SyncHelperFactory.getInstance().newArticleSyncHelper();
 
     private ArrayList<NewsOverview> newsOverviews = new ArrayList<>();
 
@@ -92,9 +94,9 @@ public class NewsListCollector extends AbsListCollector{
             return;
         }
 
-        isProcessing = false;
+        isProcessing = true;
 
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+        /*Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 ArrayList<NewsOverview> newsList;
@@ -126,7 +128,8 @@ public class NewsListCollector extends AbsListCollector{
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeNewsURL(nextPage()),null,responseListener,errorListener);
         jsonObjectRequest.setTag(category);
-        mRequestQueue.add(jsonObjectRequest);
+        mRequestQueue.add(jsonObjectRequest);*/
+        mArticleSyncHelper.syncFirstFromDB(category,nextPage(),mArticleSyncCallBacks);
     }
 
     @Override
@@ -175,32 +178,48 @@ public class NewsListCollector extends AbsListCollector{
     }
 
 
+    private ArticleSyncHelper.ArticleSyncCallBacks mArticleSyncCallBacks = new ArticleSyncHelper.ArticleSyncCallBacks() {
+        @Override
+        public void onSync(List<NewsOverview> list) {
+            newsOverviews.addAll(list);
+            onAppend(null);
+        }
+
+        @Override
+        public void onError(int flag) {
+            onAppendFails(null);
+        }
+    };
 
     private void onRefresh(SyncFlag syncFlag){
-        isProcessing = false;
+
 
         currentPage = 1;
         if(mCallBacks != null){
             mCallBacks.onRefresh(category,null);
         }
+
+        isProcessing = false;
     }
 
     private void onAppend(SyncFlag syncFlag){
-        isProcessing = false;
+
 
         currentPage++;
         if(mCallBacks != null){
             mCallBacks.onAppend(category,null);
         }
+        isProcessing = false;
     }
 
     private void onRefreshFails(SyncFlag syncFlag){
-        isProcessing = false;
+
 
 
         if(mCallBacks != null){
             mCallBacks.onRefreshFails(category,null);
         }
+        isProcessing = false;
     }
 
     private void onAppendFails(SyncFlag syncFlag){

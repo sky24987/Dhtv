@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import cn.dhtv.mobile.Database.DBHelper;
+import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
 import cn.dhtv.mobile.model.VideoPageManager;
@@ -28,6 +30,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         NetUtils.setup(this);
+        DBHelper.setUp(this);
+        DataSyncHelper.setUp(this);
         mNewsPageManager = new NewsPageManager();
         mNewsPageManager.setUp();
         mVideoPageManager = new VideoPageManager();
@@ -37,6 +41,7 @@ public class MyApplication extends Application {
         if(DEBUG){
             Log.d(LOG_TAG,"onCreate()");
         }
+
     }
 
     @Override

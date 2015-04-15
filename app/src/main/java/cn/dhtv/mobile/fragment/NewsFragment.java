@@ -169,15 +169,24 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
     @Override
     public void onAppend(Category category, AbsPageManager.CallBackFlag flag) {
+        if(DEBUG){
+            Log.d(LOG_TAG,"onAppend:"+category.getCatname());
+        }
         MyPage page = (MyPage) mPageHolder.get(category.getCatname());
         if(page == null){
             return;
         }
+        if(DEBUG){
+            Log.d(LOG_TAG,"page found");
+        }
 
-        page.listAdapter.notifyDataSetChanged();
-        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
+            page.listAdapter.notifyDataSetChanged();
+            page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
 
-        if(DEBUG) {
+
+
+
+        /*if(DEBUG) {
             if (page.listView.getAdapter() == page.listAdapter) {
                 Log.d(LOG_TAG, "page.listView.getAdapter() == page.listAdapter?true");
             } else {
@@ -187,7 +196,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             Log.d(LOG_TAG+"?", "page.listView.getAdapter():" + page.listView.getAdapter());
             Log.d(LOG_TAG+"?", "page.listAdapter:" + page.listAdapter);
 
-        }
+        }*/
     }
 
     @Override

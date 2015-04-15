@@ -18,6 +18,16 @@ public class TvOverview {
     private String tv_url;
     private String tv_pic;
 
+    private boolean checked = false;//是否已经阅读过
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
     public void setTv_url(Program program){
         tv_url = URL+program.getUpid()+"/"+dir+".mp4";
     }

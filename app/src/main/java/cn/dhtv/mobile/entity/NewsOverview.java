@@ -3,6 +3,7 @@ package cn.dhtv.mobile.entity;
 import android.util.JsonReader;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.json.JSONException;
@@ -12,7 +13,7 @@ import java.sql.Date;
 /**
  * Created by Jack on 2015/1/20.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true,value = "checked")
 public class NewsOverview {
     private int aaid;
     private int aid;
@@ -27,11 +28,35 @@ public class NewsOverview {
     private String pic_url;
     private Pic[] pic;
 
+    private boolean checked = false;//是否已经阅读过
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+
+    @JsonIgnore
+    public void setChecked(int checked){
+        if(checked == 1){
+            this.checked = true;
+        }else {
+            this.checked = false;
+        }
+    }
+
     public Pic[] getPic() {
         return pic;
     }
 
+
     public void setPic(Pic[] pic) {
+        if(pic.length > 0){
+            pic_url = NewsOverview.Pic.PIC_URL_PREFEX+pic[0].src;
+        }
         this.pic = pic;
     }
 

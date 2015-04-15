@@ -45,11 +45,12 @@ public class NewsListAdapter extends AbstractListAdapter implements View.OnClick
             holder.title = (TextView) convertView.findViewById(R.id.news_title);
             holder.summary = (TextView) convertView.findViewById(R.id.news_summary);
             holder.imageView.setDefaultImageResId(R.drawable.default_image);
-            if(item.getPic().length > 0) {
+            holder.imageView.setImageUrl(item.getPic_url(),mImageLoader);
+           /* if(item.getPic().length > 0) {
                 holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX + item.getPic()[0].getSrc(), mImageLoader);
             }else {
                 holder.imageView.setImageUrl(null, mImageLoader);
-            }
+            }*/
             holder.title.setText(item.getTitle());
             holder.summary.setText(item.getSummary());
             holder.url = item.getUrl();
@@ -62,11 +63,12 @@ public class NewsListAdapter extends AbstractListAdapter implements View.OnClick
             holder = (ViewHolder) convertView.getTag();
             holder.title.setText(item.getTitle());
             holder.summary.setText(item.getSummary());
-            if(item.getPic().length > 0) {
+            holder.imageView.setImageUrl(item.getPic_url(),mImageLoader);
+            /*if(item.getPic().length > 0) {
                 holder.imageView.setImageUrl(NewsOverview.Pic.PIC_URL_PREFEX + item.getPic()[0].getSrc(), mImageLoader);
             }else {
                 holder.imageView.setImageUrl(null, mImageLoader);
-            }
+            }*/
             holder.url = item.getUrl();
         }
 

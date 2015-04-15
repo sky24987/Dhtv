@@ -11,7 +11,7 @@ import android.widget.TextView;
  * 扩展标准ListView,滚动时通知最后一个item是否显示或隐藏
  */
 public class ListView extends android.widget.ListView{
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String LOG_TAG = "dhtvLibrary->ListView";
 
     private boolean mLastItemVisible = false;

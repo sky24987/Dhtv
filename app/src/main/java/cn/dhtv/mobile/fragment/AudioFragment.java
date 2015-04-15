@@ -33,6 +33,7 @@ import java.util.List;
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.adapter.FMAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.Program;
@@ -63,8 +64,10 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     private FMAdapter mFmAdapter = new FMAdapter(fmProgramList,mStateData);
     private View.OnClickListener radioButtonClickListener;
 
+
+
     private RequestQueue mRequestQueue = NetUtils.getRequestQueue();
-    protected ObjectMapper mObjectMapper = new ObjectMapper();
+    private ObjectMapper mObjectMapper = new ObjectMapper();
 
     ImageView mImageView;
     ImageView mPlayButton;
@@ -142,6 +145,20 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         selectFm(fmCategory);
         mFmAdapter.notifyDataSetChanged();
     }
+
+    private DataSyncHelper.CategorySyncCallBacks mCategorySyncCallBacks = new DataSyncHelper.CategorySyncCallBacks() {
+        @Override
+        public void onSync(List<Category> list) {
+            fmProgramList.clear();
+            fmProgramList.addAll(list);
+            onFmGot();
+        }
+
+        @Override
+        public void onError(int flag) {
+
+        }
+    };
 
     private void onFmGot(){
         if(fmProgramList.size() == 0){
@@ -269,7 +286,7 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     }
 
     private void requestFm(){
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+        /*Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 ArrayList<Program> list;
@@ -302,7 +319,8 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeCategoryUrl(fmCategory, 1), null,responseListener,errorListener);
         jsonObjectRequest.setTag(fmCategory);
-        mRequestQueue.add(jsonObjectRequest);
+        mRequestQueue.add(jsonObjectRequest);*/
+        DataSyncHelper.getInstance(getActivity()).SyncCategoryFirstFromDB(fmCategory,mCategorySyncCallBacks);
     }
 
     private void onAudioConnected(){
