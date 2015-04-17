@@ -20,7 +20,7 @@ public class Category implements Serializable {
     private int level;
     private int topid;
     private int catid;
-    private Live live = new Live();//直播
+    private transient Live live = new Live();//直播
 
 
 

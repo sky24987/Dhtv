@@ -6,6 +6,7 @@ import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
+import cn.dhtv.mobile.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.network.NetUtils;
 
@@ -13,7 +14,7 @@ import cn.dhtv.mobile.network.NetUtils;
  * Created by Jack on 2015/3/17.
  * 导读分页列表内容采集器,采集并保持列表数据（导读分页列表的背后数据）
  */
-public abstract class AbsListCollector implements AbstractListAdapter.ListViewDataList{
+public abstract class AbsListCollector implements AbstractListAdapter.ListViewDataList,ItemViewDataSet{
     public static final int PAGE_SIZE = 10;
 
     public static final int VIEW_TYPE_NONE = -1;

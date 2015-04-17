@@ -1,11 +1,16 @@
 package cn.dhtv.mobile.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,19 +21,29 @@ import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+
 import com.viewpagerindicator.TabPageIndicator;
 
 import cn.dhtv.android.adapter.BasePagerAdapter;
+import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
+import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.activity.WebViewActivity;
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
+import cn.dhtv.mobile.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.adapter.NewsListAdapter;
+import cn.dhtv.mobile.adapter.NewsRecyclerViewAdapter;
 import cn.dhtv.mobile.entity.Category;
+import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
-import cn.dhtv.mobile.widget.FooterRefreshListView;
+import cn.dhtv.mobile.widget.EmptyView;
+
+import cn.dhtv.mobile.widget.FooterRefreshView;
 import cn.dhtv.mobile.widget.ImagePagerView;
+import cn.dhtv.mobile.widget.MySmartTabLayout;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
@@ -57,7 +72,9 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
     public  final String title = "新闻";
     private ViewPager mViewPager;
-    private TabPageIndicator mTabPageIndicator;
+    private MySmartTabLayout mMySmartTabLayout;//    private TabPageIndicator mTabPageIndicator;
+
+    
     private BasePagerAdapter mPagerAdapter;
     private BasePagerAdapter.PageHolder mPageHolder;
 
@@ -107,13 +124,32 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         mNewsPageManager = ((MyApplication)getActivity().getApplication()).getNewsPageManager();
         mImageLoader = NetUtils.getImageLoader(getActivity());
 
-        View view =  inflater.inflate(R.layout.tab_pager, container, false);
+        View view = inflater.inflate(R.layout.pager_with_tab, container, false);//View view =  inflater.inflate(R.layout.tab_pager, container, false);
+
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.pager_title);
+        mMySmartTabLayout = (MySmartTabLayout) view.findViewById(R.id.pager_title);//        mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.pager_title);
+
         mPagerAdapter = new BasePagerAdapter(this,null);
+        mPagerAdapter.setOnPageHolderActListener(new BasePagerAdapter.OnPageHolderActListener() {
+            @Override
+            public void onReceiveNewPage(BasePagerAdapter.Page page) {
+
+            }
+
+            @Override
+            public void onProvidePage(BasePagerAdapter.Page page) {
+
+            }
+
+            @Override
+            public void onDropPage(BasePagerAdapter.Page page) {
+                ((MyPage)page).mSwipeRefreshLayout.clearAnimation();
+            }
+        });
         mPageHolder = mPagerAdapter.getPageHolder();
         mViewPager.setAdapter(mPagerAdapter);
-        mTabPageIndicator.setViewPager(mViewPager);
+        mMySmartTabLayout.setViewPager(mViewPager);//        mTabPageIndicator.setViewPager(mViewPager);
+
         return view;
     }
 
@@ -126,9 +162,9 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
     @Override
     public void onAttach(Activity activity) {
-        if(DEBUG){
+        /*if(DEBUG){
             Log.d(LOG_TAG,"getActivity null? "+(getActivity() == null));
-        }
+        }*/
         super.onAttach(activity);
         /*try {
             mListener = (OnFragmentInteractionListener) activity;
@@ -163,25 +199,29 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             return;
         }
 
-        page.listAdapter.notifyDataSetChanged();
+        page.newsRecyclerViewAdapter.notifyDataSetChanged();
+//        page.listAdapter.notifyDataSetChanged();
         page.mPullToRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onAppend(Category category, AbsPageManager.CallBackFlag flag) {
-        if(DEBUG){
+        /*if(DEBUG){
             Log.d(LOG_TAG,"onAppend:"+category.getCatname());
-        }
+        }*/
         MyPage page = (MyPage) mPageHolder.get(category.getCatname());
         if(page == null){
             return;
         }
-        if(DEBUG){
+       /* if(DEBUG){
             Log.d(LOG_TAG,"page found");
-        }
+        }*/
 
-            page.listAdapter.notifyDataSetChanged();
-            page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
+        page.newsRecyclerViewAdapter.notifyDataSetChanged();
+        if(page.footerRefreshView.getStatus() == FooterRefreshView.Status.REFRESHING){
+            page.footerRefreshView.setStatus(FooterRefreshView.Status.CLICKABLE);
+        }
+//            page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
 
 
 
@@ -217,7 +257,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             return;
         }
 
-        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
+//        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
         Toast.makeText(getActivity(), "添加新闻失败...", Toast.LENGTH_SHORT).show();
     }
 
@@ -231,23 +271,66 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
     @Override
     public BasePagerAdapter.Page generatePage(int position) {
-        Category category = mNewsPageManager.getCategory(position);
-        AbstractListAdapter.ListViewDataList listViewDataList = mNewsPageManager.getList(category);
+        final Category category = mNewsPageManager.getCategory(position);
+        ItemViewDataSet itemViewDataSet = mNewsPageManager.getList(category);
 
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.news_page,null);
+        View view = inflater.inflate(R.layout.page_recycle_view,null);
         MyPage page = new MyPage(category.getCatname(),view);
         page.category = category;
-        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
-        page.listView = (FooterRefreshListView) view.findViewById(R.id.news_list);
-        page.listView.setFooterRefreshListener(page);
-        page.listAdapter = new NewsListAdapter(category, listViewDataList, mImageLoader, getActivity());
-        ActionBarPullToRefresh.from(getActivity()).theseChildrenArePullable(page.listView).listener(page).setup(page.mPullToRefreshLayout);
-        page.listView.setAdapter(page.listAdapter);
+
+
+//        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
+        page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
+//        page.mSwipeRefreshLayout.setOnRefreshListener(page);
+        page.baseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
+
+        page.layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+//        page.layoutManager = new GridLayoutManager(getActivity(),3);
+        page.newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(itemViewDataSet);
+        page.baseRecyclerView.setLayoutManager(page.layoutManager);
+        page.baseRecyclerView.setAdapter(page.newsRecyclerViewAdapter);
+        page.baseRecyclerView.setOnItemAttachDetachListener(page);
+        page.emptyView = (EmptyView) inflater.inflate(R.layout.widget_empty_view,page.baseRecyclerView,false);
+        page.emptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EmptyView emptyView = (EmptyView) v;
+                if(emptyView.isIdle()) {
+                    emptyView.setStateProcessing();
+                }
+            }
+        });
+        page.emptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
+            @Override
+            public void onProcessing() {
+                mNewsPageManager.append(category);
+            }
+        });
+        page.footerRefreshView = (FooterRefreshView) inflater.inflate(R.layout.widget_refresh_footer,page.baseRecyclerView,false);
+        page.footerRefreshView.setRefreshingListener(page);
         page.imagePagerView = (ImagePagerView) inflater.inflate(R.layout.image_pager,null);
         page.imagePagerView.setPageFactory(page);
-        page.listView.addHeaderView(page.imagePagerView);
+        page.newsRecyclerViewAdapter.addHeaderView(new NewsRecyclerViewAdapter.ViewHolder(page.imagePagerView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_HEADER));
+        page.newsRecyclerViewAdapter.setEmptyView(new NewsRecyclerViewAdapter.ViewHolder(page.emptyView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_EMPTY));
+        page.newsRecyclerViewAdapter.addFooterView(new NewsRecyclerViewAdapter.ViewHolder(page.footerRefreshView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_FOOTER));
+        page.newsRecyclerViewAdapter.setOnItemClickListener(page);
+
+
+
+
+
+
+
+//        page.listView = (FooterRefreshListView) view.findViewById(R.id.news_list);
+//        page.listView.setFooterRefreshListener(page);
+//        page.listAdapter = new NewsListAdapter(category, listViewDataList, mImageLoader, getActivity());
+
+//        ActionBarPullToRefresh.from(getActivity()).theseChildrenArePullable(page.baseRecyclerView).listener(page).setup(page.mPullToRefreshLayout);
+//        page.listView.setAdapter(page.listAdapter);
+
+//        page.listView.addHeaderView(page.imagePagerView);
         return page;
     }
 
@@ -274,13 +357,19 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         return title;
     }
 
-    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshListView.FooterRefreshListener,BasePagerAdapter.PageFactory {
+    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshView.OnRefreshingListener,BasePagerAdapter.PageFactory,BaseRecyclerViewAdapter.OnItemClickListener,BaseRecyclerView.OnItemAttachDetachListener,SwipeRefreshLayout.OnRefreshListener{
         public Category category;
+
+        public SwipeRefreshLayout mSwipeRefreshLayout;
         public PullToRefreshLayout mPullToRefreshLayout;
-        public FooterRefreshListView listView;
+//        public FooterRefreshListView listView;
+        public BaseRecyclerView baseRecyclerView;
+        public RecyclerView.LayoutManager layoutManager;
         public ImagePagerView imagePagerView;
-        public View emptyView;
-        public BaseAdapter listAdapter;
+        public EmptyView emptyView;
+//        public BaseAdapter listAdapter;
+        public FooterRefreshView footerRefreshView;
+        public NewsRecyclerViewAdapter newsRecyclerViewAdapter;
         MyPage(String title, View pageView) {
             super(title, pageView);
         }
@@ -291,7 +380,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         }
 
         @Override
-        public void onFooterRefreshing() {
+        public void onRefreshing() {
             mNewsPageManager.append(category);
         }
 
@@ -321,6 +410,69 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         @Override
         public int getPagePosition(BasePagerAdapter.Page page) {
             return 0;
+        }
+
+
+
+        @Override
+        public void onItemClicked(BaseRecyclerViewAdapter.ViewHolder vh, Object item, int position) {
+
+        }
+
+        @Override
+        public void onItemClicked(View view) {
+            NewsRecyclerViewAdapter.ViewHolder viewHolder = (NewsRecyclerViewAdapter.ViewHolder) baseRecyclerView.getChildViewHolder(view);
+
+            Intent intent = new Intent(getActivity(), WebViewActivity.class);
+            intent.setAction("android.intent.action.VIEW");
+            intent.setDataAndType(Uri.parse(viewHolder.url),"text/html");
+            getActivity().startActivity(intent);
+        }
+
+        @Override
+        public void onItemAttachListener(View view) {
+            if(view == imagePagerView){
+               return;
+            }
+
+            if(view == emptyView){
+               /* if(DEBUG){
+                    Log.d(LOG_TAG,"emptyView attach");
+                }*/
+                emptyView.setStateProcessing();
+            }
+
+            if(view == footerRefreshView){
+                if(footerRefreshView.getStatus() == FooterRefreshView.Status.CLICKABLE){
+                    footerRefreshView.setStatus(FooterRefreshView.Status.REFRESHING);
+                }
+            }
+        }
+
+        @Override
+        public void onItemDetachListener(View view) {
+            if(view == imagePagerView){
+                emptyView.isIdle();
+            }
+
+
+            if(view == emptyView){
+                /*if(DEBUG){
+                    Log.d(LOG_TAG,"emptyView detach");
+                }*/
+                emptyView.setStateIdle();
+            }
+
+            if(view == footerRefreshView){
+                if(footerRefreshView.getStatus() != FooterRefreshView.Status.NO_MORE && footerRefreshView.getStatus() != FooterRefreshView.Status.REFRESHING){
+                    footerRefreshView.setStatus(FooterRefreshView.Status.CLICKABLE);
+                }
+            }
+        }
+
+        @Override
+        public void onRefresh() {
+            mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 

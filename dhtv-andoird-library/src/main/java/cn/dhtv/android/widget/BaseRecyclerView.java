@@ -33,6 +33,7 @@ public class BaseRecyclerView extends RecyclerView {
 
     }
 
+
     @Override
     public void onChildAttachedToWindow(View child) {
         if(mOnItemAttachDetachListener!= null){

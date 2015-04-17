@@ -28,7 +28,7 @@ public class TvOverview {
         this.checked = checked;
     }
 
-    public void setTv_url(Program program){
+    public void setTv_url(Category program){
         tv_url = URL+program.getUpid()+"/"+dir+".mp4";
     }
 

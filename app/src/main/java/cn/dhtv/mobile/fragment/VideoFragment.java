@@ -19,6 +19,7 @@ import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
+import cn.dhtv.mobile.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.adapter.VideoListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
@@ -178,7 +179,7 @@ public class VideoFragment extends SectionFragment implements BasePagerAdapter.P
     @Override
     public BasePagerAdapter.Page generatePage(int position) {
         Category category = mVideoPageManager.getCategory(position);
-        AbstractListAdapter.ListViewDataList listViewDataList = mVideoPageManager.getList(category);
+        ItemViewDataSet listViewDataList = mVideoPageManager.getList(category);
 
 
         LayoutInflater inflater = getActivity().getLayoutInflater();

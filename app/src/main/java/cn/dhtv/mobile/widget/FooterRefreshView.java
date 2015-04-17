@@ -2,6 +2,7 @@ package cn.dhtv.mobile.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -56,6 +57,10 @@ public class FooterRefreshView extends RelativeLayout {
                 mProgressBar.setVisibility(GONE);
                 break;
         }
+    }
+
+    public Status getStatus() {
+        return mStatus;
     }
 
     public void setRefreshingListener(OnRefreshingListener refreshingListener) {

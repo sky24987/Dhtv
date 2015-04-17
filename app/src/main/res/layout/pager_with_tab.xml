@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:stl="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <cn.dhtv.mobile.widget.MySmartTabLayout
+        android:id="@+id/pager_title"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        stl:stl_indicatorAlwaysInCenter="false"
+        stl:stl_indicatorInFront="true"
+        stl:stl_indicatorInterpolation="linear"
+        stl:stl_indicatorColor="#40C4FF"
+        stl:stl_indicatorThickness="4dp"
+        stl:stl_indicatorCornerRadius="2dp"
+        stl:stl_underlineColor="#4D000000"
+        stl:stl_underlineThickness="1dp"
+        stl:stl_dividerColor="#4D000000"
+        stl:stl_dividerThickness="1dp"
+        stl:stl_defaultTabTextAllCaps="false"
+        stl:stl_defaultTabTextColor="#FC000000"
+        stl:stl_defaultTabTextSize="30sp"
+        stl:stl_defaultTabTextHorizontalPadding="10dp"
+        stl:stl_defaultTabTextMinWidth="5dp"
+        stl:stl_distributeEvenly="false"/>
+    <!--<com.astuetz.PagerSlidingTabStrip-->
+        <!--android:id="@+id/pager_title"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:pstsShouldExpand = "true"-->
+        <!--/>-->
+
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pager">
+    </android.support.v4.view.ViewPager>
+
+
+</LinearLayout>

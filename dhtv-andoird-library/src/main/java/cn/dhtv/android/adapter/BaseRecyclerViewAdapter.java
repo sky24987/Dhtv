@@ -1,6 +1,7 @@
 package cn.dhtv.android.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -56,11 +57,10 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     public void onBindViewHolder(VH holder, int position) {
         if(inDataSet(position)){
             //holder.position = position;
-            onBindVH(holder, position);
+            onBindVH(holder, extractDataPosition(position));
             holder.itemView.setOnClickListener(mSelfOnClickListener);
             return;
         }
-
 
         holder.onVHBind(holder, position);
         return;
@@ -96,31 +96,39 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
 
         int dataPosition = position - headerViewList.size();
-        return itemViewType(dataPosition);
+
+        int itemViewType = itemViewType(dataPosition);
+
+        if(itemViewType < 0){
+            Log.e(LOG_TAG,"item view type should >= 0 ");
+        }
+
+        return itemViewType;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
     }
 
-    public void setHeaderView(VH vh){
-       setHeaderView(0,vh);
+    public void addHeaderView(VH vh){
+       addHeaderView(0, vh);
     }
 
-    public void setHeaderView(int position,VH vh){
-        headerViewList.set(position, vh);
+    public void addHeaderView(int position, VH vh){
+
+        headerViewList.add(position, vh);
     }
 
     public void removeHeaderView(VH vh){
         headerViewList.remove(vh);
     }
 
-    public void setFooterView(VH vh){
-        setFooterView(0,vh);
+    public void addFooterView(VH vh){
+        addFooterView(0, vh);
     }
 
-    public void setFooterView(int position,VH vh){
-        footerViewList.set(position, vh);
+    public void addFooterView(int position, VH vh){
+        footerViewList.add(position, vh);
     }
 
     public void removeFooterView(VH vh){
@@ -184,6 +192,10 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return true;
     }
 
+    private int extractDataPosition(int viewPosition){
+        return viewPosition - headerViewList.size();
+    }
+
 
 
     public abstract int itemCount();
@@ -235,4 +247,16 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         }
 
     }
+/*
+    public static class HeaderViewHolder extends ViewHolder{
+        public HeaderViewHolder(View itemView) {
+            super(itemView, VIEW_TYPE_HEADER);
+        }
+    }
+
+    public static class FooterViewHolder extends ViewHolder{
+        public FooterViewHolder(View itemView) {
+            super(itemView, VIEW_TYPE_FOOTER);
+        }
+    }*/
 }

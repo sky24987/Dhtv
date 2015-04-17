@@ -22,6 +22,8 @@ public class ImagePagerView extends FrameLayout implements ViewPager.OnPageChang
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = false;
 
+    private float mRatio = 16.0f/9;
+
     ViewPager mViewPager;
     ImagePagerAdapter mPagerAdapter;
     BasePagerAdapter.PageFactory mPageFactory;
@@ -101,7 +103,29 @@ public class ImagePagerView extends FrameLayout implements ViewPager.OnPageChang
         }
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
+        int width;
+        int height;
+
+//        if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY){
+            width = MeasureSpec.getSize(widthMeasureSpec);
+            height = (int) (width / mRatio);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height,MeasureSpec.getMode(widthMeasureSpec));
+//        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+       /* int width = getMeasuredWidth();
+        int height = getMeasuredHeight();
+        *//*if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY){
+            height = (int) (width / mRatio);
+        }else {
+            width = (int) (height * mRatio);
+        }*//*
+        height = (int) (width / mRatio);
+
+        setMeasuredDimension(width,height);*/
+    }
 
     private class ImagePagerAdapter extends BasePagerAdapter{
         private ImagePagerAdapter(PageFactory pageFactory, PageHolder PageHolder) {

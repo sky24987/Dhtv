@@ -24,7 +24,7 @@ public class NewsListAdapter extends AbstractListAdapter implements View.OnClick
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = false;
 
-    public NewsListAdapter(Category category, ListViewDataList dataList, ImageLoader imageLoader, Context context) {
+    public NewsListAdapter(Category category, ItemViewDataSet dataList, ImageLoader imageLoader, Context context) {
         this.category = category;
         this.dataList = dataList;
         this.mImageLoader = imageLoader;

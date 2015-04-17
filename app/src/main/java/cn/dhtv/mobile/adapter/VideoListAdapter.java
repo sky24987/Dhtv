@@ -25,7 +25,7 @@ public class VideoListAdapter extends AbstractListAdapter implements View.OnClic
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = false;
 
-    public VideoListAdapter(Category category,AbstractListAdapter.ListViewDataList dataList,ImageLoader imageLoader, Context context) {
+    public VideoListAdapter(Category category,ItemViewDataSet dataList,ImageLoader imageLoader, Context context) {
         this.category = category;
         this.dataList = dataList;
         this.mImageLoader = imageLoader;

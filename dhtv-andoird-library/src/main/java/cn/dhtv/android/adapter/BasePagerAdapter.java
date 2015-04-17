@@ -18,6 +18,8 @@ public class BasePagerAdapter extends PagerAdapter {
 
     private PageFactory mPageFactory;
     private PageHolder mPageHolder;
+    private OnPageHolderActListener mOnPageHolderActListener;
+
 
     /**
      *
@@ -58,9 +60,16 @@ public class BasePagerAdapter extends PagerAdapter {
         String title = mPageFactory.getPageTitle(position);
         Page page;
         if(mPageHolder != null && mPageHolder.contains(title)){
+
             page = mPageHolder.get(title);
+            if(mOnPageHolderActListener != null){
+                mOnPageHolderActListener.onProvidePage(page);
+            }
         }else {
             page = mPageFactory.generatePage(position);
+            if(mOnPageHolderActListener != null){
+                mOnPageHolderActListener.onReceiveNewPage(page);
+            }
             mPageHolder.add(page);
         }
         container.addView(page.getPageView());
@@ -70,8 +79,11 @@ public class BasePagerAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         Page page = (Page) object;
-        container.removeView(page.getPageView());
+        if(mOnPageHolderActListener != null){
+            mOnPageHolderActListener.onDropPage(page);
+        }
         mPageHolder.remove(page);
+        container.removeView(page.getPageView());
         return;
     }
 
@@ -173,6 +185,11 @@ public class BasePagerAdapter extends PagerAdapter {
         public int size(){
             return mPageList.size();
         }
+
+    }
+
+    public void setOnPageHolderActListener(OnPageHolderActListener mOnPageHolderActListener) {
+        this.mOnPageHolderActListener = mOnPageHolderActListener;
     }
 
     public interface PageFactory {
@@ -180,5 +197,11 @@ public class BasePagerAdapter extends PagerAdapter {
         Page generatePage(int position);
         String getPageTitle(int position);
         int getPagePosition(Page page);
+    }
+
+    public interface OnPageHolderActListener{
+        void onReceiveNewPage(Page page);
+        void onProvidePage(Page page);
+        void onDropPage(Page page);
     }
 }

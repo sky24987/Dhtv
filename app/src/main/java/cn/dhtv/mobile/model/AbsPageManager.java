@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
+import cn.dhtv.mobile.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.entity.Category;
 
 /**
@@ -43,7 +44,7 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
         this.mCallBacks = mCallBacks;
     }
 
-    public AbstractListAdapter.ListViewDataList getList(Category category){
+    public ItemViewDataSet getList(Category category){
         return mListMap.get(category);
     }
 

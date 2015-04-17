@@ -24,10 +24,10 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
-    private AbstractListAdapter.ListViewDataList dataList;
+    private ItemViewDataSet dataList;
     private Context mContext;
 
-    public ProgramListAdapter(AbstractListAdapter.ListViewDataList dataList,Context context) {
+    public ProgramListAdapter(ItemViewDataSet dataList,Context context) {
         this.dataList = dataList;
         this.mContext = context;
     }
@@ -77,7 +77,7 @@ public class ProgramListAdapter extends RecyclerView.Adapter<ProgramListAdapter.
 
     @Override
     public void onClick(View v) {
-        Program program = (Program) v.getTag();
+        Category program = (Category) v.getTag();
         Intent intent = new Intent(mContext, ProgramDetailActivity.class);
         intent.putExtra("program",program);
         mContext.startActivity(intent);

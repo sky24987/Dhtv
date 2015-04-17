@@ -107,6 +107,7 @@ public class ArticleAccessor {
         newsOverview.setAid(cursor.getInt(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_AID)));
         newsOverview.setCatid(cursor.getInt(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_CAT_ID)));
         newsOverview.setTitle(cursor.getString(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_TITLE)));
+        newsOverview.setUrl(cursor.getString(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_URL)));
         newsOverview.setSummary(cursor.getString(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_SUMMARY)));
         newsOverview.setPic_url(cursor.getString(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_PIC_URL)));
         newsOverview.setDateline(cursor.getString(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_DATELINE)));

@@ -15,7 +15,7 @@ import cn.dhtv.mobile.entity.Category;
 public abstract class AbstractListAdapter extends BaseAdapter {
 
     protected Category category;
-    protected ListViewDataList dataList;
+    protected ItemViewDataSet dataList;
     protected ImageLoader mImageLoader;
     protected Context context;
 

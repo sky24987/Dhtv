@@ -10,6 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/ExoPlayerlibrary" />
+            <option value="$PROJECT_DIR$/PagerSlidingTabStrip-library" />
+            <option value="$PROJECT_DIR$/SmartTabLayout-library" />
             <option value="$PROJECT_DIR$/android" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/dhtv-andoird-library" />

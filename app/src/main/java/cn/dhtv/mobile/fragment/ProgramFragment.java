@@ -24,6 +24,7 @@ import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.adapter.AbstractListAdapter;
+import cn.dhtv.mobile.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.adapter.ProgramListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
@@ -157,7 +158,7 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     @Override
     public BasePagerAdapter.Page generatePage(int position) {
         Category category = mProgramPageManager.getCategory(position);
-        AbstractListAdapter.ListViewDataList listViewDataList = mProgramPageManager.getList(category);
+        ItemViewDataSet listViewDataList = mProgramPageManager.getList(category);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.page_recycle_view,null);

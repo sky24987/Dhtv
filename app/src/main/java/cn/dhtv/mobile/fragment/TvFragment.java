@@ -37,6 +37,7 @@ import java.util.List;
 
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.adapter.TvListAdapter;
+import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.Program;
 import cn.dhtv.mobile.entity.TvOverview;
 import cn.dhtv.mobile.network.NetUtils;
@@ -56,7 +57,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
     RequestQueue mRequestQueue = NetUtils.getRequestQueue();
     ObjectMapper mObjectMapper = new ObjectMapper();
 
-    Program mProgram;
+    Category mProgram;
     StateDate mStateDate = new StateDate();
     int mediaBufferPercentage = 0;
     boolean surfacePrepared = false;
@@ -136,7 +137,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
      * @param program
      * @param tvList 用于保存结果列表
      */
-    private void asyncRequestProgramList(Program program,final ArrayList<TvOverview> tvList){
+    private void asyncRequestProgramList(Category program,final ArrayList<TvOverview> tvList){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -243,10 +244,10 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
             Log.d(LOG_TAG,"onPause");
         }
         super.onPause();
-        if(mMediaPlayer.isPlaying()){
+        /*if(mMediaPlayer.isPlaying()){
             pause();
             autoPaused = true;
-        }
+        }*/autoPause();
     }
 
     @Override
@@ -393,7 +394,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
 
 
         Intent intent = getActivity().getIntent();
-        mProgram = (Program) intent.getSerializableExtra("program");
+        mProgram = (Category) intent.getSerializableExtra("program");
         mTvListAdapter.setmOnItemClickListener(this);
 
         mediaPlayerBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {

@@ -21,7 +21,7 @@ import cn.dhtv.mobile.widget.FooterRefreshView;
 /**
  * Created by Jack on 2015/4/1.
  */
-public class NewsListAdapter2 extends RecyclerView.Adapter<NewsListAdapter2.ViewHolder>{
+public class drop_NewsListAdapter2 extends RecyclerView.Adapter<drop_NewsListAdapter2.ViewHolder>{
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
@@ -36,7 +36,7 @@ public class NewsListAdapter2 extends RecyclerView.Adapter<NewsListAdapter2.View
     private int headerCount=0;
     private int footerCount=0;
 
-    public NewsListAdapter2(Category category, AbstractListAdapter.ListViewDataList listViewDataList,Context context) {
+    public drop_NewsListAdapter2(Category category, AbstractListAdapter.ListViewDataList listViewDataList, Context context) {
         this.category = category;
         this.listViewDataList = listViewDataList;
         mContext = context;
