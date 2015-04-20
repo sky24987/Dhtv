@@ -26,6 +26,7 @@ import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.widget.FooterRefreshListView;
 import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
+import cn.dhtv.mobile.widget.MySmartTabLayout;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
@@ -45,7 +46,7 @@ public class VideoFragment extends SectionFragment implements BasePagerAdapter.P
 
     public  final String title = "视频";
     private ViewPager mViewPager;
-    private TabPageIndicator mTabPageIndicator;
+    private MySmartTabLayout mMySmartTabLayout;//private TabPageIndicator mTabPageIndicator;
     private BasePagerAdapter mPagerAdapter;
     private BasePagerAdapter.PageHolder mPageHolder;
 
@@ -79,13 +80,13 @@ public class VideoFragment extends SectionFragment implements BasePagerAdapter.P
 
         mImageLoader = NetUtils.getImageLoader(getActivity());
 
-        View view =  inflater.inflate(R.layout.tab_pager, container, false);
+        View view =  inflater.inflate(R.layout.pager_with_tab, container, false);//View view =  inflater.inflate(R.layout.tab_pager, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.pager_title);
+       mMySmartTabLayout = (MySmartTabLayout) view.findViewById(R.id.pager_title);// mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.pager_title);
         mPagerAdapter = new BasePagerAdapter(this,null);
         mPageHolder = mPagerAdapter.getPageHolder();
         mViewPager.setAdapter(mPagerAdapter);
-        mTabPageIndicator.setViewPager(mViewPager);
+       mMySmartTabLayout.setViewPager(mViewPager);//mTabPageIndicator.setViewPager(mViewPager);
 
         return view;
     }

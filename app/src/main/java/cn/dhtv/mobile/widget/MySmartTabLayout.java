@@ -2,6 +2,7 @@ package cn.dhtv.mobile.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
@@ -23,11 +24,23 @@ public class MySmartTabLayout extends SmartTabLayout{
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        /*final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         final boolean lockedExpanded = widthMode == MeasureSpec.EXACTLY;
-        setFillViewport(lockedExpanded);*/
-
+        setFillViewport(lockedExpanded);
+//
+        final int oldWidth = getMeasuredWidth();
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//
+        final int newWidth = getMeasuredWidth();
+
+        if (lockedExpanded && oldWidth != newWidth) {
+            // Recenter the tab display if we're at a new (scrollable) size.
+//            setCurrentItem(mSelectedTabIndex);
+//            scrollToTab(2,0);
+            smoothScrollTo(0,0);
+        }
 
     }
+
+
 }

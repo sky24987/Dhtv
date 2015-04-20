@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         stl:stl_indicatorAlwaysInCenter="false"
-        stl:stl_indicatorInFront="true"
+        stl:stl_indicatorInFront="false"
         stl:stl_indicatorInterpolation="linear"
         stl:stl_indicatorColor="#40C4FF"
         stl:stl_indicatorThickness="4dp"
@@ -20,9 +20,10 @@
         stl:stl_dividerThickness="1dp"
         stl:stl_defaultTabTextAllCaps="false"
         stl:stl_defaultTabTextColor="#FC000000"
-        stl:stl_defaultTabTextSize="30sp"
-        stl:stl_defaultTabTextHorizontalPadding="10dp"
-        stl:stl_defaultTabTextMinWidth="5dp"
+        stl:stl_defaultTabTextSize="@dimen/text_size_tab"
+        stl:stl_defaultTabTextHorizontalPadding="15dp"
+        stl:stl_defaultTabTextVerticalPadding="@dimen/abc_button_padding_vertical_material"
+        stl:stl_defaultTabTextMinWidth="0dp"
         stl:stl_distributeEvenly="false"/>
     <!--<com.astuetz.PagerSlidingTabStrip-->
         <!--android:id="@+id/pager_title"-->
@@ -30,7 +31,10 @@
         <!--android:layout_height="wrap_content"-->
         <!--app:pstsShouldExpand = "true"-->
         <!--/>-->
-
+<!--<TextView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:textSize="@dimen/abc_text_size_large_material"/>-->
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
