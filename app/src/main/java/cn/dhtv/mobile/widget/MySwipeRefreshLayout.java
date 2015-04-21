@@ -15,7 +15,7 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
 
     private float mInitialDownY;
     private float mInitialDownX;
-    private float mYXRatio = 1;
+    private float mYXRatio = 0.6f;
     private boolean mMatchRatio = true;
 
     public MySwipeRefreshLayout(Context context, AttributeSet attrs) {
@@ -30,6 +30,7 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
                 mInitialDownX = ev.getX();
                 mInitialDownY = ev.getY();
                 break;
+
             case MotionEvent.ACTION_MOVE:
 
                     float totalDX = ev.getX() - mInitialDownX;
@@ -40,6 +41,12 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
                             mMatchRatio = false;
                         }
                     }
+                break;
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                mMatchRatio = true;
+                break;
 
         }
 

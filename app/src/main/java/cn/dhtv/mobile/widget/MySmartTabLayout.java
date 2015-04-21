@@ -22,6 +22,7 @@ public class MySmartTabLayout extends SmartTabLayout{
         super(context, attrs, defStyle);
     }
 
+/*
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -41,6 +42,7 @@ public class MySmartTabLayout extends SmartTabLayout{
         }
 
     }
+*/
 
 
 }

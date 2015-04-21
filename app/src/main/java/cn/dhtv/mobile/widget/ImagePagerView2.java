@@ -4,23 +4,19 @@ import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.R;
 
 /**
- * Created by Jack on 2015/3/25.
+ * Created by Jack on 2015/4/21.
  */
-public class ImagePagerView extends FrameLayout implements ViewPager.OnPageChangeListener{
+public class ImagePagerView2 extends FrameLayout implements ViewPager.OnPageChangeListener{
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = false;
 
@@ -30,13 +26,11 @@ public class ImagePagerView extends FrameLayout implements ViewPager.OnPageChang
     ImagePagerAdapter mPagerAdapter;
     BasePagerAdapter.PageFactory mPageFactory;
     TextView mTextView;
-    LinearLayout dotContainer;
-    ImageView[] dots;
-//    RadioGroup mRadioGroup;
-    Context mContext;
-    public ImagePagerView(Context context, AttributeSet attrs) {
+    PictureIndicator mPictureIndicator;
+
+    public ImagePagerView2(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
+
     }
 
     @Override
@@ -45,14 +39,12 @@ public class ImagePagerView extends FrameLayout implements ViewPager.OnPageChang
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOnPageChangeListener(this);
         mTextView = (TextView) findViewById(R.id.title);
-      //  dotContainer = (LinearLayout) findViewById(R.id.dot_container);
-//        mRadioGroup = (RadioGroup) findViewById(R.id.radio_group);
-
+        mPictureIndicator = (PictureIndicator) findViewById(R.id.picture_indicator);
     }
 
     public void setPageFactory(BasePagerAdapter.PageFactory pageFactory){
         if(DEBUG){
-            Log.d(LOG_TAG,"setPageFactory");
+            Log.d(LOG_TAG, "setPageFactory");
         }
         mPageFactory = pageFactory;
         if(mPagerAdapter == null){
@@ -62,49 +54,27 @@ public class ImagePagerView extends FrameLayout implements ViewPager.OnPageChang
             mPagerAdapter.setPageFactory(pageFactory);
             mPagerAdapter.notifyDataSetChanged();
         }
-        dots = new ImageView[mPageFactory.pageCount()];
-        dotContainer.removeAllViews();
-//        mRadioGroup.removeAllViews();
-        for(int i=0;i<dots.length;++i){
-            dots[i] = new ImageView(mContext);
-            ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            dots[i].setLayoutParams(lp);
-            dots[i].setImageResource(R.drawable.indicator_dot);
-            dots[i].setAdjustViewBounds(true);
-            dotContainer.addView(dots[i]);
 
+        mPictureIndicator.setUpIndicator(mPagerAdapter.getCount());
+        select(mViewPager.getCurrentItem());
+    }
 
-
-
-        }
-
-        if(DEBUG){
-            Log.d(LOG_TAG,"dotContainer child size:"+dotContainer.getChildCount());
-        }
-        onPageSelected(0);
+    private void select(int position){
+        mPictureIndicator.select(position);
+        mTextView.setText(mPageFactory.getPageTitle(position));
     }
 
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if(DEBUG){
+       /* if(DEBUG){
             Log.d(LOG_TAG,"onPageScrolled:"+position);
-        }
+        }*/
     }
 
     @Override
     public void onPageSelected(int position) {
-        if(DEBUG){
-            Log.d(LOG_TAG,"onPageSelected:"+position);
-        }
-
-        for(int i=0;i<dots.length;++i){
-            dots[i].setSelected(false);
-        }
-        dots[position].setSelected(true);
-
-
-        mTextView.setText(mPageFactory.getPageTitle(position));
+        select(position);
     }
 
     @Override

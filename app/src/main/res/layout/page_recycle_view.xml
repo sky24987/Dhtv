@@ -6,6 +6,8 @@
     android:layout_height="match_parent">
     <cn.dhtv.android.widget.BaseRecyclerView
         android:id="@+id/recyclerView"
+        android:scrollbars="vertical"
+        android:scrollbarStyle="insideOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </cn.dhtv.mobile.widget.MySwipeRefreshLayout>

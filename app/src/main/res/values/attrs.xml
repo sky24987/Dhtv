@@ -8,5 +8,10 @@
         <attr name="metaButtonBarStyle" format="reference" />
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
+    
+    <declare-styleable name="ImageIndicator">
+        <attr name="ii_indicator_margin" format="dimension"/>
+
+    </declare-styleable>
 
 </resources>

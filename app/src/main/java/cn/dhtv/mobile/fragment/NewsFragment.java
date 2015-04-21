@@ -8,21 +8,16 @@ import android.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-
-import com.viewpagerindicator.TabPageIndicator;
 
 import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
@@ -30,22 +25,18 @@ import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.WebViewActivity;
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.adapter.ItemViewDataSet;
-import cn.dhtv.mobile.adapter.NewsListAdapter;
 import cn.dhtv.mobile.adapter.NewsRecyclerViewAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.widget.EmptyView;
 
 import cn.dhtv.mobile.widget.FooterRefreshView;
-import cn.dhtv.mobile.widget.ImagePagerView;
+import cn.dhtv.mobile.widget.ImagePagerView2;
 import cn.dhtv.mobile.widget.MySmartTabLayout;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
@@ -285,6 +276,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
 //        page.mSwipeRefreshLayout.setOnRefreshListener(page);
         page.baseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
+//        page.baseRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
 
         page.layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
 //        page.layoutManager = new GridLayoutManager(getActivity(),3);
@@ -310,7 +302,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         });
         page.footerRefreshView = (FooterRefreshView) inflater.inflate(R.layout.widget_refresh_footer,page.baseRecyclerView,false);
         page.footerRefreshView.setRefreshingListener(page);
-        page.imagePagerView = (ImagePagerView) inflater.inflate(R.layout.image_pager,null);
+        page.imagePagerView = (ImagePagerView2) inflater.inflate(R.layout.widget_pager_image,null);
         page.imagePagerView.setPageFactory(page);
         page.newsRecyclerViewAdapter.addHeaderView(new NewsRecyclerViewAdapter.ViewHolder(page.imagePagerView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_HEADER));
         page.newsRecyclerViewAdapter.setEmptyView(new NewsRecyclerViewAdapter.ViewHolder(page.emptyView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_EMPTY));
@@ -365,7 +357,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 //        public FooterRefreshListView listView;
         public BaseRecyclerView baseRecyclerView;
         public RecyclerView.LayoutManager layoutManager;
-        public ImagePagerView imagePagerView;
+        public ImagePagerView2 imagePagerView;
         public EmptyView emptyView;
 //        public BaseAdapter listAdapter;
         public FooterRefreshView footerRefreshView;

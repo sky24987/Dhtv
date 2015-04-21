@@ -10,6 +10,8 @@
 
     <color name="text_selected">#ffff7367</color>
     <color name="text_title">#ff000000</color>
+    <color name="text_tab_default">#ff858585</color>
+    <color name="text_tab_selected">#ff266fcf</color>
 
 
 </resources>

@@ -2,8 +2,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
     <dimen name="text_size_tab">@dimen/abc_text_size_large_material</dimen>
+    <dimen name="text_size_title">@dimen/abc_text_size_title_material</dimen>
+    <dimen name="text_size_title_subtitle">@dimen/abc_text_size_subhead_material</dimen>
+    <dimen name="text_size_body">@dimen/abc_text_size_body_1_material</dimen>
+    <dimen name="text_size_body_small">@dimen/abc_text_size_small_material</dimen>
+
     <dimen name="padding_tabs_trip">@dimen/abc_button_padding_vertical_material</dimen>
+    <dimen name="padding_list_item">@dimen/abc_dropdownitem_text_padding_left</dimen>
 
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
