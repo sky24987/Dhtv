@@ -124,6 +124,17 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         mListener = null;
     }
 
+
+    @Override
+    public void onFirstFetch(Category category, AbsPageManager.CallBackFlag flag) {
+
+    }
+
+    @Override
+    public void onFirstFetchFails(Category category, AbsPageManager.CallBackFlag flag) {
+
+    }
+
     @Override
     public void onRefresh(Category category, AbsPageManager.CallBackFlag flag) {
         if(DEBUG){

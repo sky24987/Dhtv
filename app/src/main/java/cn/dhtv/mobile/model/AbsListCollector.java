@@ -38,6 +38,7 @@ public abstract class AbsListCollector implements AbstractListAdapter.ListViewDa
 
 
     public abstract void clear();
+    public abstract void asyncFirstFetch();
     public abstract void asyncAppend();
     public abstract void asyncRefresh();
 
@@ -95,6 +96,8 @@ public abstract class AbsListCollector implements AbstractListAdapter.ListViewDa
         void onAppend(Category category,SyncFlag syncFlag);
         void onRefreshFails(Category category,SyncFlag syncFlag);
         void onAppendFails(Category category,SyncFlag syncFlag);
+        void onFirstFetch(Category category,SyncFlag syncFlag);
+        void onFirstFetchFails(Category category,SyncFlag syncFlag);
     }
 
     public enum SyncFlag{

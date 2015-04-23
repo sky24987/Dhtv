@@ -1,6 +1,7 @@
 package cn.dhtv.mobile.widget;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,7 +21,6 @@ public class ImagePagerView2 extends FrameLayout implements ViewPager.OnPageChan
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = false;
 
-    private float mRatio = 16.0f/9;
 
     ViewPager mViewPager;
     ImagePagerAdapter mPagerAdapter;
@@ -38,8 +38,10 @@ public class ImagePagerView2 extends FrameLayout implements ViewPager.OnPageChan
         super.onFinishInflate();
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setOnPageChangeListener(this);
+
         mTextView = (TextView) findViewById(R.id.title);
         mPictureIndicator = (PictureIndicator) findViewById(R.id.picture_indicator);
+
     }
 
     public void setPageFactory(BasePagerAdapter.PageFactory pageFactory){
@@ -49,17 +51,38 @@ public class ImagePagerView2 extends FrameLayout implements ViewPager.OnPageChan
         mPageFactory = pageFactory;
         if(mPagerAdapter == null){
             mPagerAdapter = new ImagePagerAdapter(mPageFactory,null);
-            mViewPager.setAdapter(mPagerAdapter);
+
         }else{
             mPagerAdapter.setPageFactory(pageFactory);
-            mPagerAdapter.notifyDataSetChanged();
         }
 
+        mPagerAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                resetIndicator();
+            }
+        });
+        mViewPager.setAdapter(mPagerAdapter);
+
+        resetIndicator();
+
+    }
+
+    public ViewPager getViewPager(){
+        return mViewPager;
+    }
+
+    private void resetIndicator(){
         mPictureIndicator.setUpIndicator(mPagerAdapter.getCount());
-        select(mViewPager.getCurrentItem());
+        if(mPagerAdapter.getCount() != 0){
+            select(mViewPager.getCurrentItem());
+        }
     }
 
     private void select(int position){
+        if(position < 0){
+            return;
+        }
         mPictureIndicator.select(position);
         mTextView.setText(mPageFactory.getPageTitle(position));
     }
@@ -84,29 +107,6 @@ public class ImagePagerView2 extends FrameLayout implements ViewPager.OnPageChan
         }
     }
 
-   /* @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
-        int width;
-        int height;
-
-//        if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY){
-            width = MeasureSpec.getSize(widthMeasureSpec);
-            height = (int) (width / mRatio);
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(height,MeasureSpec.getMode(widthMeasureSpec));
-//        }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-       *//* int width = getMeasuredWidth();
-        int height = getMeasuredHeight();
-        *//**//*if(MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY){
-            height = (int) (width / mRatio);
-        }else {
-            width = (int) (height * mRatio);
-        }*//**//*
-        height = (int) (width / mRatio);
-
-        setMeasuredDimension(width,height);*//*
-    }*/
 
     private class ImagePagerAdapter extends BasePagerAdapter{
         private ImagePagerAdapter(PageFactory pageFactory, PageHolder PageHolder) {

@@ -20,9 +20,10 @@ public class PictureIndicator extends LinearLayout{
     private int mIndicatorMargin = 0 ;
 
     private int mCount;
-    private int mCurrentPosition;
+    private int mCurrentPosition = -1;
     private ImageView[] imageViews;
     private ViewPager mViewPager;
+
 
 
 
@@ -59,6 +60,7 @@ public class PictureIndicator extends LinearLayout{
 
     private void setIndicatorCount(int count){
         clearIndicators();
+        mCurrentPosition = -1;
         mCount = count;
         imageViews = new ImageView[mCount];
         for(int i = 0; i < imageViews.length; ++ i){
@@ -78,6 +80,14 @@ public class PictureIndicator extends LinearLayout{
         }
         imageViews[mCurrentPosition].setSelected(true);
     }
+
+    /*@Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(mCurrentPosition >= 0){
+            select(mCurrentPosition);
+        }
+    }*/
 
     public void setViewPager(ViewPager viewPager){
         if(viewPager == null || viewPager.getAdapter() == null){

@@ -125,6 +125,17 @@ public class VideoFragment extends SectionFragment implements BasePagerAdapter.P
         return title;
     }
 
+
+    @Override
+    public void onFirstFetch(Category category, AbsPageManager.CallBackFlag flag) {
+
+    }
+
+    @Override
+    public void onFirstFetchFails(Category category, AbsPageManager.CallBackFlag flag) {
+
+    }
+
     @Override
     public void onRefresh(Category category, AbsPageManager.CallBackFlag flag) {
         MyPage page = (MyPage) mPageHolder.get(category.getCatname());

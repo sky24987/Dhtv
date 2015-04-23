@@ -32,6 +32,10 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
         mListMap.get(category).asyncRefresh();
     }
 
+    public void firstFetch(Category category){
+        mListMap.get(category).asyncFirstFetch();
+    }
+
     public void append(Category category){
         mListMap.get(category).asyncAppend();
     }
@@ -93,6 +97,8 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
         void onAppend(Category category,CallBackFlag flag);
         void onRefreshFails(Category category,CallBackFlag flag);
         void onAppendFails(Category category,CallBackFlag flag);
+        void onFirstFetch(Category category,CallBackFlag flag);
+        void onFirstFetchFails(Category category,CallBackFlag flag);
     }
 
     public static enum CallBackFlag{

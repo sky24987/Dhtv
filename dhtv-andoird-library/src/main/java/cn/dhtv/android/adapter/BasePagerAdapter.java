@@ -127,8 +127,6 @@ public class BasePagerAdapter extends PagerAdapter {
         public int getId() {
             return id;
         }
-
-
     }
 
     public static class PageHolder{

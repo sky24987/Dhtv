@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
+import java.util.ArrayList;
+
 import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.android.widget.BaseRecyclerView;
@@ -27,8 +29,10 @@ import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.WebViewActivity;
 import cn.dhtv.mobile.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.adapter.NewsRecyclerViewAdapter;
+import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
+import cn.dhtv.mobile.model.NewsListCollector2;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.widget.EmptyView;
@@ -184,6 +188,22 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     }
 
     @Override
+    public void onFirstFetch(Category category, AbsPageManager.CallBackFlag flag) {
+        MyPage page = (MyPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
+
+        page.newsRecyclerViewAdapter.notifyDataSetChanged();
+        page.imagePagerView.getViewPager().getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onFirstFetchFails(Category category, AbsPageManager.CallBackFlag flag) {
+
+    }
+
+    @Override
     public void onRefresh(Category category, AbsPageManager.CallBackFlag flag) {
         MyPage page = (MyPage) mPageHolder.get(category.getCatname());
         if(page == null){
@@ -191,8 +211,10 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         }
 
         page.newsRecyclerViewAdapter.notifyDataSetChanged();
+        page.imagePagerView.getViewPager().getAdapter().notifyDataSetChanged();
+        page.mSwipeRefreshLayout.setRefreshing(false);
 //        page.listAdapter.notifyDataSetChanged();
-        page.mPullToRefreshLayout.setRefreshing(false);
+//        page.mPullToRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -236,8 +258,8 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         if(page == null){
             return;
         }
-
-        page.mPullToRefreshLayout.setRefreshing(false);
+        page.mSwipeRefreshLayout.setRefreshing(false);
+        //page.mPullToRefreshLayout.setRefreshing(false);
         Toast.makeText(getActivity(), "获取新闻失败...", Toast.LENGTH_SHORT).show();
     }
 
@@ -270,10 +292,12 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         View view = inflater.inflate(R.layout.page_recycle_view,null);
         MyPage page = new MyPage(category.getCatname(),view);
         page.category = category;
+        page.blocks = ((NewsListCollector2)mNewsPageManager.getList(category)).getBlockArrayList();
 
 
 //        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
+        page.mSwipeRefreshLayout.setOnRefreshListener(page);
 //        page.mSwipeRefreshLayout.setOnRefreshListener(page);
         page.baseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
 //        page.baseRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
@@ -297,7 +321,9 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         page.emptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
             @Override
             public void onProcessing() {
+                //TODO
                 mNewsPageManager.append(category);
+//                mNewsPageManager.firstFetch(category);
             }
         });
         page.footerRefreshView = (FooterRefreshView) inflater.inflate(R.layout.widget_refresh_footer,page.baseRecyclerView,false);
@@ -354,6 +380,8 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshView.OnRefreshingListener,BasePagerAdapter.PageFactory,BaseRecyclerViewAdapter.OnItemClickListener,BaseRecyclerView.OnItemAttachDetachListener,SwipeRefreshLayout.OnRefreshListener{
         public Category category;
 
+        public ArrayList<Block> blocks;
+
         public SwipeRefreshLayout mSwipeRefreshLayout;
         public PullToRefreshLayout mPullToRefreshLayout;
 //        public FooterRefreshListView listView;
@@ -373,32 +401,44 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             mNewsPageManager.refresh(category);
         }
 
+
+        /*FooterRefreshView*/
         @Override
         public void onRefreshing() {
             mNewsPageManager.append(category);
+//            mNewsPageManager.firstFetch(category);
         }
+
+        /*SwipeRefreshLayout*/
+        @Override
+        public void onRefresh() {
+
+            mNewsPageManager.refresh(category);
+            //mSwipeRefreshLayout.setRefreshing(true);
+        }
+
+
 
         @Override
         public int pageCount() {
-            return 2;
+            return blocks.size();
         }
 
         @Override
         public BasePagerAdapter.Page generatePage(int position) {
+            Block block = blocks.get(position);
             NetworkImageView netImageView = new NetworkImageView(getActivity());
             netImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             netImageView.setDefaultImageResId(R.drawable.default_image);
+            netImageView.setImageUrl(block.getPic(), mImageLoader);
             BasePagerAdapter.Page page = new BasePagerAdapter.Page("",netImageView);
             return page;
         }
 
         @Override
         public String getPageTitle(int position) {
-            if(position == 0){
-                return "标题示例1";
-            }else {
-                return "标题示例2";
-            }
+            Block block = blocks.get(position);
+            return block.getTitle();
         }
 
         @Override
@@ -465,10 +505,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             }
         }
 
-        @Override
-        public void onRefresh() {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
+
     }
 
 

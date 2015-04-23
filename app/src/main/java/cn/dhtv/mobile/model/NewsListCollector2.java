@@ -91,6 +91,26 @@ public class NewsListCollector2 extends AbsListCollector {
         mExecutorService.submit(new DBFindArticleTask(category, 0,true));
     }
 
+
+    @Override
+    public void asyncFirstFetch(){
+        mMode = MODE_INIT;
+        if(mState != STATE_IDLE){
+            onFails();
+            resetProcessing();
+            return;
+        }
+
+        mState = STATE_PROCESSING_INIT;
+
+        JsonObjectRequest newsRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeNewsOverviewUrl(category, 1),null,new ArticleResponseListener(),new ErrorListener());
+        JsonObjectRequest blockRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeBlockQueryUrl(category),null,new BlockResponseListener(),new ErrorListener());
+        newsRequest.setTag(mNetTag);
+        blockRequest.setTag(mNetTag);
+        mRequestQueue.add(newsRequest);
+        mRequestQueue.add(blockRequest);
+    }
+
     @Override
     public void asyncRefresh() {
         mMode = MODE_REFRESH;
@@ -123,6 +143,9 @@ public class NewsListCollector2 extends AbsListCollector {
                 }
                 break;
             case MODE_INIT:
+                if(mCallBacks != null){
+                    mCallBacks.onFirstFetchFails(category, null);
+                }
                 break;
             case MODE_IDLE:
                 break;
@@ -142,14 +165,19 @@ public class NewsListCollector2 extends AbsListCollector {
                 }
                 break;
             case MODE_INIT:
+                if(mCallBacks != null){
+                    mCallBacks.onFirstFetch(category, null);
+                }
                 break;
             case MODE_IDLE:
                 break;
         }
     }
 
-    public void asyncInit(){
 
+
+    public ArrayList<Block> getBlockArrayList(){
+        return blockArrayList;
     }
 
 
@@ -405,6 +433,16 @@ public class NewsListCollector2 extends AbsListCollector {
                 resetProcessing();
                 e.printStackTrace();
             } catch (IOException e) {
+
+                if(mMode == MODE_INIT){
+                    /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
+                    cancelTask();
+                    mExecutorService.submit(new DBFindArticleTask(category, 0, false));
+                    mExecutorService.submit(new DBFindBlockTask(category,false));
+
+                }
+
+
                 mState = STATE_ERROR_NET_PROBLEM;
                 cancelTask();
                 onFails();
@@ -423,6 +461,15 @@ public class NewsListCollector2 extends AbsListCollector {
                 mCache.blockOrigin = Cache.FROM_NET;
                 checkCache();
             } catch (JSONException e) {
+                if(mMode == MODE_INIT){
+                    /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
+                    cancelTask();
+                    mExecutorService.submit(new DBFindArticleTask(category, 0, false));
+                    mExecutorService.submit(new DBFindBlockTask(category,false));
+
+                }
+
+
                 mState = STATE_ERROR_JSON_PROBLEM;
                 cancelTask();
                 onFails();

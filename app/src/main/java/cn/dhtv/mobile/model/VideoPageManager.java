@@ -65,4 +65,18 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector> {
             mCallBacks.onAppendFails(category, null);
         }
     }
+
+    @Override
+    public void onFirstFetch(Category category, AbsListCollector.SyncFlag syncFlag) {
+        if(mCallBacks != null){
+            mCallBacks.onFirstFetch(category, null);
+        }
+    }
+
+    @Override
+    public void onFirstFetchFails(Category category, AbsListCollector.SyncFlag syncFlag) {
+        if(mCallBacks != null){
+            mCallBacks.onRefreshFails(category, null);
+        }
+    }
 }

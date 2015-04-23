@@ -207,7 +207,10 @@ public class NewsListCollector extends AbsListCollector{
 
     }
 
+    @Override
+    public void asyncFirstFetch() {
 
+    }
 
     private void asyncFetchBlocks(){
 

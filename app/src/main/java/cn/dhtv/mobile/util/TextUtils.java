@@ -21,7 +21,7 @@ public class TextUtils {
     }
 
     public static String makeBlockQueryUrl(Category category){
-        return URL_BLOCK+"?"+"bid="+category.getCatid();
+        return URL_BLOCK+"?"+"bid="+category.getBid();
     }
 
 }

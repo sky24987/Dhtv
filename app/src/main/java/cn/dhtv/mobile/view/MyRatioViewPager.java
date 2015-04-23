@@ -9,7 +9,7 @@ import android.view.ViewGroup;
  * Created by Jack on 2015/4/20.
  */
 public class MyRatioViewPager extends ViewPager{
-    private float mRatio = 19.0f/9;
+    private float mRatio = 16.0f/9;
 
     public MyRatioViewPager(Context context) {
         super(context);

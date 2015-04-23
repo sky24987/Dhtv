@@ -87,6 +87,11 @@ public class ProgramCollector extends AbsListCollector {
     }
 
     @Override
+    public void asyncFirstFetch() {
+
+    }
+
+    @Override
     public void asyncRefresh() {
         if(isProcessing()){
             onRefreshFails(null);

@@ -86,6 +86,11 @@ public class VideoListCollector extends AbsListCollector {
     }
 
     @Override
+    public void asyncFirstFetch() {
+
+    }
+
+    @Override
     public void asyncRefresh() {
         if(isProcessing()){
             onRefreshFails(null);

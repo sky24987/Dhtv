@@ -67,4 +67,18 @@ public class ProgramPageManager extends AbsPageManager<ProgramCollector> {
             mCallBacks.onAppendFails(category, null);
         }
     }
+
+    @Override
+    public void onFirstFetch(Category category, AbsListCollector.SyncFlag syncFlag) {
+        if(mCallBacks != null){
+            mCallBacks.onFirstFetch(category, null);
+        }
+    }
+
+    @Override
+    public void onFirstFetchFails(Category category, AbsListCollector.SyncFlag syncFlag) {
+        if(mCallBacks != null){
+            mCallBacks.onFirstFetchFails(category, null);
+        }
+    }
 }
