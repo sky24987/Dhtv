@@ -45,9 +45,27 @@ public class SQL {
             Contract.Category.COLUMN_NAME_CAT_NAME+TEXT_TYPE+COMMA_SEP+
             Contract.Category.COLUMN_NAME_DESCRIPTION+TEXT_TYPE+COMMA_SEP+
             Contract.Category.COLUMN_NAME_NAME+TEXT_TYPE+COMMA_SEP+
+            Contract.Category.COLUMN_NAME_BID+INTEGER_TYPE+COMMA_SEP+
             Contract.Category.COLUMN_NAME_M3U8+TEXT_TYPE+COMMA_SEP+
             Contract.Category.COLUMN_NAME_RTMP+TEXT_TYPE+
             ");";
+
+    public static final String SQL_CREATE_BLOCK = "CREATE TABLE "+ Contract.Block.TABLE_NAME+" ("+
+            Contract.Block._ID+INTEGER_TYPE+PRIMARY_KEY+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_ID+INTEGER_TYPE+NOT_NULL+UNIQUE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_UID+INTEGER_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_COMMENT_NUM+INTEGER_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_TITLE+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_SUMMARY+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_URL+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_PIC+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_CATNAME+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_ID_TYPE+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_AVATAR+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_DATELINE+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_USER_NAME+TEXT_TYPE+
+            ");";
+
 
     /*public static void main(String[] args){
         System.out.println(SQL_CREATE_ARTICLE);

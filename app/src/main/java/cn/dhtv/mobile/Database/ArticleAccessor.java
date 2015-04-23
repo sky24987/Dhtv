@@ -72,6 +72,12 @@ public class ArticleAccessor {
         return getDb().replace(Contract.Article.TABLE_NAME,null,values);
     }
 
+    public void clear(Category category){
+        getDb().beginTransaction();
+        getDb().delete(Contract.Article.TABLE_NAME, Contract.Article.COLUMN_NAME_CAT_ID+" = ?",new String[]{""+category.getCatid()});
+        getDb().endTransaction();
+    }
+
     private SQLiteDatabase getDb(){
         return DBHelper.getInstance().getWritableDatabase();
     }

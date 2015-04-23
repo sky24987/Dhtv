@@ -5,7 +5,7 @@ import cn.dhtv.mobile.entity.Category;
 /**
  * Created by Jack on 2015/3/18.
  */
-public class NewsPageManager extends AbsPageManager<NewsListCollector> {
+public class NewsPageManager extends AbsPageManager<NewsListCollector2> {
     @Override
     public void setUp() {
         Category cat1 = new Category();
@@ -37,7 +37,7 @@ public class NewsPageManager extends AbsPageManager<NewsListCollector> {
         categories.add(cat6);*/
 
         for(Category cat:categories){
-            mListMap.put(cat,new NewsListCollector(cat, this));
+            mListMap.put(cat,new NewsListCollector2(cat, this));
         }
     }
 

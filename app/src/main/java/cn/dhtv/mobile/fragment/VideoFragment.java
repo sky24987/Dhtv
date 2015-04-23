@@ -13,7 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.viewpagerindicator.TabPageIndicator;
+
 
 import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.MyApplication;

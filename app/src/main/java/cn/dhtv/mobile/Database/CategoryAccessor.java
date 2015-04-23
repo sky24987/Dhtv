@@ -29,6 +29,7 @@ public class CategoryAccessor {
         values.put(Contract.Category.COLUMN_NAME_CAT_NAME,category.getCatname());
         values.put(Contract.Category.COLUMN_NAME_NAME,category.getName());
         values.put(Contract.Category.COLUMN_NAME_DESCRIPTION,category.getDescription());
+        values.put(Contract.Category.COLUMN_NAME_BID,category.getBid());
         values.put(Contract.Category.COLUMN_NAME_M3U8,category.getLive().getM3u8());
         values.put(Contract.Category.COLUMN_NAME_RTMP,category.getLive().getRtmp());
         return getDb().replace(Contract.Category.TABLE_NAME,null,values);
@@ -68,6 +69,7 @@ public class CategoryAccessor {
         category.setUpid(cursor.getInt(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_UP_ID)));
         category.setCatname(cursor.getString(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_CAT_NAME)));
         category.setName(cursor.getString(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_NAME)));
+        category.setBid(cursor.getInt(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_BID)));
         live.setM3u8(cursor.getString(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_M3U8)));
         live.setRtmp(cursor.getString(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_RTMP)));
         category.setLive(live);

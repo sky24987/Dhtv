@@ -1,4 +1,4 @@
-package cn.dhtv.mobile.util;
+package cn.dhtv.mobile.Sync;
 
 import java.util.List;
 

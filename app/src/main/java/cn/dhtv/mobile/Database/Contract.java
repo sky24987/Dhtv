@@ -17,7 +17,7 @@ public final class Contract {
         public static final String COLUMN_NAME_CAT_NAME = "catname";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
-
+        public static final String COLUMN_NAME_BID = "bid";
         public static final String COLUMN_NAME_RTMP = "rtmp";
         public static final String COLUMN_NAME_M3U8 = "m3u8";
     }
@@ -36,6 +36,22 @@ public final class Contract {
         public static final String COLUMN_NAME_URL = "url";
         public static final String COLUMN_NAME_PIC_URL = "pic_url";
         public static final String COLUMN_NAME_CHECKED = "checked";
+    }
+
+    public static abstract class Block implements BaseColumns{
+        public static final String TABLE_NAME = "block";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_UID = "uid";
+        public static final String COLUMN_NAME_COMMENT_NUM = "commentnum";
+        public static final String COLUMN_NAME_ID_TYPE = "idtype";
+        public static final String COLUMN_NAME_USER_NAME = "username";
+        public static final String COLUMN_NAME_AVATAR = "avatar";
+        public static final String COLUMN_NAME_URL  = "url";
+        public static final String COLUMN_NAME_TITLE = "title";
+        public static final String COLUMN_NAME_PIC = "pic";
+        public static final String COLUMN_NAME_SUMMARY = "summary";
+        public static final String COLUMN_NAME_DATELINE = "dateline";
+        public static final String COLUMN_NAME_CATNAME = "catname";
     }
 
    /* public static abstract class Live {

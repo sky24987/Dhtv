@@ -22,4 +22,8 @@ public class SyncHelperFactory {
     public ArticleSyncHelper newArticleSyncHelper(){
         return new ArticleSyncHelper(mExecutorService);
     }
+
+    public BlockSyncHelper newBlockSyncHelper(){
+        return new BlockSyncHelper(mExecutorService);
+    }
 }

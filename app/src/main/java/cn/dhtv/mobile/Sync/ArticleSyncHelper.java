@@ -18,14 +18,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import cn.dhtv.mobile.Database.ArticleAccessor;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.util.Data;
-import cn.dhtv.mobile.util.MessageObject;
 import cn.dhtv.mobile.util.TextUtils;
 
 /**

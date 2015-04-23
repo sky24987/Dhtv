@@ -304,7 +304,9 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         page.footerRefreshView.setRefreshingListener(page);
         page.imagePagerView = (ImagePagerView2) inflater.inflate(R.layout.widget_pager_image,null);
         page.imagePagerView.setPageFactory(page);
-        page.newsRecyclerViewAdapter.addHeaderView(new NewsRecyclerViewAdapter.ViewHolder(page.imagePagerView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_HEADER));
+        NewsRecyclerViewAdapter.ViewHolder headerViewHolder = new NewsRecyclerViewAdapter.ViewHolder(page.imagePagerView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_HEADER);
+        headerViewHolder.setIsRecyclable(false);
+        page.newsRecyclerViewAdapter.addHeaderView(headerViewHolder);
         page.newsRecyclerViewAdapter.setEmptyView(new NewsRecyclerViewAdapter.ViewHolder(page.emptyView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_EMPTY));
         page.newsRecyclerViewAdapter.addFooterView(new NewsRecyclerViewAdapter.ViewHolder(page.footerRefreshView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_FOOTER));
         page.newsRecyclerViewAdapter.setOnItemClickListener(page);
@@ -436,6 +438,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
             if(view == footerRefreshView){
                 if(footerRefreshView.getStatus() == FooterRefreshView.Status.CLICKABLE){
+                    //baseRecyclerView.smoothScrollToPosition(newsRecyclerViewAdapter.getItemCount());
                     footerRefreshView.setStatus(FooterRefreshView.Status.REFRESHING);
                 }
             }

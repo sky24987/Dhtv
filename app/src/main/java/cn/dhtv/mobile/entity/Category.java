@@ -20,6 +20,7 @@ public class Category implements Serializable {
     private int level;
     private int topid;
     private int catid;
+    private int bid;
     private transient Live live = new Live();//直播
 
 
@@ -88,6 +89,11 @@ public class Category implements Serializable {
         this.upid = upid;
     }
 
+    public int getBid() {
+        return bid;
+    }
 
-
+    public void setBid(int bid) {
+        this.bid = bid;
+    }
 }
