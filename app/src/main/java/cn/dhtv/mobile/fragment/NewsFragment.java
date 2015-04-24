@@ -194,6 +194,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             return;
         }
 
+        page.emptyView.setStateIdle();
         page.newsRecyclerViewAdapter.notifyDataSetChanged();
         page.imagePagerView.getViewPager().getAdapter().notifyDataSetChanged();
     }
@@ -234,22 +235,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         if(page.footerRefreshView.getStatus() == FooterRefreshView.Status.REFRESHING){
             page.footerRefreshView.setStatus(FooterRefreshView.Status.CLICKABLE);
         }
-//            page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.CLICKABLE);
 
-
-
-
-        /*if(DEBUG) {
-            if (page.listView.getAdapter() == page.listAdapter) {
-                Log.d(LOG_TAG, "page.listView.getAdapter() == page.listAdapter?true");
-            } else {
-                Log.d(LOG_TAG, "page.listView.getAdapter() == page.listAdapter?false");
-            }
-            Log.d(LOG_TAG+"?", "after page:" + page);
-            Log.d(LOG_TAG+"?", "page.listView.getAdapter():" + page.listView.getAdapter());
-            Log.d(LOG_TAG+"?", "page.listAdapter:" + page.listAdapter);
-
-        }*/
     }
 
     @Override
@@ -272,6 +258,13 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 
 //        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
         Toast.makeText(getActivity(), "添加新闻失败...", Toast.LENGTH_SHORT).show();
+    }
+
+    private void startWebActivity(String url){
+        Intent intent = new Intent(getActivity(), WebViewActivity.class);
+        intent.setAction("android.intent.action.VIEW");
+        intent.setDataAndType(Uri.parse(url),"text/html");
+        getActivity().startActivity(intent);
     }
 
 
@@ -298,12 +291,10 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
 //        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout.setOnRefreshListener(page);
-//        page.mSwipeRefreshLayout.setOnRefreshListener(page);
         page.baseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
 //        page.baseRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
 
         page.layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
-//        page.layoutManager = new GridLayoutManager(getActivity(),3);
         page.newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(itemViewDataSet);
         page.baseRecyclerView.setLayoutManager(page.layoutManager);
         page.baseRecyclerView.setAdapter(page.newsRecyclerViewAdapter);
@@ -318,14 +309,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
                 }
             }
         });
-        page.emptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
-            @Override
-            public void onProcessing() {
-                //TODO
-                mNewsPageManager.append(category);
-//                mNewsPageManager.firstFetch(category);
-            }
-        });
+        page.emptyView.setOnProcessingListener(page);
         page.footerRefreshView = (FooterRefreshView) inflater.inflate(R.layout.widget_refresh_footer,page.baseRecyclerView,false);
         page.footerRefreshView.setRefreshingListener(page);
         page.imagePagerView = (ImagePagerView2) inflater.inflate(R.layout.widget_pager_image,null);
@@ -377,7 +361,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         return title;
     }
 
-    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshView.OnRefreshingListener,BasePagerAdapter.PageFactory,BaseRecyclerViewAdapter.OnItemClickListener,BaseRecyclerView.OnItemAttachDetachListener,SwipeRefreshLayout.OnRefreshListener{
+    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshView.OnRefreshingListener,BasePagerAdapter.PageFactory,BaseRecyclerViewAdapter.OnItemClickListener,BaseRecyclerView.OnItemAttachDetachListener,SwipeRefreshLayout.OnRefreshListener,EmptyView.OnProcessingListener{
         public Category category;
 
         public ArrayList<Block> blocks;
@@ -417,7 +401,11 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             //mSwipeRefreshLayout.setRefreshing(true);
         }
 
-
+        /*EmptyView*/
+        @Override
+        public void onProcessing() {
+            mNewsPageManager.firstFetch(category);
+        }
 
         @Override
         public int pageCount() {
@@ -431,6 +419,13 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
             netImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             netImageView.setDefaultImageResId(R.drawable.default_image);
             netImageView.setImageUrl(block.getPic(), mImageLoader);
+            netImageView.setTag(block.getUrl());
+            netImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startWebActivity((String) v.getTag());
+                }
+            });
             BasePagerAdapter.Page page = new BasePagerAdapter.Page("",netImageView);
             return page;
         }
@@ -457,10 +452,12 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
         public void onItemClicked(View view) {
             NewsRecyclerViewAdapter.ViewHolder viewHolder = (NewsRecyclerViewAdapter.ViewHolder) baseRecyclerView.getChildViewHolder(view);
 
-            Intent intent = new Intent(getActivity(), WebViewActivity.class);
+
+            startWebActivity(viewHolder.url);
+            /*Intent intent = new Intent(getActivity(), WebViewActivity.class);
             intent.setAction("android.intent.action.VIEW");
             intent.setDataAndType(Uri.parse(viewHolder.url),"text/html");
-            getActivity().startActivity(intent);
+            getActivity().startActivity(intent);*/
         }
 
         @Override

@@ -248,7 +248,16 @@ public class NewsListCollector2 extends AbsListCollector {
                 break;
             case STATE_PROCESSING_INIT:
                 //TODO
-
+                blockArrayList.clear();
+                newsOverviews.clear();
+                blockArrayList.addAll(mCache.blocks);
+                newsOverviews.addAll(mCache.newsOverviews);
+                if(mCache.newsOrigin == Cache.FROM_NET){
+                    mExecutorService.submit(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                }
+                if(mCache.blockOrigin == Cache.FROM_NET) {
+                    mExecutorService.submit(new DBUpDateBlockTask(mCache.blocks,category));
+                }
                 onSync();
                 resetProcessing();
                 break;
