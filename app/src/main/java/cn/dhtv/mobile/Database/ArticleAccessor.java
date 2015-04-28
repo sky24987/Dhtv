@@ -10,7 +10,7 @@ import java.util.List;
 
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
-import cn.dhtv.mobile.util.Data;
+import cn.dhtv.mobile.Data;
 
 /**
  * Created by Jack on 2015/4/13.

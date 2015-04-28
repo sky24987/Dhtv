@@ -20,6 +20,7 @@ import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
 import cn.dhtv.mobile.R;
 
 import cn.dhtv.mobile.fragment.NewsFragment;
+import cn.dhtv.mobile.fragment.NewsFragment2;
 import cn.dhtv.mobile.fragment.ProgramFragment;
 import cn.dhtv.mobile.fragment.SectionFragment;
 import cn.dhtv.mobile.fragment.VideoFragment;
@@ -69,7 +70,7 @@ public class HomeActivity extends ActionBarActivity
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();*/
         if(position == 0){
-            fragmentManager.beginTransaction().replace(R.id.container, NewsFragment.newInstance(null, null)).commit();
+            fragmentManager.beginTransaction().replace(R.id.container, NewsFragment2.newInstance(null, null)).commit();
         }else if(position == 1){
             fragmentManager.beginTransaction().replace(R.id.container, VideoFragment.newInstance()).commit();
         }else if(position == 2){

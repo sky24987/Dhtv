@@ -26,6 +26,7 @@ public class DBHelper extends SQLiteOpenHelper{
         return instance;
     }
 
+
     public static void setUp(Context c){
         context = c.getApplicationContext();
     }

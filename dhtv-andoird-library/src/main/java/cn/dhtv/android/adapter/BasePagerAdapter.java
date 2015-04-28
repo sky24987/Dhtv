@@ -131,6 +131,11 @@ public class BasePagerAdapter extends PagerAdapter {
 
     public static class PageHolder{
         private ArrayList<Page> mPageList = new ArrayList<Page>();
+
+        public ArrayList<Page> getPages(){
+            return mPageList;
+        }
+
         public Page get(String title){
             int index = indexOf(title);
             if(index >= 0){

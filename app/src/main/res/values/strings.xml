@@ -14,6 +14,12 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_web_view">WebViewActivity</string>
 
+    <!--应用初始化对话框-->
+    <string name="init_dialog_hint">初始化失败，请检查网络</string>
+    <string name="init_dialog_positive">重试</string>
+    <string name="init_dialog_negative">退出</string>
+    <!--应用初始化对话框-->
+
 
     <!--底部刷新组件提示文本-->
     <string name="refresh_footer_default"></string>

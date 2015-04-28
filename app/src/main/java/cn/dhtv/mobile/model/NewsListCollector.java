@@ -23,13 +23,11 @@ import cn.dhtv.mobile.Database.BlockAccessor;
 import cn.dhtv.mobile.Sync.ArticleSyncHelper;
 import cn.dhtv.mobile.Sync.BlockSyncHelper;
 import cn.dhtv.mobile.Sync.SyncHelperFactory;
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
-import cn.dhtv.mobile.model.AbsListCollector.CallBacks;
 import cn.dhtv.mobile.network.BlockClient;
-import cn.dhtv.mobile.util.Singletons;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.util.TextUtils;
 
 /**

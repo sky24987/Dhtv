@@ -22,6 +22,21 @@ public class CategoryAccessor {
     }
 
     public long insertOrReplace(Category category){
+        ContentValues values = makeContentValues(category);
+        /*
+        values.put(Contract.Category.COLUMN_NAME_CAT_ID,category.getCatid());
+        values.put(Contract.Category.COLUMN_NAME_UP_ID,category.getUpid());
+        values.put(Contract.Category.COLUMN_NAME_TOP_ID,category.getTopid());
+        values.put(Contract.Category.COLUMN_NAME_CAT_NAME,category.getCatname());
+        values.put(Contract.Category.COLUMN_NAME_NAME,category.getName());
+        values.put(Contract.Category.COLUMN_NAME_DESCRIPTION,category.getDescription());
+        values.put(Contract.Category.COLUMN_NAME_BID,category.getBid());
+        values.put(Contract.Category.COLUMN_NAME_M3U8,category.getLive().getM3u8());
+        values.put(Contract.Category.COLUMN_NAME_RTMP,category.getLive().getRtmp());*/
+        return getDb().replace(Contract.Category.TABLE_NAME,null,values);
+    }
+
+    public ContentValues makeContentValues(Category category){
         ContentValues values = new ContentValues();
         values.put(Contract.Category.COLUMN_NAME_CAT_ID,category.getCatid());
         values.put(Contract.Category.COLUMN_NAME_UP_ID,category.getUpid());
@@ -32,11 +47,11 @@ public class CategoryAccessor {
         values.put(Contract.Category.COLUMN_NAME_BID,category.getBid());
         values.put(Contract.Category.COLUMN_NAME_M3U8,category.getLive().getM3u8());
         values.put(Contract.Category.COLUMN_NAME_RTMP,category.getLive().getRtmp());
-        return getDb().replace(Contract.Category.TABLE_NAME,null,values);
+        return values;
     }
 
 
-    private SQLiteDatabase getDb(){
+    public SQLiteDatabase getDb(){
          return DBHelper.getInstance().getWritableDatabase();
     }
 

@@ -1,18 +1,16 @@
 package cn.dhtv.mobile.model;
 
-import android.util.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
-import cn.dhtv.mobile.adapter.ItemViewDataSet;
+import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.entity.Category;
 
 /**
  * Created by Jack on 2015/3/17.
  */
 public abstract class AbsPageManager<L extends AbsListCollector> implements AbsListCollector.CallBacks{
+    protected boolean setup = false;
     protected ArrayList<Category> categories = new ArrayList<>();
     protected HashMap<Category,L> mListMap = new HashMap<>();
     protected CallBacks mCallBacks;
@@ -27,6 +25,8 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
             l.asyncRefresh();
         }
     }
+
+
 
     public void refresh(Category category){
         mListMap.get(category).asyncRefresh();
@@ -60,6 +60,8 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
             }
             absListCollector.clear();
         }
+
+        categories.clear();
     }
 
     public void clear(Category category){
@@ -68,6 +70,8 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
             absListCollector.clear();
         }
     }
+
+
 
     public int indexof(Category category){
         return categories.indexOf(category);

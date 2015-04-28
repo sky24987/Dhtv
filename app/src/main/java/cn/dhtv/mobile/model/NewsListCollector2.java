@@ -25,7 +25,7 @@ import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.BlockClient;
 import cn.dhtv.mobile.network.NewsClient;
-import cn.dhtv.mobile.util.Singletons;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.util.TextUtils;
 
 /**

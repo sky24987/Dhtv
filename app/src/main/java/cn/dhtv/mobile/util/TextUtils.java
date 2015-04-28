@@ -13,7 +13,7 @@ public class TextUtils {
     public static final String URL_BLOCK = "http://api.dhtv.cn/mobile/block/";
 
     public static String makeCategoryUrl(Category category,int page){
-        return URL_CATEGORY +"?level=1"+"&catid="+category.getCatid()+"&page="+page+"&size="+PAGE_SIZE;
+        return URL_CATEGORY +"?level=1"+"&catid="+category.getCatid()+"&page="+page/*+"&size="+PAGE_SIZE*/;
     }
 
     public static String makeNewsOverviewUrl(Category category,int page){

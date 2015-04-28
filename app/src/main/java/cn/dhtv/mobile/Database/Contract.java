@@ -20,6 +20,8 @@ public final class Contract {
         public static final String COLUMN_NAME_BID = "bid";
         public static final String COLUMN_NAME_RTMP = "rtmp";
         public static final String COLUMN_NAME_M3U8 = "m3u8";
+
+
     }
 
     public static abstract class Article implements BaseColumns{

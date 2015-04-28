@@ -1,5 +1,7 @@
 package cn.dhtv.mobile.model;
 
+import java.util.ArrayList;
+
 import cn.dhtv.mobile.entity.Category;
 
 /**
@@ -21,24 +23,27 @@ public class NewsPageManager extends AbsPageManager<NewsListCollector2> {
         cat3.setCatid(263);
         cat3.setBid(38);
 
-       /* Category cat4 = new Category();
-        cat1.setCatname("时政2");
-        cat1.setCatid(256);
-        Category cat5 = new Category();
-        cat2.setCatname("社会2");
-        cat2.setCatid(260);
-        Category cat6 = new Category();
-        cat3.setCatname("文化2");
-        cat3.setCatid(263);*/
-
         categories.add(cat1);
         categories.add(cat2);
         categories.add(cat3);
 
-       /* categories.add(cat4);
-        categories.add(cat5);
-        categories.add(cat6);*/
+        for(Category cat:categories){
+            mListMap.put(cat,new NewsListCollector2(cat, this));
+        }
+    }
 
+    public void setUp(ArrayList<Category> list){
+        for (Category category : list){
+            categories.add(category);
+        }
+        for (Category category:categories){
+            mListMap.put(category,new NewsListCollector2(category,this));
+        }
+    }
+
+    public void change(ArrayList<Category> list){
+        clear();
+        categories.addAll(list);
         for(Category cat:categories){
             mListMap.put(cat,new NewsListCollector2(cat, this));
         }

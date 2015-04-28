@@ -27,19 +27,19 @@ import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.WebViewActivity;
-import cn.dhtv.mobile.adapter.ItemViewDataSet;
-import cn.dhtv.mobile.adapter.NewsRecyclerViewAdapter;
+import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
+import cn.dhtv.mobile.ui.adapter.NewsRecyclerViewAdapter;
 import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.NewsListCollector2;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
-import cn.dhtv.mobile.widget.EmptyView;
+import cn.dhtv.mobile.ui.widget.EmptyView;
 
-import cn.dhtv.mobile.widget.FooterRefreshView;
-import cn.dhtv.mobile.widget.ImagePagerView2;
-import cn.dhtv.mobile.widget.MySmartTabLayout;
+import cn.dhtv.mobile.ui.widget.FooterRefreshView;
+import cn.dhtv.mobile.ui.widget.ImagePagerView2;
+import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<cn.dhtv.mobile.widget.FooterRefreshView xmlns:android="http://schemas.android.com/apk/res/android"
+<cn.dhtv.mobile.ui.widget.FooterRefreshView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/refresh_footer">
@@ -25,4 +25,4 @@
         android:text="@string/refresh_footer_clickable"/>
 
 
-</cn.dhtv.mobile.widget.FooterRefreshView>
+</cn.dhtv.mobile.ui.widget.FooterRefreshView>

@@ -16,7 +16,7 @@ import java.util.List;
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.R;
-import cn.dhtv.mobile.adapter.ChannelAdapter;
+import cn.dhtv.mobile.ui.adapter.ChannelAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.Sync.DataSyncHelper;
 

@@ -5,8 +5,8 @@ import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
-import cn.dhtv.mobile.adapter.ItemViewDataSet;
+import cn.dhtv.mobile.ui.adapter.AbstractListAdapter;
+import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.network.NetUtils;
 

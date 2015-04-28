@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.dhtv.mobile.Sync.DataSyncHelper;
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.Program;
-import cn.dhtv.mobile.entity.VideoOverview;
 
 /**
  * Created by Jack on 2015/3/26.

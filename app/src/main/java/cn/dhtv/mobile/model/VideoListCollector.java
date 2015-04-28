@@ -13,9 +13,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.entity.VideoOverview;
 
 /**

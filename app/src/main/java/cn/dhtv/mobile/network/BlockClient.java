@@ -1,8 +1,6 @@
 package cn.dhtv.mobile.network;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -17,7 +15,7 @@ import java.util.List;
 
 import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.util.Singletons;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.util.TextUtils;
 
 /**

@@ -16,15 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,12 +27,10 @@ import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.Sync.DataSyncHelper;
-import cn.dhtv.mobile.adapter.FMAdapter;
+import cn.dhtv.mobile.ui.adapter.FMAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.Program;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.service.AudioService;
-import cn.dhtv.mobile.util.TextUtils;
 
 
 public class AudioFragment extends SectionFragment implements ServiceConnection,AudioService.CallBacks,BaseRecyclerViewAdapter.OnItemClickListener{

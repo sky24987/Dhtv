@@ -7,11 +7,9 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
@@ -29,16 +27,13 @@ import com.google.android.exoplayer.VideoSurfaceView;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.dhtv.mobile.R;
-import cn.dhtv.mobile.adapter.TvListAdapter;
+import cn.dhtv.mobile.ui.adapter.TvListAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.Program;
 import cn.dhtv.mobile.entity.TvOverview;
 import cn.dhtv.mobile.network.NetUtils;
 

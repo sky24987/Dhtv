@@ -23,7 +23,7 @@ import cn.dhtv.mobile.Database.ArticleAccessor;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.NetUtils;
-import cn.dhtv.mobile.util.Data;
+import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.util.TextUtils;
 
 /**

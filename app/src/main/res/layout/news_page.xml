@@ -4,7 +4,7 @@
     android:id="@+id/refresh_view"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <cn.dhtv.mobile.widget.FooterRefreshListView
+    <cn.dhtv.mobile.ui.widget.FooterRefreshListView
         android:id="@+id/news_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

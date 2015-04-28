@@ -1,7 +1,5 @@
 package cn.dhtv.mobile.entity.inner;
 
-import cn.dhtv.mobile.widget.FooterRefreshView;
-
 /**
  * Created by Jack on 2015/4/7.
  */

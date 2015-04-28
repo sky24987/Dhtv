@@ -33,7 +33,7 @@ public class MyApplication extends Application {
         DBHelper.setUp(this);
         DataSyncHelper.setUp(this);
         mNewsPageManager = new NewsPageManager();
-        mNewsPageManager.setUp();
+//        mNewsPageManager.setUp();
         mVideoPageManager = new VideoPageManager();
         mVideoPageManager.setUp();
         mProgramPageManager = new ProgramPageManager();
@@ -41,7 +41,6 @@ public class MyApplication extends Application {
         if(DEBUG){
             Log.d(LOG_TAG,"onCreate()");
         }
-
     }
 
     @Override
@@ -53,6 +52,14 @@ public class MyApplication extends Application {
         }
 
     }
+
+   /* public void asyncInitCategories(){
+        mNewsPageManager.clear();
+        mVideoPageManager.clear();
+        mProgramPageManager.clear();
+        Singletons.getExecutorService().submit(new FindCategoryTask(CATEGORY_TYPE_NEWS));
+    }*/
+
 
     public void startAudioService(){
         Intent intent = new Intent(this, AudioService.class);
@@ -87,4 +94,63 @@ public class MyApplication extends Application {
     public ProgramPageManager getProgramPageManager() {
         return mProgramPageManager;
     }
+
+/*
+    private static final int CATEGORY_TYPE_NEWS = 1;
+    private static final int CATEGORY_TYPE_VIDEO = 2;
+    private static final int CATEGORY_TYPE_TV_CHANNEL = 3;
+    private static final int CATEGORY_TYPE_AUDIO_CHANNEL = 4;
+    private CategoryAccessor mCategoryAccessor = new CategoryAccessor();
+    private class FindCategoryTask implements Runnable{
+        private int categoryType;
+
+        private FindCategoryTask(int categoryType) {
+            this.categoryType = categoryType;
+        }
+
+        @Override
+        public void run() {
+            ArrayList<Category> list;
+            switch (categoryType){
+                case CATEGORY_TYPE_NEWS:
+                   list = (ArrayList<Category>) mCategoryAccessor.getSubCategories(Data.newsFatherCategory);
+                    mInitCategoriesHandler.sendMessage(mInitCategoriesHandler.obtainMessage(MESSAGE_CATEGORY_SUCCESS_NEWS,list));
+                    break;
+                case CATEGORY_TYPE_VIDEO:
+                    list = (ArrayList<Category>) mCategoryAccessor.getSubCategories(Data.audioChannelFatherCategory);
+                    mInitCategoriesHandler.sendMessage(mInitCategoriesHandler.obtainMessage(MESSAGE_CATEGORY_SUCCESS_VIDEO,list));
+                    break;
+                case CATEGORY_TYPE_TV_CHANNEL:
+                    list = (ArrayList<Category>) mCategoryAccessor.getSubCategories(Data.tvChannelFatherCategory);
+                    mInitCategoriesHandler.sendMessage(mInitCategoriesHandler.obtainMessage(MESSAGE_CATEGORY_SUCCESS_TV_CHANNEL,list));
+                    break;
+                case CATEGORY_TYPE_AUDIO_CHANNEL:
+                    list = (ArrayList<Category>) mCategoryAccessor.getSubCategories(Data.audioChannelFatherCategory);
+                    mInitCategoriesHandler.sendMessage(mInitCategoriesHandler.obtainMessage(MESSAGE_CATEGORY_SUCCESS_AUDIO_CHANNEL,list));
+                    break;
+
+            }
+        }
+    }
+
+    private static final int MESSAGE_CATEGORY_SUCCESS_NEWS = 1;
+    private static final int MESSAGE_CATEGORY_SUCCESS_VIDEO = 2;
+    private static final int MESSAGE_CATEGORY_SUCCESS_TV_CHANNEL = 3;
+    private static final int MESSAGE_CATEGORY_SUCCESS_AUDIO_CHANNEL = 4;
+    private Handler mInitCategoriesHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case MESSAGE_CATEGORY_SUCCESS_NEWS:
+                    mNewsPageManager.setUp((ArrayList<Category>) msg.obj);
+                    break;
+                case MESSAGE_CATEGORY_SUCCESS_VIDEO:
+                    break;
+                case MESSAGE_CATEGORY_SUCCESS_TV_CHANNEL:
+                    break;
+                case MESSAGE_CATEGORY_SUCCESS_AUDIO_CHANNEL:
+                    break;
+            }
+        }
+    };*/
 }

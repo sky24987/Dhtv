@@ -11,11 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 
@@ -23,17 +20,14 @@ import com.android.volley.toolbox.ImageLoader;
 import cn.dhtv.android.adapter.BasePagerAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
-import cn.dhtv.mobile.adapter.AbstractListAdapter;
-import cn.dhtv.mobile.adapter.ItemViewDataSet;
-import cn.dhtv.mobile.adapter.ProgramListAdapter;
+import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
+import cn.dhtv.mobile.ui.adapter.ProgramListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
-import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
-import cn.dhtv.mobile.widget.FooterRefreshListView;
-import cn.dhtv.mobile.widget.MySmartTabLayout;
-import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
+import cn.dhtv.mobile.ui.widget.FooterRefreshListView;
+import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
