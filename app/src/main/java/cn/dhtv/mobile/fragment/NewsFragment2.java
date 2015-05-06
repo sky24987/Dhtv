@@ -41,6 +41,7 @@ import cn.dhtv.mobile.model.NewsListCollector2;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.Data;
+import cn.dhtv.mobile.ui.view.DividerItemDecoration;
 import cn.dhtv.mobile.ui.widget.EmptyView;
 
 import cn.dhtv.mobile.ui.widget.FooterRefreshView;
@@ -338,7 +339,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout.setOnRefreshListener(page);
         page.baseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
-//        page.baseRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
+        page.baseRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
 
         page.layoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         page.newsRecyclerViewAdapter = new NewsRecyclerViewAdapter(itemViewDataSet);

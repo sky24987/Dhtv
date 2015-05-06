@@ -34,7 +34,7 @@ public class BlockClient {
                 .build();
         Response response =  mOkHttpClient.newCall(request).execute();
         JSONObject jsonObject = new JSONObject(response.body().string());
-        return toList(jsonObject);
+        return Block.injectFromBid(toList(jsonObject),category);
     }
 
 
@@ -45,5 +45,6 @@ public class BlockClient {
         });
         return list;
     }
+
 
 }

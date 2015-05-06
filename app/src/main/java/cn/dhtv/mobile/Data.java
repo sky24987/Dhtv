@@ -17,6 +17,7 @@ public class Data {
 
     public static final int PAGE_SIZE = 10;
     public static final int NEWS_PAGE_SIZE = PAGE_SIZE;
+    public static final int VIDEO_PAGE_SIZE = PAGE_SIZE;
 
     public static final Category newsFatherCategory;
     public static final Category videoFatherCategory;

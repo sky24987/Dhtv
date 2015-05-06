@@ -27,6 +27,7 @@ import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.ui.widget.FooterRefreshListView;
+import cn.dhtv.mobile.ui.widget.FooterRefreshView;
 import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
@@ -214,12 +215,13 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         public void onFragmentInteraction(Uri uri);
     }
 
-    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshListView.FooterRefreshListener{
+    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshView.OnRefreshingListener{
         public Category category;
         public RecyclerView mRecyclerView;
         public View emptyView;
         public RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(),3, LinearLayoutManager.VERTICAL,false);
         public ProgramListAdapter adapter;
+
         MyPage(String title, View pageView) {
             super(title, pageView);
         }
@@ -229,14 +231,11 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
             mProgramPageManager.refresh(category);
         }
 
+        /*FooterRefreshView*/
         @Override
-        public void onFooterRefreshing() {
+        public void onRefreshing() {
             mProgramPageManager.append(category);
         }
-
-
-
-
     }
 
 }

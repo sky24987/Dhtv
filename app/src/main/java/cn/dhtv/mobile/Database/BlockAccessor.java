@@ -17,7 +17,9 @@ public class BlockAccessor {
 
 
     public ArrayList<Block> findBlocks(Category category){
-        Cursor cursor = getDb().query(Contract.Block.TABLE_NAME, null, Contract.Block.COLUMN_NAME_CATNAME + "=?", new String[]{"" + category.getCatname()}, null, null, Contract.Block.COLUMN_NAME_ID+" desc");
+//        Cursor cursor = getDb().query(Contract.Block.TABLE_NAME, null,null, null, null, null, null,""+3);
+        String selection = Contract.Block.COLUMN_NAME_FROM_BID+" = ?";
+        Cursor cursor = getDb().query(Contract.Block.TABLE_NAME, null, selection, new String[]{""+category.getBid()}, null, null, Contract.Block.COLUMN_NAME_ID);
         return toList(cursor);
     }
 
@@ -31,19 +33,24 @@ public class BlockAccessor {
         values.put(Contract.Block.COLUMN_NAME_TITLE,block.getTitle());
         values.put(Contract.Block.COLUMN_NAME_SUMMARY,block.getSummary());
         values.put(Contract.Block.COLUMN_NAME_URL,block.getUrl());
-        values.put(Contract.Block.COLUMN_NAME_PIC,block.getUrl());
+        values.put(Contract.Block.COLUMN_NAME_PIC,block.getPic());
         values.put(Contract.Block.COLUMN_NAME_DATELINE,block.getDateline());
         values.put(Contract.Block.COLUMN_NAME_CATNAME,block.getCatname());
         values.put(Contract.Block.COLUMN_NAME_AVATAR,block.getAvatar());
         values.put(Contract.Block.COLUMN_NAME_ID_TYPE,block.getIdtype());
         values.put(Contract.Block.COLUMN_NAME_USER_NAME,block.getUsername());
-        return getDb().replace(Contract.Block.TABLE_NAME,null,values);
+
+        values.put(Contract.Block.COLUMN_NAME_FROM_BID,block.getFromBid());
+        long a = getDb().replace(Contract.Block.TABLE_NAME,null,values);
+        return a;
+//        return getDb().insert(Contract.Block.TABLE_NAME,null,values);
     }
 
 
     public void clear(Category category){
         getDb().beginTransaction();
-        getDb().delete(Contract.Block.TABLE_NAME, Contract.Block.COLUMN_NAME_CATNAME+" = ?",new String[]{category.getCatname()});
+        getDb().delete(Contract.Block.TABLE_NAME, Contract.Block.COLUMN_NAME_FROM_BID+" = ?",new String[]{""+category.getBid()});
+        getDb().setTransactionSuccessful();
         getDb().endTransaction();
     }
 
@@ -75,6 +82,8 @@ public class BlockAccessor {
         block.setIdtype(cursor.getString(cursor.getColumnIndex(Contract.Block.COLUMN_NAME_ID_TYPE)));
         block.setAvatar(cursor.getString(cursor.getColumnIndex(Contract.Block.COLUMN_NAME_AVATAR)));
         block.setUsername(cursor.getString(cursor.getColumnIndex(Contract.Block.COLUMN_NAME_USER_NAME)));
+
+        block.setFromBid(cursor.getInt(cursor.getColumnIndex(Contract.Block.COLUMN_NAME_FROM_BID)));
         return block;
     }
 

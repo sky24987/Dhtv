@@ -14,7 +14,7 @@ public class DBHelper extends SQLiteOpenHelper{
     private static Context context;
 
     private static final String DB_NAME = "dhtv";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 1;
 
     public static DBHelper getInstance(){
         if(instance == null){
@@ -40,21 +40,26 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL(SQL.SQL_CREATE_CATEGORY);
         db.execSQL(SQL.SQL_CREATE_ARTICLE);
         db.execSQL(SQL.SQL_CREATE_BLOCK);
+        db.execSQL(SQL.SQL_CREATE_VIDEO);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Article.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Block.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+Contract.Video.TABLE_NAME);
         db.execSQL(SQL.SQL_CREATE_ARTICLE);
         db.execSQL(SQL.SQL_CREATE_BLOCK);
+        db.execSQL(SQL.SQL_CREATE_VIDEO);
     }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Article.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Block.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+Contract.Video.TABLE_NAME);
         db.execSQL(SQL.SQL_CREATE_ARTICLE);
         db.execSQL(SQL.SQL_CREATE_BLOCK);
+        db.execSQL(SQL.SQL_CREATE_VIDEO);
     }
 }

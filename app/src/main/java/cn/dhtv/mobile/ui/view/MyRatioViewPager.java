@@ -32,7 +32,7 @@ public class MyRatioViewPager extends ViewPager{
         }else if(layoutParams.height ==ViewGroup.LayoutParams.MATCH_PARENT){
             height = MeasureSpec.getSize(heightMeasureSpec);
             width = (int) (height*mRatio);
-            widthMeasureSpec = MeasureSpec.makeMeasureSpec(height,MeasureSpec.getMode(heightMeasureSpec));
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(width,MeasureSpec.getMode(heightMeasureSpec));
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);

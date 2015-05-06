@@ -3,6 +3,7 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="@dimen/padding_list_item"
+
     >
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/news_image"
@@ -42,6 +43,7 @@
             android:textSize="@dimen/text_size_body_small"
             android:maxLines="2"
             android:lineSpacingMultiplier="1.3"
+            android:textColor="@color/text_body_gray"
             />
 
         <!--<TextView

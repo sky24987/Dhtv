@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="ratio_width_weight" format="integer"/>
+    <attr name="ratio_height_weight" format="integer"/>
+
+    <declare-styleable name="RatioImageView">
+        <attr name="ratio_width_weight"/>
+        <attr name="ratio_height_weight"/>
+    </declare-styleable>
+    
+</resources>

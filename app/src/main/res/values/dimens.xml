@@ -5,7 +5,9 @@
 
     <dimen name="text_size_tab">@dimen/abc_text_size_large_material</dimen>
     <dimen name="text_size_title">@dimen/abc_text_size_title_material</dimen>
+    <dimen name="text_size_title_big">@dimen/abc_text_size_headline_material</dimen>
     <dimen name="text_size_title_subtitle">@dimen/abc_text_size_subhead_material</dimen>
+    <dimen name="text_size_body_big">@dimen/abc_text_size_medium_material</dimen>
     <dimen name="text_size_body">@dimen/abc_text_size_body_1_material</dimen>
     <dimen name="text_size_body_small">@dimen/abc_text_size_small_material</dimen>
 

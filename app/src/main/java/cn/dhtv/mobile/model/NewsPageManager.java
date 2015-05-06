@@ -44,6 +44,7 @@ public class NewsPageManager extends AbsPageManager<NewsListCollector2> {
     public void change(ArrayList<Category> list){
         clear();
         categories.addAll(list);
+        mListMap.clear();
         for(Category cat:categories){
             mListMap.put(cat,new NewsListCollector2(cat, this));
         }

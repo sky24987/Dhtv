@@ -1,5 +1,6 @@
 package cn.dhtv.mobile.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -32,6 +33,15 @@ public class VideoOverview {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    @JsonIgnore
+    public void setChecked(int checked){
+        if(checked == 1){
+            this.checked = true;
+        }else {
+            this.checked = false;
+        }
     }
 
     @JsonSetter(value = "dir")

@@ -24,6 +24,7 @@ import cn.dhtv.mobile.fragment.NewsFragment2;
 import cn.dhtv.mobile.fragment.ProgramFragment;
 import cn.dhtv.mobile.fragment.SectionFragment;
 import cn.dhtv.mobile.fragment.VideoFragment;
+import cn.dhtv.mobile.fragment.VideoFragment2;
 
 
 public class HomeActivity extends ActionBarActivity
@@ -72,7 +73,7 @@ public class HomeActivity extends ActionBarActivity
         if(position == 0){
             fragmentManager.beginTransaction().replace(R.id.container, NewsFragment2.newInstance(null, null)).commit();
         }else if(position == 1){
-            fragmentManager.beginTransaction().replace(R.id.container, VideoFragment.newInstance()).commit();
+            fragmentManager.beginTransaction().replace(R.id.container, VideoFragment2.newInstance()).commit();
         }else if(position == 2){
             fragmentManager.beginTransaction().replace(R.id.container, ProgramFragment.newInstance()).commit();
         }else if(position == 3){

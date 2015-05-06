@@ -11,6 +11,7 @@ public class TextUtils {
     public static final String URL_CATEGORY = Category.URL;
     public static final String URL_NEWS = "http://api.dhtv.cn/mobile/article/";
     public static final String URL_BLOCK = "http://api.dhtv.cn/mobile/block/";
+    private static final String URL_VIDEO = "http://api.dhtv.cn/mobile/video/";
 
     public static String makeCategoryUrl(Category category,int page){
         return URL_CATEGORY +"?level=1"+"&catid="+category.getCatid()+"&page="+page/*+"&size="+PAGE_SIZE*/;
@@ -22,6 +23,10 @@ public class TextUtils {
 
     public static String makeBlockQueryUrl(Category category){
         return URL_BLOCK+"?"+"bid="+category.getBid();
+    }
+
+    public static String makeVideoUrl(Category category,int beginId){
+        return URL_VIDEO+"?"+"catid="+category.getCatid()+"&page="+beginId+"&size="+PAGE_SIZE;
     }
 
 }

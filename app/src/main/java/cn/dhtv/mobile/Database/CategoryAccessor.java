@@ -17,7 +17,7 @@ import cn.dhtv.mobile.entity.inner.Live;
 public class CategoryAccessor {
 
     public List<Category> getSubCategories(Category category){
-        Cursor cursor = getDb().query(Contract.Category.TABLE_NAME, getProjection(), Contract.Category.COLUMN_NAME_UP_ID + "=?", new String[]{"" + category.getCatid()}, null, null, Contract.Category.COLUMN_NAME_CAT_ID);
+        Cursor cursor = getDb().query(Contract.Category.TABLE_NAME, null, Contract.Category.COLUMN_NAME_UP_ID + "=?", new String[]{"" + category.getCatid()}, null, null, Contract.Category.COLUMN_NAME_CAT_ID);
         return toList(cursor);
     }
 

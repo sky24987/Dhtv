@@ -238,10 +238,10 @@ public class NewsListCollector2 extends AbsListCollector {
                 blockArrayList.addAll(mCache.blocks);
                 newsOverviews.addAll(mCache.newsOverviews);
                 if(mCache.newsOrigin == Cache.FROM_NET){
-                    mExecutorService.submit(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
                 }
                 if(mCache.blockOrigin == Cache.FROM_NET) {
-                    mExecutorService.submit(new DBUpDateBlockTask(mCache.blocks,category));
+                    mExecutorService.execute(new DBUpDateBlockTask(mCache.blocks,category));
                 }
                 onSync();
                 resetProcessing();
@@ -253,10 +253,10 @@ public class NewsListCollector2 extends AbsListCollector {
                 blockArrayList.addAll(mCache.blocks);
                 newsOverviews.addAll(mCache.newsOverviews);
                 if(mCache.newsOrigin == Cache.FROM_NET){
-                    mExecutorService.submit(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
                 }
                 if(mCache.blockOrigin == Cache.FROM_NET) {
-                    mExecutorService.submit(new DBUpDateBlockTask(mCache.blocks,category));
+                    mExecutorService.execute(new DBUpDateBlockTask(mCache.blocks,category));
                 }
                 onSync();
                 resetProcessing();
@@ -264,7 +264,7 @@ public class NewsListCollector2 extends AbsListCollector {
             case STATE_PROCESSING_APPEND:
                 newsOverviews.addAll(mCache.newsOverviews);
                 if(mCache.newsOrigin == Cache.FROM_NET){
-                    mExecutorService.submit(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
                 }
                 onSync();
                 resetProcessing();
@@ -446,8 +446,9 @@ public class NewsListCollector2 extends AbsListCollector {
                 if(mMode == MODE_INIT){
                     /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
                     cancelTask();
-                    mExecutorService.submit(new DBFindArticleTask(category, 0, false));
-                    mExecutorService.submit(new DBFindBlockTask(category,false));
+                    mExecutorService.execute(new DBFindArticleTask(category, 0, false));
+                    mExecutorService.execute(new DBFindBlockTask(category,false));
+
 
                 }
 
@@ -465,7 +466,7 @@ public class NewsListCollector2 extends AbsListCollector {
         @Override
         public void onResponse(JSONObject jsonObject) {
             try {
-                ArrayList<Block> list = BlockClient.toList(jsonObject);
+                ArrayList<Block> list = Block.injectFromBid(BlockClient.toList(jsonObject),category);
                 mCache.blocks = list;
                 mCache.blockOrigin = Cache.FROM_NET;
                 checkCache();
@@ -473,8 +474,8 @@ public class NewsListCollector2 extends AbsListCollector {
                 if(mMode == MODE_INIT){
                     /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
                     cancelTask();
-                    mExecutorService.submit(new DBFindArticleTask(category, 0, false));
-                    mExecutorService.submit(new DBFindBlockTask(category,false));
+                    mExecutorService.execute(new DBFindArticleTask(category, 0, false));
+                    mExecutorService.execute(new DBFindBlockTask(category,false));
 
                 }
 
@@ -497,10 +498,17 @@ public class NewsListCollector2 extends AbsListCollector {
     private class ErrorListener implements Response.ErrorListener{
         @Override
         public void onErrorResponse(VolleyError volleyError) {
-            mState = STATE_ERROR_NET_PROBLEM;
+//            mState = STATE_ERROR_NET_PROBLEM;
             cancelTask();
-            onFails();
-            resetProcessing();
+            if(mMode == MODE_INIT || mMode == MODE_REFRESH){
+                mExecutorService.execute(new DBFindArticleTask(category, 0, false));
+                mExecutorService.execute(new DBFindBlockTask(category,false));
+                return;
+            }else {
+
+                onFails();
+                resetProcessing();
+            }
         }
     }
 
@@ -522,4 +530,6 @@ public class NewsListCollector2 extends AbsListCollector {
             blockOrigin= 0;
         }
     }
+
+
 }

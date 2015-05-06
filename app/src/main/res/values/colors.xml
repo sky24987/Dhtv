@@ -1,4 +1,6 @@
 <resources>
+    <color name="white">#ffffffff</color>
+
     <color name="acton_bar_background">#ff2347a3</color>
 
     <color name="test">#5c000000</color>
@@ -13,6 +15,12 @@
     <color name="text_title">#ff000000</color>
     <color name="text_tab_default">#ff858585</color>
     <color name="text_tab_selected">#ff266fcf</color>
+    <color name="text_body_gray">#ff707070</color>
+
+
+
+    <color name="background_context">#ffc4c4c4</color>
+    <color name="background_context_dark">#ffececec</color>
 
 
 </resources>

@@ -20,7 +20,7 @@
         stl:stl_dividerThickness="1dp"
         stl:stl_defaultTabTextAllCaps="false"
         stl:stl_defaultTabTextColor="@color/tab_text_state"
-        stl:stl_defaultTabTextSize="@dimen/text_size_tab"
+        stl:stl_defaultTabTextSize="@dimen/text_size_body_big"
         stl:stl_defaultTabTextHorizontalPadding="15dp"
         stl:stl_defaultTabTextVerticalPadding="@dimen/abc_button_padding_vertical_material"
         stl:stl_defaultTabTextMinWidth="0dp"

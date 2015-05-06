@@ -1,11 +1,13 @@
 package cn.dhtv.mobile.model;
 
+import java.util.ArrayList;
+
 import cn.dhtv.mobile.entity.Category;
 
 /**
  * Created by Jack on 2015/3/20.
  */
-public class VideoPageManager extends AbsPageManager<VideoListCollector> {
+public class VideoPageManager extends AbsPageManager<VideoListCollector2> {
     @Override
     public void setUp() {
         Category cat1 = new Category();
@@ -26,7 +28,7 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector> {
         categories.add(cat3);
         categories.add(cat4);
         for(Category cat:categories){
-            mListMap.put(cat,new VideoListCollector(cat, this));
+            mListMap.put(cat,new VideoListCollector2(cat, this));
         }
     }
 
@@ -35,7 +37,13 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector> {
 
     }
 
-
+    public void change(ArrayList<Category> list){
+        clear();
+        categories.addAll(list);
+        for(Category cat:categories){
+            mListMap.put(cat,new VideoListCollector2(cat, this));
+        }
+    }
 
 
     @Override

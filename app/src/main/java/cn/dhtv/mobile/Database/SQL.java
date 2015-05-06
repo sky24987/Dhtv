@@ -37,6 +37,24 @@ public class SQL {
             Contract.Article.COLUMN_NAME_USER_NAME+TEXT_TYPE+
             ");";
 
+    public static final String SQL_CREATE_VIDEO = "CREATE TABLE "+Contract.Video.TABLE_NAME+" ("+
+            Contract.Video._ID+INTEGER_TYPE+PRIMARY_KEY+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_AVID+INTEGER_TYPE+NOT_NULL+UNIQUE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_VID+INTEGER_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_CAT_ID+INTEGER_TYPE+NOT_NULL+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_TITLE+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_SUMMARY+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_DATELINE+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_UID+INTEGER_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_CHECKED + BOOLEAN_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_USER_NAME+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_DIR+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_PIC+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_URL+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_DURATION+INTEGER_TYPE+
+            ");";
+
+
     public static final String SQL_CREATE_CATEGORY = "CREATE TABLE "+Contract.Category.TABLE_NAME+" ("+
             Contract.Category._ID+INTEGER_TYPE+PRIMARY_KEY+COMMA_SEP+
             Contract.Category.COLUMN_NAME_CAT_ID+INTEGER_TYPE+NOT_NULL+UNIQUE+COMMA_SEP+
@@ -63,8 +81,11 @@ public class SQL {
             Contract.Block.COLUMN_NAME_ID_TYPE+TEXT_TYPE+COMMA_SEP+
             Contract.Block.COLUMN_NAME_AVATAR+TEXT_TYPE+COMMA_SEP+
             Contract.Block.COLUMN_NAME_DATELINE+TEXT_TYPE+COMMA_SEP+
-            Contract.Block.COLUMN_NAME_USER_NAME+TEXT_TYPE+
+            Contract.Block.COLUMN_NAME_USER_NAME+TEXT_TYPE+COMMA_SEP+
+            Contract.Block.COLUMN_NAME_FROM_BID+INTEGER_TYPE+NOT_NULL+
             ");";
+
+
 
 
     /*public static void main(String[] args){

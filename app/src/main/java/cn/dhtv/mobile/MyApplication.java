@@ -35,7 +35,7 @@ public class MyApplication extends Application {
         mNewsPageManager = new NewsPageManager();
 //        mNewsPageManager.setUp();
         mVideoPageManager = new VideoPageManager();
-        mVideoPageManager.setUp();
+//        mVideoPageManager.setUp();
         mProgramPageManager = new ProgramPageManager();
         mProgramPageManager.setUp();
         if(DEBUG){

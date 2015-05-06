@@ -26,7 +26,7 @@ public class ArticleAccessor {
             size = DEFAULT_SIZE;
         }
         String selection =Contract.Article.COLUMN_NAME_CAT_ID +" = "+category.getCatid();
-        Cursor cursor = getDb().query(Contract.Article.TABLE_NAME,null,selection,null,null,null, Contract.Article.COLUMN_NAME_AID,""+size);
+        Cursor cursor = getDb().query(Contract.Article.TABLE_NAME,null,selection,null,null,null, Contract.Article.COLUMN_NAME_AAID,""+size);
         List<NewsOverview> list = toList(cursor);
         cursor.close();
         return list;
@@ -54,9 +54,9 @@ public class ArticleAccessor {
     }
 
     public long insertOrReplace(NewsOverview newsOverview){
-        if(DEBUG){
+        /*if(DEBUG){
             Log.d(LOG_TAG,"insertOrReplace");
-        }
+        }*/
         ContentValues values = new ContentValues();
         values.put(Contract.Article.COLUMN_NAME_AID,newsOverview.getAid());
         values.put(Contract.Article.COLUMN_NAME_AAID,newsOverview.getAaid());
@@ -75,6 +75,7 @@ public class ArticleAccessor {
     public void clear(Category category){
         getDb().beginTransaction();
         getDb().delete(Contract.Article.TABLE_NAME, Contract.Article.COLUMN_NAME_CAT_ID+" = ?",new String[]{""+category.getCatid()});
+        getDb().setTransactionSuccessful();
         getDb().endTransaction();
     }
 

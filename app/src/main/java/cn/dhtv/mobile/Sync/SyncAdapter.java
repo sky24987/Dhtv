@@ -47,7 +47,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             ArrayList<Category> newsCategories = mCategoryClient.fetchCategories(Data.newsFatherCategory);
-            ArrayList<Category> videoCategories = mCategoryClient.fetchCategories(Data.tvChannelFatherCategory);
+            ArrayList<Category> videoCategories = mCategoryClient.fetchCategories(Data.videoFatherCategory);
             ArrayList<Category> tvChannelCategories = mCategoryClient.fetchCategories(Data.tvChannelFatherCategory);
             ArrayList<Category> audioChannelCategories = mCategoryClient.fetchCategories(Data.audioChannelFatherCategory);
 

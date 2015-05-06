@@ -2,6 +2,8 @@ package cn.dhtv.mobile.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
+
 /**
  * Created by Jack on 2015/4/21.
  */
@@ -20,6 +22,8 @@ public class Block {
     private String summary;
     private String dateline;
     private String catname;
+
+    private int fromBid;
 
     public int getId() {
         return id;
@@ -115,5 +119,20 @@ public class Block {
 
     public void setCatname(String catname) {
         this.catname = catname;
+    }
+
+    public int getFromBid() {
+        return fromBid;
+    }
+
+    public void setFromBid(int fromBid) {
+        this.fromBid = fromBid;
+    }
+
+    public static ArrayList<Block> injectFromBid(ArrayList<Block>  blocks,Category category){
+        for (Block block : blocks){
+            block.setFromBid(category.getBid());
+        }
+        return blocks;
     }
 }
