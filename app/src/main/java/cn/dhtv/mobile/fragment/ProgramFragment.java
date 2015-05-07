@@ -1,11 +1,16 @@
 package cn.dhtv.mobile.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,15 +22,26 @@ import android.view.ViewGroup;
 import com.android.volley.toolbox.ImageLoader;
 
 
+import java.util.ArrayList;
+
 import cn.dhtv.android.adapter.BasePagerAdapter;
+import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
+import cn.dhtv.android.widget.BaseRecyclerView;
+import cn.dhtv.mobile.Data;
+import cn.dhtv.mobile.Database.CategoryAccessor;
+import cn.dhtv.mobile.Database.Contract;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.activity.ProgramDetailActivity;
+import cn.dhtv.mobile.provider.MyContentProvider;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.ui.adapter.ProgramListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
 import cn.dhtv.mobile.network.NetUtils;
+import cn.dhtv.mobile.ui.adapter.ProgramRecyclerViewAdapter;
+import cn.dhtv.mobile.ui.widget.EmptyView;
 import cn.dhtv.mobile.ui.widget.FooterRefreshListView;
 import cn.dhtv.mobile.ui.widget.FooterRefreshView;
 import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
@@ -39,7 +55,8 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
  * Use the {@link ProgramFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProgramFragment extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks{
+public class ProgramFragment extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks,android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>{
+    private static final int LOADER_PROGRAM_CATEGORY = 1;
 
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
@@ -68,7 +85,7 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getLoaderManager().initLoader(LOADER_PROGRAM_CATEGORY, null, this);
     }
 
     @Override
@@ -81,9 +98,26 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
         mMySmartTabLayout = (MySmartTabLayout) view.findViewById(R.id.pager_title);//mTabPageIndicator =  (TabPageIndicator) view.findViewById(R.id.pager_title);
         mPagerAdapter = new BasePagerAdapter(this,null);
+        mPagerAdapter.setOnPageHolderActListener(new BasePagerAdapter.OnPageHolderActListener() {
+            @Override
+            public void onReceiveNewPage(BasePagerAdapter.Page page) {
+
+            }
+
+            @Override
+            public void onProvidePage(BasePagerAdapter.Page page) {
+
+            }
+
+            @Override
+            public void onDropPage(BasePagerAdapter.Page page) {
+                ((MyPage)page).mSwipeRefreshLayout.clearAnimation();
+            }
+        });
         mPageHolder = mPagerAdapter.getPageHolder();
         mViewPager.setAdapter(mPagerAdapter);
         mMySmartTabLayout.setViewPager(mViewPager);//mTabPageIndicator.setViewPager(mViewPager);
+
 
         return view;
     }
@@ -93,7 +127,7 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     public void onResume() {
         super.onResume();
         mProgramPageManager.setCallBacks(this);
-        mProgramPageManager.refresh();
+//        mProgramPageManager.refresh();
     }
 
     @Override
@@ -119,6 +153,31 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         mListener = null;
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri.Builder builder = new Uri.Builder();
+        Uri uri = builder.scheme("content").authority(MyContentProvider.AUTHORITY).appendPath(Contract.Category.TABLE_NAME).build();
+        Log.d(LOG_TAG,uri.toString());
+        String selection = Contract.Category.COLUMN_NAME_UP_ID+ " = ?";
+        String[] selectionArgs = new String[]{""+ Data.tvChannelFatherCategory.getCatid()};
+        return new CursorLoader(getActivity(),uri,null,selection,selectionArgs,null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        ArrayList<Category> titles = (ArrayList<Category>) CategoryAccessor.toList(data);
+        mProgramPageManager.change(titles);
+        mPagerAdapter.notifyDataSetChanged();
+        mMySmartTabLayout.setViewPager(mViewPager);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+
+
 
     @Override
     public void onFirstFetch(Category category, AbsPageManager.CallBackFlag flag) {
@@ -139,7 +198,9 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         if(page == null){
             return;
         }
-        page.adapter.notifyDataSetChanged();
+
+        page.mSwipeRefreshLayout.setRefreshing(false);
+        page.mProgramRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -171,10 +232,30 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         View view = inflater.inflate(R.layout.page_recycle_view,null);
         MyPage page = new MyPage(category.getCatname(),view);
         page.category = category;
-        page.mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        page.adapter = new ProgramListAdapter(listViewDataList,getActivity());
+        page.mRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
+        page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
+        page.mSwipeRefreshLayout.setOnRefreshListener(page);
+
+//        page.adapter = new ProgramListAdapter(listViewDataList,getActivity());
+        page.mProgramRecyclerViewAdapter = new ProgramRecyclerViewAdapter(listViewDataList);
         page.mRecyclerView.setLayoutManager(page.layoutManager);
-        page.mRecyclerView.setAdapter(page.adapter);
+        page.mRecyclerView.setAdapter(page.mProgramRecyclerViewAdapter);
+        page.mRecyclerView.setOnItemAttachDetachListener(page);
+        page.emptyView = (EmptyView) inflater.inflate(R.layout.widget_empty_view,page.mRecyclerView,false);
+        page.emptyView.setOnProcessingListener(page);
+        page.emptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EmptyView emptyView = (EmptyView) v;
+                if (emptyView.isIdle()) {
+                    emptyView.setStateProcessing();
+                }
+            }
+        });
+
+        page.mProgramRecyclerViewAdapter.setEmptyView(new ProgramRecyclerViewAdapter.ViewHolder(page.emptyView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_EMPTY));
+        page.mProgramRecyclerViewAdapter.setOnItemClickListener(page);
+
         return page;
     }
 
@@ -200,6 +281,12 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         return title;
     }
 
+    private void startProgram(Category category){
+        Intent intent = new Intent(getActivity(), ProgramDetailActivity.class);
+        intent.putExtra("program",category);
+        getActivity().startActivity(intent);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -215,19 +302,27 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         public void onFragmentInteraction(Uri uri);
     }
 
-    private class MyPage extends BasePagerAdapter.Page implements OnRefreshListener,FooterRefreshView.OnRefreshingListener{
+    private class MyPage extends BasePagerAdapter.Page implements FooterRefreshView.OnRefreshingListener,SwipeRefreshLayout.OnRefreshListener,EmptyView.OnProcessingListener,BaseRecyclerViewAdapter.OnItemClickListener,BaseRecyclerView.OnItemAttachDetachListener{
         public Category category;
-        public RecyclerView mRecyclerView;
-        public View emptyView;
+        public BaseRecyclerView mRecyclerView;
+        public EmptyView emptyView;
         public RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(),3, LinearLayoutManager.VERTICAL,false);
-        public ProgramListAdapter adapter;
+//        public ProgramListAdapter adapter;
+        public ProgramRecyclerViewAdapter mProgramRecyclerViewAdapter;
+        public SwipeRefreshLayout mSwipeRefreshLayout;
 
         MyPage(String title, View pageView) {
             super(title, pageView);
         }
 
-        @Override
+        /*@Override
         public void onRefreshStarted(View view) {
+            mProgramPageManager.refresh(category);
+        }*/
+
+
+        @Override
+        public void onRefresh() {
             mProgramPageManager.refresh(category);
         }
 
@@ -235,6 +330,40 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         @Override
         public void onRefreshing() {
             mProgramPageManager.append(category);
+        }
+
+        /*EmptyView*/
+        @Override
+        public void onProcessing() {
+            mProgramPageManager.refresh(category);
+        }
+
+        /*BaseRecyclerViewAdapter*/
+        @Override
+        public void onItemClicked(BaseRecyclerViewAdapter.ViewHolder vh, Object item, int position) {
+
+        }
+
+        @Override
+        public void onItemClicked(View view) {
+            ProgramRecyclerViewAdapter.ViewHolder viewHolder = (ProgramRecyclerViewAdapter.ViewHolder) mRecyclerView.getChildViewHolder(view);
+            startProgram(viewHolder.category);
+        }
+
+        /*BaseRecyclerView*/
+        @Override
+        public void onItemAttachListener(View view) {
+            if(view == emptyView){
+               /* if(DEBUG){
+                    Log.d(LOG_TAG,"emptyView attach");
+                }*/
+                emptyView.setStateProcessing();
+            }
+        }
+
+        @Override
+        public void onItemDetachListener(View view) {
+
         }
     }
 

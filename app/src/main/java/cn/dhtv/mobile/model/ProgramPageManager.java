@@ -1,5 +1,7 @@
 package cn.dhtv.mobile.model;
 
+import java.util.ArrayList;
+
 import cn.dhtv.mobile.entity.Category;
 
 /**
@@ -9,7 +11,7 @@ public class ProgramPageManager extends AbsPageManager<ProgramCollector> {
 
     @Override
     public void setUp() {
-        Category cat1 = new Category();
+       /* Category cat1 = new Category();
         cat1.setCatname("新闻综合");
         cat1.setCatid(17);
         Category cat2 = new Category();
@@ -32,13 +34,23 @@ public class ProgramPageManager extends AbsPageManager<ProgramCollector> {
         categories.add(cat5);
         for(Category cat:categories){
             mListMap.put(cat,new ProgramCollector(cat, this));
-        }
+        }*/
     }
 
     @Override
     public void release() {
 
     }
+
+    public void change(ArrayList<Category> list){
+        clear();
+        categories.addAll(list);
+        mListMap.clear();
+        for(Category cat:categories){
+            mListMap.put(cat,new ProgramCollector(cat, this));
+        }
+    }
+
 
     @Override
     public void onRefresh(Category category, AbsListCollector.SyncFlag syncFlag) {

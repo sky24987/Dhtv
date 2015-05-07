@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+
 import cn.dhtv.mobile.Database.DBHelper;
 import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.model.NewsPageManager;
@@ -29,6 +31,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fresco.initialize(this);
         NetUtils.setup(this);
         DBHelper.setUp(this);
         DataSyncHelper.setUp(this);
@@ -37,7 +40,7 @@ public class MyApplication extends Application {
         mVideoPageManager = new VideoPageManager();
 //        mVideoPageManager.setUp();
         mProgramPageManager = new ProgramPageManager();
-        mProgramPageManager.setUp();
+//        mProgramPageManager.setUp();
         if(DEBUG){
             Log.d(LOG_TAG,"onCreate()");
         }

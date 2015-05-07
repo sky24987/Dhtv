@@ -305,7 +305,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
             mMediaPlayer.setDataSource(tvOverview.getTv_url());
 //            mMediaPlayer.setDataSource("http://hls.dhtv.cn:8080/live/v1_15.m3u8");
 //            mMediaPlayer.setDataSource("http://219.232.160.141:5080/hls/750e3de72b71feefa1664678c2208a1e.m3u8");
-//            mMediaPlayer.setDataSource("rtmp://livetv.dhtv.cn/live/financial");
+//            mMediaPlayer.setDataSource("http://hls.dhtv.cn:8080/live/v1_15_1430930269.mpg");
 
             mMediaPlayer.prepareAsync();
         } catch (Exception e) {
