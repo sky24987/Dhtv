@@ -12,8 +12,11 @@ public class TextUtils {
     public static final String URL_NEWS = "http://api.dhtv.cn/mobile/article/";
     public static final String URL_BLOCK = "http://api.dhtv.cn/mobile/block/";
     public static final String URL_VIDEO = "http://api.dhtv.cn/mobile/video/";
+    public static final String URL_TV = "http://api.dhtv.cn/?mod=lookback&ac=tv_archiver";
 
     public static final String URL_RES_IMG = "http://tv.dhtv.cn/img/";
+    public static final String URL_RES_TV = "http://tv.dhtv.cn/tv/";
+
 
     public static String makeCategoryUrl(Category category,int page){
         return URL_CATEGORY +"?level=1"+"&catid="+category.getCatid()+"&page="+page/*+"&size="+PAGE_SIZE*/;
@@ -29,6 +32,10 @@ public class TextUtils {
 
     public static String makeVideoUrl(Category category,int beginId){
         return URL_VIDEO+"?"+"catid="+category.getCatid()+"&page="+beginId+"&size="+PAGE_SIZE;
+    }
+
+    public static String makeTvUrl(Category category,int beginId){
+        return URL_TV+"&page="+beginId+"&id="+category.getUpid()+"&catid="+category.getCatid();
     }
 
 }

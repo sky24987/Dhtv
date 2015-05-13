@@ -3,6 +3,8 @@ package cn.dhtv.mobile.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import cn.dhtv.mobile.util.TextUtils;
+
 /**
  * Created by Jack on 2015/3/31.
  */
@@ -32,9 +34,15 @@ public class TvOverview {
         tv_url = URL+program.getUpid()+"/"+dir+".mp4";
     }
 
+
+    public void setTv_pic(Category category){
+        tv_pic = TextUtils.URL_RES_TV+category.getUpid()+"/"+dir+".jpg";
+    }
+
     @JsonSetter(value = "dir")
     public void jsonSetDir(String dir){
         this.dir = dir;
+
     }
 
     public int getTvid() {
@@ -89,6 +97,7 @@ public class TvOverview {
         return tv_pic;
     }
 
+    @JsonSetter(value = "tv_pic")
     public void setTv_pic(String tv_pic) {
         this.tv_pic = tv_pic;
     }

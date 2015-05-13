@@ -23,7 +23,6 @@ import cn.dhtv.mobile.fragment.NewsFragment;
 import cn.dhtv.mobile.fragment.NewsFragment2;
 import cn.dhtv.mobile.fragment.ProgramFragment;
 import cn.dhtv.mobile.fragment.SectionFragment;
-import cn.dhtv.mobile.fragment.VideoFragment;
 import cn.dhtv.mobile.fragment.VideoFragment2;
 
 

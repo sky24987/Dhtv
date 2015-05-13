@@ -44,5 +44,7 @@
 
     <string name="title_fragment_news">新闻</string>
     <string name="title_activity_program_detail">ProgramDetailActivity</string>
+    <string name="title_activity_video_player">VideoPlayerActivity</string>
+    <string name="title_activity_tvlist">TVListActivity</string>
 
 </resources>

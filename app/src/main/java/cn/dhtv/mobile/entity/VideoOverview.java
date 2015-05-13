@@ -23,6 +23,7 @@ public class VideoOverview {
     private String dateline;
     private String url;
     private String pic;
+    private String video;
     private String dir;
 
     private boolean checked =false;//是否已经阅读过
@@ -48,6 +49,7 @@ public class VideoOverview {
     public void jsonSetDir(String dir){
         this.dir = dir;
         this.pic = URL+dir+".jpg";
+        this.video = URL+dir+".mp4";
     }
 
     public String getDir() {
@@ -144,5 +146,13 @@ public class VideoOverview {
 
     public void setPic(String pic) {
         this.pic = pic;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
     }
 }

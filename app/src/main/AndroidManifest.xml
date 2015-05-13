@@ -38,7 +38,7 @@
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:screenOrientation="locked" >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.WebViewActivity"
@@ -87,18 +87,32 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-
         <service
             android:name=".service.AuthenticatorService"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator"/>
+                <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
+        <activity
+            android:name=".activity.VideoPlayerActivity"
+            android:label="@string/title_activity_video_player"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"
+            >
+        </activity>
+        <activity
+            android:name=".activity.TVListActivity"
+            android:label="@string/title_activity_tvlist"
+
+            android:configChanges="orientation|screenSize">
+        </activity>
     </application>
 
 </manifest>

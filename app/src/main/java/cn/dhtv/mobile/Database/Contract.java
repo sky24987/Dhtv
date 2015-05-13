@@ -54,6 +54,7 @@ public final class Contract {
         public static final String COLUMN_NAME_SUMMARY = "summary";
         public static final String COLUMN_NAME_URL = "url";
         public static final String COLUMN_NAME_PIC = "pic";
+        public static final String COLUMN_NAME_VIDEO = "video";
         public static final String COLUMN_NAME_DIR = "dir";
         public static final String COLUMN_NAME_CHECKED = "checked";
     }

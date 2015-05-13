@@ -5,9 +5,12 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import java.util.ArrayList;
@@ -26,11 +29,15 @@ import cn.dhtv.mobile.Sync.DataSyncHelper;
  * create an instance of this fragment.
  */
 public class LiveTvFragment extends SectionFragment {
+    private final String LOG_TAG = getClass().getSimpleName();
+    private final boolean DEBUG = true;
+
     public  final String title = "直播";
 
     private VideoView mVideoView;
     private BaseRecyclerView mBaseRecyclerView;
     private GridLayoutManager mLayoutManager;
+    MediaController mMediaController;
 
     private Category tvRoot;
     private ArrayList<Category> tvs = new ArrayList<>();
@@ -93,6 +100,16 @@ public class LiveTvFragment extends SectionFragment {
 
     private void initView(View view){
         mVideoView = (VideoView) view.findViewById(R.id.video_view);
+        mMediaController = new MediaController(getActivity());
+        mMediaController.setMediaPlayer(mVideoView);
+        mMediaController.setAnchorView(mVideoView);
+        mVideoView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mMediaController.show();
+                return true;
+            }
+        });
         mBaseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
         mLayoutManager = new GridLayoutManager(getActivity(),4,LinearLayoutManager.VERTICAL,false);
         mBaseRecyclerView.setLayoutManager(mLayoutManager);

@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="cn.dhtv.mobile.activity.TVListActivity">
+
+    <cn.dhtv.android.view.RatioFrameLayout
+        android:id="@+id/ratio_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <fragment
+            android:id="@+id/fragment_video"
+            class="cn.dhtv.mobile.fragment.VideoPlayerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_video_player_only" />
+
+    </cn.dhtv.android.view.RatioFrameLayout>
+
+    <cn.dhtv.android.widget.BaseRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+</LinearLayout>

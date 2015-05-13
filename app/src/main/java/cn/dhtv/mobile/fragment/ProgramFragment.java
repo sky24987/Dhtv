@@ -33,9 +33,10 @@ import cn.dhtv.mobile.Database.Contract;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.ProgramDetailActivity;
+import cn.dhtv.mobile.activity.TVListActivity;
 import cn.dhtv.mobile.provider.MyContentProvider;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
-import cn.dhtv.mobile.ui.adapter.ProgramListAdapter;
+
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
@@ -235,6 +236,7 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         page.mRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout.setOnRefreshListener(page);
+        page.mSwipeRefreshLayout.setEnabled(false);
 
 //        page.adapter = new ProgramListAdapter(listViewDataList,getActivity());
         page.mProgramRecyclerViewAdapter = new ProgramRecyclerViewAdapter(listViewDataList);
@@ -282,7 +284,8 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     }
 
     private void startProgram(Category category){
-        Intent intent = new Intent(getActivity(), ProgramDetailActivity.class);
+//        Intent intent = new Intent(getActivity(), ProgramDetailActivity.class);
+        Intent intent = new Intent(getActivity(), TVListActivity.class);
         intent.putExtra("program",category);
         getActivity().startActivity(intent);
     }

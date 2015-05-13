@@ -46,6 +46,7 @@ public class VideoAccessor {
         values.put(Contract.Video.COLUMN_NAME_SUMMARY,videoOverview.getSummary());
         values.put(Contract.Video.COLUMN_NAME_DATELINE,videoOverview.getDateline());
         values.put(Contract.Video.COLUMN_NAME_PIC,videoOverview.getPic());
+        values.put(Contract.Video.COLUMN_NAME_VIDEO,videoOverview.getVideo());
         values.put(Contract.Video.COLUMN_NAME_DIR,videoOverview.getDir());
         values.put(Contract.Video.COLUMN_NAME_UID,videoOverview.getUid());
         values.put(Contract.Video.COLUMN_NAME_URL,videoOverview.getUrl());
@@ -77,6 +78,7 @@ public class VideoAccessor {
         videoOverview.setSummary(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_SUMMARY)));
         videoOverview.setUrl(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_URL)));
         videoOverview.setPic(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_PIC)));
+        videoOverview.setVideo(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_VIDEO)));
         videoOverview.setDir(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_DIR)));
         videoOverview.setDateline(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_DATELINE)));
         videoOverview.setUsername(cursor.getString(cursor.getColumnIndex(Contract.Video.COLUMN_NAME_USER_NAME)));

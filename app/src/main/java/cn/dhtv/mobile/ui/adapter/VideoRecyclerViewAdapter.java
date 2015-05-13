@@ -53,6 +53,7 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
         holder.durition.setText(""+item.getDuration());
         Picasso.with(holder.imageView.getContext()).load(item.getPic()).placeholder(R.drawable.default_image).into(holder.imageView);
         holder.url = item.getUrl();
+        holder.videoUrl = item.getVideo();
     }
 
     @Override
@@ -61,7 +62,8 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
     }
 
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder{
-        private String url;
+        public String url;
+        public String videoUrl;
         public ImageView imageView;
         public TextView title;
         public TextView dataline;

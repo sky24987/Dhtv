@@ -1,0 +1,16 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cn.dhtv.mobile.activity.VideoPlayerActivity"
+    android:background="@color/black">
+
+    <fragment
+        class="cn.dhtv.mobile.fragment.VideoPlayerFragment"
+        android:layout_centerInParent="true"
+        android:id="@+id/fragment_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_video_player_only" />
+
+
+</RelativeLayout>

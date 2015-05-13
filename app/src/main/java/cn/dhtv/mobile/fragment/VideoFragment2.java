@@ -1,6 +1,7 @@
 package cn.dhtv.mobile.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,10 +33,11 @@ import cn.dhtv.mobile.Database.CategoryAccessor;
 import cn.dhtv.mobile.Database.Contract;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.activity.VideoPlayerActivity;
 import cn.dhtv.mobile.provider.MyContentProvider;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.ui.adapter.NewsRecyclerViewAdapter;
-import cn.dhtv.mobile.ui.adapter.VideoListAdapter;
+
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.ui.adapter.VideoRecyclerViewAdapter;
@@ -319,6 +321,14 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
         }
     }
 
+
+    public void startVideoPlayerActivity(Uri uri){
+        Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
+        intent.setData(uri);
+        getActivity().startActivity(intent);
+
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -394,7 +404,9 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
 
         @Override
         public void onItemClicked(View view) {
-
+            VideoRecyclerViewAdapter.ViewHolder viewHolder = (VideoRecyclerViewAdapter.ViewHolder) mBaseRecyclerView.getChildViewHolder(view);
+            Uri videoUri = Uri.parse(viewHolder.videoUrl);
+            startVideoPlayerActivity(videoUri);
         }
 
         /*EmptyView*/

@@ -50,6 +50,7 @@ public class SQL {
             Contract.Video.COLUMN_NAME_USER_NAME+TEXT_TYPE+COMMA_SEP+
             Contract.Video.COLUMN_NAME_DIR+TEXT_TYPE+COMMA_SEP+
             Contract.Video.COLUMN_NAME_PIC+TEXT_TYPE+COMMA_SEP+
+            Contract.Video.COLUMN_NAME_VIDEO+TEXT_TYPE+NOT_NULL+COMMA_SEP+
             Contract.Video.COLUMN_NAME_URL+TEXT_TYPE+COMMA_SEP+
             Contract.Video.COLUMN_NAME_DURATION+INTEGER_TYPE+
             ");";

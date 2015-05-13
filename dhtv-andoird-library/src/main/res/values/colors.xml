@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dhtv_background_transparent_light_gray">#47000000</color>
+    <color name="dhtv_white">#ffffffff</color>
+</resources>
