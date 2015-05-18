@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.dhtv.mobile.ui.widget.MySwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/refresh_view"
-     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <cn.dhtv.android.widget.BaseRecyclerView
-        android:id="@+id/recyclerView"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="insideOverlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-</cn.dhtv.mobile.ui.widget.MySwipeRefreshLayout>
+        android:layout_height="match_parent">
+    <cn.dhtv.mobile.ui.widget.MySwipeRefreshLayout
+        android:id="@+id/refresh_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <cn.dhtv.android.widget.BaseRecyclerView
+            android:id="@+id/recyclerView"
+            android:scrollbars="vertical"
+            android:scrollbarStyle="insideOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            />
+    </cn.dhtv.mobile.ui.widget.MySwipeRefreshLayout>
+
+        <include
+            android:layout_margin="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/widget_prompt_bar"
+            android:layout_gravity="center_horizontal|top" />
+
+
+</FrameLayout>

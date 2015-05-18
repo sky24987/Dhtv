@@ -44,6 +44,7 @@ public class CategoryClient {
                 .build();
         com.squareup.okhttp.Response response =  mOkHttpClient.newCall(request).execute();
         JSONObject jsonObject = new JSONObject(response.body().string());
+        response.body().close();
         return toList(jsonObject);
     }
 

@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import cn.dhtv.mobile.R;
@@ -12,7 +13,7 @@ import cn.dhtv.mobile.R;
 /**
  * Created by Jack on 2015/4/16.
  */
-public class EmptyView extends FrameLayout {
+public class EmptyView extends RelativeLayout {
 
 
     private final String LOG_TAG = getClass().getSimpleName();
@@ -20,6 +21,8 @@ public class EmptyView extends FrameLayout {
 
     private static final int STATE_IDLE = 0;
     private static final int STATE_PROCESSING = 1;
+    private static final int STATE_ACTIVE = 2;
+    private static final int STATE_FAIL = -1;
 
     private OnProcessingListener mOnProcessingListener;
 
@@ -29,22 +32,29 @@ public class EmptyView extends FrameLayout {
 
 
     public EmptyView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public EmptyView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
     public EmptyView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setStateProcessing();
+            }
+        });
+        setStateActive();
     }
 
     @Override
     protected void onFinishInflate() {
         hint = (TextView) findViewById(R.id.hint);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        setStateIdle();
+
     }
 
     public void setOnProcessingListener(OnProcessingListener onProcessingListener) {
@@ -59,19 +69,43 @@ public class EmptyView extends FrameLayout {
         return mState == STATE_PROCESSING;
     }
 
+    public boolean isActive(){
+        return mState == STATE_ACTIVE;
+    }
+
+    public boolean isFail(){
+        return mState == STATE_FAIL;
+    }
+
     public void setStateIdle(){
         mState = STATE_IDLE;
+        setClickable(false);
         hint.setVisibility(VISIBLE);
         progressBar.setVisibility(GONE);
     }
 
+    public void setStateActive(){
+        mState = STATE_ACTIVE;
+        setClickable(false);
+    }
+
     public void setStateProcessing(){
         mState = STATE_PROCESSING;
-        hint.setVisibility(GONE);
+        setClickable(false);
+        hint.setText(getContext().getString(R.string.empty_view_hint));
+        hint.setVisibility(VISIBLE);
         progressBar.setVisibility(VISIBLE);
         if(mOnProcessingListener !=null){
             mOnProcessingListener.onProcessing();
         }
+    }
+
+    public void setStateFail(){
+        mState = STATE_FAIL;
+        setClickable(true);
+        hint.setText(getContext().getString(R.string.empty_view_fail));
+        hint.setVisibility(VISIBLE);
+        progressBar.setVisibility(GONE);
     }
 
 

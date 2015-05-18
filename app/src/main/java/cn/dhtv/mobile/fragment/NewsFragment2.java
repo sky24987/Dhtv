@@ -10,10 +10,14 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -48,6 +52,7 @@ import cn.dhtv.mobile.ui.widget.FooterRefreshView;
 import cn.dhtv.mobile.ui.widget.ImagePagerView2;
 import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
 import cn.dhtv.mobile.provider.MyContentProvider;
+import cn.dhtv.mobile.ui.widget.PromptBar;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
@@ -169,6 +174,12 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         }
     }
 
+
+
+    private ActionBar getActionBar() {
+        return ((ActionBarActivity) getActivity()).getSupportActionBar();
+    }
+
     @Override
     public void onAttach(Activity activity) {
         /*if(DEBUG){
@@ -244,11 +255,18 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         myPage.emptyView.setStateIdle();
         myPage.newsRecyclerViewAdapter.notifyDataSetChanged();
         myPage.imagePagerView.getViewPager().getAdapter().notifyDataSetChanged();
+        myPage.promptBar.show(getString(R.string.prompt_bar_refresh_success));
     }
 
     @Override
     public void onFirstFetchFails(Category category, AbsPageManager.CallBackFlag flag) {
+        MyPage page = (MyPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.emptyView.setStateFail();
+//        page.promptBar.show(getString(R.string.prompt_bar_refresh_fail));
     }
 
     @Override
@@ -261,6 +279,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         page.newsRecyclerViewAdapter.notifyDataSetChanged();
         page.imagePagerView.getViewPager().getAdapter().notifyDataSetChanged();
         page.mSwipeRefreshLayout.setRefreshing(false);
+        page.promptBar.show(getString(R.string.prompt_bar_refresh_success));
 //        page.listAdapter.notifyDataSetChanged();
 //        page.mPullToRefreshLayout.setRefreshing(false);
     }
@@ -282,6 +301,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         if(page.footerRefreshView.getStatus() == FooterRefreshView.Status.REFRESHING){
             page.footerRefreshView.setStatus(FooterRefreshView.Status.CLICKABLE);
         }
+//        page.promptBar.show(getString(R.string.prompt_bar_append_success));
 
     }
 
@@ -293,7 +313,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         }
         page.mSwipeRefreshLayout.setRefreshing(false);
         //page.mPullToRefreshLayout.setRefreshing(false);
-        Toast.makeText(getActivity(), "获取新闻失败...", Toast.LENGTH_SHORT).show();
+        page.promptBar.show(getString(R.string.prompt_bar_refresh_fail));
     }
 
     @Override
@@ -304,7 +324,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         }
 
 //        page.listView.setRefreshFooterStatus(cn.dhtv.android.widget.FooterRefreshListView.RefreshFooterStatus.FORCE_CLICK_STATE);
-        Toast.makeText(getActivity(), "添加新闻失败...", Toast.LENGTH_SHORT).show();
+//        page.promptBar.show(getString(R.string.prompt_bar_append_fail));
     }
 
     private void startWebActivity(String url){
@@ -338,6 +358,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
 //        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout.setOnRefreshListener(page);
+        page.promptBar = (PromptBar) view.findViewById(R.id.promptBar);
         page.baseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
         page.baseRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
 
@@ -413,6 +434,7 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
 
         public ArrayList<Block> blocks;
 
+        public PromptBar promptBar;
         public SwipeRefreshLayout mSwipeRefreshLayout;
         public PullToRefreshLayout mPullToRefreshLayout;
         //        public FooterRefreshListView listView;
@@ -443,7 +465,6 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
         /*SwipeRefreshLayout*/
         @Override
         public void onRefresh() {
-
             mNewsPageManager.refresh(category);
             //mSwipeRefreshLayout.setRefreshing(true);
         }
@@ -517,7 +538,10 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
                /* if(DEBUG){
                     Log.d(LOG_TAG,"emptyView attach");
                 }*/
-                emptyView.setStateProcessing();
+                if(emptyView.isActive()){
+                    emptyView.setStateProcessing();
+                }
+
             }
 
             if(view == footerRefreshView){
@@ -530,16 +554,13 @@ public class NewsFragment2 extends SectionFragment implements BasePagerAdapter.P
 
         @Override
         public void onItemDetachListener(View view) {
-            if(view == imagePagerView){
-                emptyView.isIdle();
-            }
 
 
             if(view == emptyView){
                 /*if(DEBUG){
                     Log.d(LOG_TAG,"emptyView detach");
                 }*/
-                emptyView.setStateIdle();
+                emptyView.setStateActive();
             }
 
             if(view == footerRefreshView){

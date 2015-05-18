@@ -12,7 +12,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web">WebActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_web_view">WebViewActivity</string>
+    <string name="title_activity_web_view">Web</string>
 
     <!--应用初始化对话框-->
     <string name="init_dialog_hint">初始化失败，请检查网络</string>
@@ -29,6 +29,18 @@
     <string name="refresh_footer_auto"></string>
     <!--底部刷新组件提示文本-->
 
+    <!--内容更新提示组件文本-->
+    <string name="prompt_bar_refresh_success">更新成功</string>
+    <string name="prompt_bar_refresh_fail">更新失败</string>
+    <string name="prompt_bar_append_success">加载成功</string>
+    <string name="prompt_bar_append_fail">加载失败</string>
+    <!--内容更新提示组件文本-->
+
+    <!--空视图组件文本-->
+    <string name="empty_view_fail">加载失败，点击重试</string>
+    <string name="empty_view_hint">正在更新</string>
+    <!--空视图组件文本-->
+
 
     <!--导读fragment标题-->
     <string name="title_section1">新闻</string>
@@ -39,8 +51,7 @@
     <string name="title_section6">Section 3</string>
     <!--导读fragment标题-->
 
-    <!--空视图文本-->
-    <string name="empty_view_hint">没有内容</string>
+
 
     <string name="title_fragment_news">新闻</string>
     <string name="title_activity_program_detail">ProgramDetailActivity</string>

@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -43,6 +45,7 @@ public class TVListActivity extends ActionBarActivity {
     private TvRecyclerViewAdapter mTvRecyclerViewAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RatioFrameLayout mRatioFrameLayout;
+    private ImageButton mFullScreenButton;
 
 
     private ArrayList<TvOverview> mTvOverviews = new ArrayList<>();
@@ -79,6 +82,22 @@ public class TVListActivity extends ActionBarActivity {
         mBaseRecyclerView = (BaseRecyclerView) findViewById(R.id.recyclerView);
         mBaseRecyclerView.setLayoutManager(mLayoutManager);
         mBaseRecyclerView.setAdapter(mTvRecyclerViewAdapter);
+
+        VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment) mFragmentManager.findFragmentById(R.id.fragment_video);
+        if(videoPlayerFragment != null) {
+            mFullScreenButton = videoPlayerFragment.getScreenCfgButton();
+            mFullScreenButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE){
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    }else if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    }
+
+                }
+            });
+        }
 
 
         asyncFetchTvs();
@@ -170,7 +189,9 @@ public class TVListActivity extends ActionBarActivity {
 
     private void playTv(TvOverview tvOverview){
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment) mFragmentManager.findFragmentById(R.id.fragment_video);
-        videoPlayerFragment.setVideoURI(Uri.parse(tvOverview.getTv_url()));
+        if(videoPlayerFragment != null) {
+            videoPlayerFragment.setVideoURI(Uri.parse(tvOverview.getTv_url()));
+        }
     }
 
 

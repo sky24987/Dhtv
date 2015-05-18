@@ -19,7 +19,6 @@ import cn.dhtv.mobile.fragment.LiveTvFragment;
 import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
 import cn.dhtv.mobile.R;
 
-import cn.dhtv.mobile.fragment.NewsFragment;
 import cn.dhtv.mobile.fragment.NewsFragment2;
 import cn.dhtv.mobile.fragment.ProgramFragment;
 import cn.dhtv.mobile.fragment.SectionFragment;
@@ -39,6 +38,9 @@ public class HomeActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    private String mSectionTitle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,14 +93,18 @@ public class HomeActivity extends ActionBarActivity
         if(section == null){
             return;
         }
-        mTitle = section.getTitle();
+//        mTitle = section.getTitle();
+        mSectionTitle = section.getTitle();
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        actionBar.setTitle(mSectionTitle);
+
+
+
     }
 
 
@@ -108,7 +114,7 @@ public class HomeActivity extends ActionBarActivity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.home, menu);
+            /*getMenuInflater().inflate(R.menu.home, menu);*/
             restoreActionBar();
             return true;
         }

@@ -1,6 +1,7 @@
 package cn.dhtv.mobile.fragment;
 
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -11,8 +12,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-//import cn.dhtv.android.widget.MediaController;
-import android.widget.MediaController;
+import cn.dhtv.android.widget.MediaController;
+//import android.widget.MediaController;
+//import cn.dhtv.mobile.ui.view.MediaController;
+import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
@@ -39,6 +43,7 @@ public class VideoPlayerFragment extends Fragment {
     private MediaController mMediaController;
     private View mVideoOverlay;
     private ProgressBar mProgressBar;
+    private ImageButton mFullScreenButton;
 
 
 
@@ -95,6 +100,7 @@ public class VideoPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         /*if(DEBUG){
             Log.d(LOG_TAG,"onResume!!!!!");
         }*/
@@ -108,6 +114,7 @@ public class VideoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        mMediaController.hide();
         /*if(DEBUG){
             Log.d(LOG_TAG,"onPause!!!!!");
         }*/
@@ -147,8 +154,14 @@ public class VideoPlayerFragment extends Fragment {
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
+    public ImageButton getScreenCfgButton(){
+        return mMediaController.getScreenCfgButton();
+    }
+
+
     private void init(){
-        mMediaController = new MediaController(getActivity(),false);
+        mMediaController = new MediaController(getActivity());
+        mFullScreenButton = mMediaController.getScreenCfgButton();
     }
 
     private MediaPlayer.OnInfoListener mOnInfoListener = new MediaPlayer.OnInfoListener() {

@@ -22,6 +22,18 @@
 
     <color name="background_context">#ffc4c4c4</color>
     <color name="background_context_dark">#ffececec</color>
+    <color name="background_theme_blue">@color/theme_blue</color>
+
+    <color name="theme_blue">#ff3991ec</color>
+    <color name="theme_dark_blue">#ff306cb5</color>
+    <color name="theme_blue_light">#ff72b5ff</color>
+    <color name="theme_dark_blue__">#ff18528e</color>
+
+
+
+
+    
+
 
 
 </resources>

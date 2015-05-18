@@ -36,6 +36,7 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
+
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
@@ -57,6 +58,7 @@ public class NavigationDrawerFragment extends Fragment {
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
+    private boolean selectedFirstTime = false;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -101,15 +103,15 @@ public class NavigationDrawerFragment extends Fragment {
         });
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
+                R.layout.list_item_navigation,
+                R.id.text_negavition,
                 new String[]{
                         getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
                         getString(R.string.title_section4),
-                        getString(R.string.title_section5),
-                        getString(R.string.title_section6)
+                        getString(R.string.title_section5)
+
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -194,16 +196,24 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
+
+
+
+        if (mDrawerListView != null && (mCurrentSelectedPosition != position || selectedFirstTime == false)) {
             mDrawerListView.setItemChecked(position, true);
         }
+
+        if (mCallbacks != null && (mCurrentSelectedPosition != position || selectedFirstTime == false)) {
+            mCallbacks.onNavigationDrawerItemSelected(position);
+        }
+
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
-        }
+
+        selectedFirstTime = true;
+        mCurrentSelectedPosition = position;
+
     }
 
     @Override
@@ -240,8 +250,9 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            /*inflater.inflate(R.menu.global, menu);*/
             showGlobalContextActionBar();
+
         }
         super.onCreateOptionsMenu(menu, inflater);
     }

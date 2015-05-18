@@ -47,6 +47,7 @@ import cn.dhtv.mobile.model.VideoPageManager;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.ui.widget.FooterRefreshView;
 import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
+import cn.dhtv.mobile.ui.widget.PromptBar;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
@@ -202,11 +203,18 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
 
         page.emptyView.setStateIdle();
         page.mVideoRecyclerViewAdapter.notifyDataSetChanged();
+        page.promptBar.show(getString(R.string.prompt_bar_refresh_success));
     }
 
     @Override
     public void onFirstFetchFails(Category category, AbsPageManager.CallBackFlag flag) {
+        MyPage page = (MyPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.emptyView.setStateIdle();
+//        page.promptBar.show(getString(R.string.prompt_bar_refresh_fail));
     }
 
     @Override
@@ -218,7 +226,7 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
 
         page.mSwipeRefreshLayout.setRefreshing(false);
         page.mVideoRecyclerViewAdapter.notifyDataSetChanged();
-//        page.mPullToRefreshLayout.setRefreshing(false);
+        page.promptBar.show(getString(R.string.prompt_bar_refresh_success));
     }
 
     @Override
@@ -241,7 +249,7 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
         }
 
 //        page.mPullToRefreshLayout.setRefreshing(false);
-        Toast.makeText(getActivity(), "获取视频失败...", Toast.LENGTH_SHORT).show();
+        page.promptBar.show(getString(R.string.prompt_bar_refresh_fail));
     }
 
     @Override
@@ -276,6 +284,7 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
 //        page.mPullToRefreshLayout = (PullToRefreshLayout)view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refresh_view);
         page.mSwipeRefreshLayout.setOnRefreshListener(page);
+        page.promptBar = (PromptBar) view.findViewById(R.id.promptBar);
 
         page.mBaseRecyclerView = (BaseRecyclerView) view.findViewById(R.id.recyclerView);
         page.mLayoutManager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
@@ -351,6 +360,7 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
 //        public FooterRefreshListView listView;
         public EmptyView emptyView;
 //        public BaseAdapter listAdapter;
+        public PromptBar promptBar;
         public BaseRecyclerView mBaseRecyclerView;
         public SwipeRefreshLayout mSwipeRefreshLayout;
         public RecyclerView.LayoutManager mLayoutManager;
@@ -380,7 +390,9 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
                /* if(DEBUG){
                     Log.d(LOG_TAG,"emptyView attach");
                 }*/
-                emptyView.setStateProcessing();
+                if(emptyView.isActive()) {
+                    emptyView.setStateProcessing();
+                }
             }
 
             if(view == footerRefreshView){
@@ -394,6 +406,9 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
 
         @Override
         public void onItemDetachListener(View view) {
+            if(view == emptyView){
+                emptyView.setStateActive();
+            }
 
         }
 

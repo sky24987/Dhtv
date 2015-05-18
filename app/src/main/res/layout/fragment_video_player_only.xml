@@ -27,12 +27,12 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-    <cn.dhtv.android.widget.MediaController
+    <!--<cn.dhtv.android.widget.MediaController
         android:id="@+id/mediaController"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
 
-        />
+        />-->
 
 </FrameLayout>

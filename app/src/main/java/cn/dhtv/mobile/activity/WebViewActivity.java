@@ -2,6 +2,7 @@ package cn.dhtv.mobile.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import cn.dhtv.mobile.R;
 
 
 public class WebViewActivity extends ActionBarActivity {
+    private String mContentTitle;
     private WebView mWebView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +24,10 @@ public class WebViewActivity extends ActionBarActivity {
         mWebView.getSettings().setJavaScriptEnabled(true);
         Intent intent = getIntent();
         Uri uri = intent.getData();
+        mContentTitle = intent.getStringExtra("title");
         mWebView.loadUrl(uri.toString());
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(view);
     }
 
@@ -31,7 +35,11 @@ public class WebViewActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_web_view, menu);
+        /*getMenuInflater().inflate(R.menu.menu_web_view, menu);*/
+        ActionBar actionBar = getSupportActionBar();
+        if(mContentTitle != null) {
+            actionBar.setTitle(mContentTitle);
+        }
         return true;
     }
 
@@ -51,6 +59,10 @@ public class WebViewActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if(id == android.R.id.home){
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

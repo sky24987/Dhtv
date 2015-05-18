@@ -1,17 +1,29 @@
 package cn.dhtv.android.widget;
 
 import android.content.Context;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.internal.widget.FitWindowsViewGroup;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.lang.reflect.Method;
+import java.util.Deque;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -21,15 +33,29 @@ import cn.dhtv.android.R;
  * Created by Jack on 2015/5/12.
  */
 public class MediaController extends FrameLayout{
+
+
+    private final String LOG_TAG = getClass().getSimpleName();
+    private final boolean DEBUG = true;
+
+
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final int    sDefaultTimeout = 4000;
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
 
+    private boolean mMotionCaptureDown = false;
+    private boolean mMotionCaptureUp = false;
+    private boolean mMotionCaptureCancel = false;
+
     private boolean mShowing = false;
 
     private android.widget.MediaController.MediaPlayerControl mPlayer;
 
+
+    private View mAnchor;
+    private View mRoot;
+    private PopupWindow mWindow;
     private ImageButton mPlayButton;
     private ImageButton mScreenCfgButton;
     private SeekBar mSeekBar;
@@ -51,26 +77,31 @@ public class MediaController extends FrameLayout{
 
     public MediaController(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        /*ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        setLayoutParams(lp);*/
+        setFocusable(true);
 
-        /*View view =*/ LayoutInflater.from(context).inflate(R.layout.widget_video_controller,this,true);
-        mPlayButton = (ImageButton) findViewById(R.id.button_play);
-        mScreenCfgButton = (ImageButton) findViewById(R.id.button_screen_configure);
-        mSeekBar = (SeekBar) findViewById(R.id.seek_bar);
-        mCurrentTimeTextView = (TextView) findViewById(R.id.time_current);
-        mTimeTextView = (TextView) findViewById(R.id.time);
-
-        mSeekBar.setMax(PROGRESS_BAR_MAX);
-        mTimeTextView.setText(stringForTime(0));
-        mCurrentTimeTextView.setText(stringForTime(0));
+        initFloatingWindow();
+        View view = makeControllerView(context);
+        initView(view);
+        this.addView(view/*,new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)*/);
+        mRoot = this;
+        mWindow.setContentView(mRoot);
 
         mShowing = false;
-        setVisibility(GONE);
+        /*setVisibility(GONE);*/
 
+    }
+
+    public void setAnchorView(View view){
+        mAnchor = view;
+        mAnchor.addOnLayoutChangeListener(mOnLayoutChangeListener);
+//        mAnchor.setOnSystemUiVisibilityChangeListener(mOnSystemUiVisibilityChangeListener);
     }
 
     public void setMediaPlayer(android.widget.MediaController.MediaPlayerControl player){
         mPlayer = player;
-        updatePausePlay();
+        updatePlayState();
     }
 
     public void show(){
@@ -78,15 +109,19 @@ public class MediaController extends FrameLayout{
     }
 
     public void show(int timeout){
+
         if(!mShowing){
             setProgress();
             mShowing = true;
-            setVisibility(VISIBLE);
+            /*setVisibility(VISIBLE);*/
 
+            layoutWindow();
+//            updateWindow();
         }
 
-        updatePausePlay();
+//        updatePlayState();
 
+        mHandler.removeMessages(FADE_OUT);
         // cause the progress bar to be updated even if mShowing
         // was already true.  This happens, for example, if we're
         // paused with the progress bar showing the user hits play.
@@ -102,13 +137,22 @@ public class MediaController extends FrameLayout{
 
     public void hide(){
         if(mShowing){
+
+            /*setVisibility(GONE);*/
+            try {
+                mHandler.removeMessages(SHOW_PROGRESS);
+                mWindow.dismiss();
+
+            }catch (IllegalArgumentException ex) {
+                Log.w("MediaController", "already removed");
+            }
+
             mShowing = false;
-            setVisibility(GONE);
-            mHandler.removeMessages(SHOW_PROGRESS);
+
         }
     }
 
-    private void updatePausePlay(){
+    /*private void updatePausePlay(){
         if(mPlayer == null){
             return;
         }
@@ -118,12 +162,15 @@ public class MediaController extends FrameLayout{
         } else {
             mPlayButton.setImageResource(android.R.drawable.ic_media_pause);
         }
-    }
+    }*/
 
     private int setProgress(){
+
         if(mPlayer == null){
             return 0;
         }
+
+        updatePlayState();
 
         int position = mPlayer.getCurrentPosition();
         int duration = mPlayer.getDuration();
@@ -149,6 +196,18 @@ public class MediaController extends FrameLayout{
         return mShowing;
     }
 
+    public ImageButton getScreenCfgButton(){
+        return  mScreenCfgButton;
+    }
+
+    public void setFullScreen(boolean fullScreen){
+        if(fullScreen){
+            //TODO 全屏
+        }else {
+            //TODO 不全屏
+        }
+    }
+
     private String stringForTime(int timeMs) {
         int totalSeconds = timeMs / 1000;
 
@@ -164,6 +223,268 @@ public class MediaController extends FrameLayout{
         }
     }
 
+    private void initFloatingWindow(){
+        mWindow = new PopupWindow(getContext());
+        mWindow.setFocusable(false);
+        mWindow.setBackgroundDrawable(null);
+        mWindow.setOutsideTouchable(true);
+//        mWindow.setWindowLayoutMode(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+
+
+
+    }
+
+    private void sizeWindow(){
+        int width = mAnchor.getWidth();
+        int height = mAnchor.getHeight();
+//        mRoot.setLayoutParams(new ViewGroup.LayoutParams(width,height));
+        mWindow.setWidth(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY));
+        mWindow.setHeight(MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+    }
+
+    private void locateWindow(){
+        int[] location = new int[2];
+        mAnchor.getLocationOnScreen(location);
+        Rect anchorRect = new Rect(location[0], location[1], location[0] + mAnchor.getWidth(), location[1] + mAnchor.getHeight());
+        mWindow.showAtLocation(mAnchor, Gravity.NO_GRAVITY, anchorRect.left, anchorRect.top);
+        if(DEBUG){
+            Log.d(LOG_TAG+".locateWindow","left:"+anchorRect.left+"top:"+anchorRect.top);
+        }
+    }
+
+    private void layoutWindow(){
+        sizeWindow();
+        locateWindow();
+    }
+
+
+    private void updateWindow(){
+        int width = mAnchor.getWidth();
+        int height = mAnchor.getHeight();
+        int[] location = new int[2];
+        mAnchor.getLocationOnScreen(location);
+
+        mWindow.update(location[0], location[1], MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY), true);
+
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            /*case MotionEvent.ACTION_DOWN:
+                show(0); // show until hide is called
+                break;*/
+            case MotionEvent.ACTION_UP:
+
+                if(mMotionCaptureUp == false) {
+                    show(sDefaultTimeout); // start timeout
+                    mMotionCaptureUp = true;
+                }
+
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                if(mMotionCaptureCancel == false){
+                    hide();
+                    mMotionCaptureCancel = true;
+                }
+
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if(DEBUG){
+            Log.d(LOG_TAG,"onInterceptTouchEvent");
+        }
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if(DEBUG){
+                    Log.d(LOG_TAG,"ACTION_DOWN");
+                }
+
+                mMotionCaptureUp = false;
+                mMotionCaptureCancel = false;
+
+                show(0); // show until hide is called
+                break;
+            case MotionEvent.ACTION_UP:
+                if(DEBUG){
+                    Log.d(LOG_TAG,"ACTION_UP");
+                }
+
+                if(mMotionCaptureUp == false){
+                    show(sDefaultTimeout); // start timeout
+                    mMotionCaptureUp = true;
+                }
+
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                if(DEBUG){
+                    Log.d(LOG_TAG,"ACTION_CANCEL");
+                }
+
+                if(mMotionCaptureCancel == false){
+                    hide();
+                    mMotionCaptureCancel = true;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    private void initView(View parent){
+        mPlayButton = (ImageButton) parent.findViewById(R.id.button_play);
+        mScreenCfgButton = (ImageButton) parent.findViewById(R.id.button_screen_configure);
+        mSeekBar = (SeekBar) parent.findViewById(R.id.seek_bar);
+        mCurrentTimeTextView = (TextView) parent.findViewById(R.id.time_current);
+        mTimeTextView = (TextView) parent.findViewById(R.id.time);
+
+        mSeekBar.setMax(PROGRESS_BAR_MAX);
+        mTimeTextView.setText(stringForTime(0));
+        mCurrentTimeTextView.setText(stringForTime(0));
+
+        mPlayButton.setOnClickListener(mPlayButtonListener);
+        mSeekBar.setOnSeekBarChangeListener(mSeekListener);
+    }
+
+    private View makeControllerView(Context context){
+        return LayoutInflater.from(context).inflate(R.layout.widget_video_controller,this,false);
+    }
+
+
+
+    /*@Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
+//            if (uniqueDown) {
+                hide();
+//            }
+            return true;
+        }else {
+            return super.dispatchKeyEvent(event);
+        }
+    }*/
+
+
+
+
+
+
+
+    /*private void setWindowLayoutType(){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            try {
+//                mAnchor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+                Method setWindowLayoutType = PopupWindow.class.getMethod("setWindowLayoutType", new Class[] { int.class });
+                setWindowLayoutType.invoke(mWindow, WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG);
+            } catch (Exception e) {
+                Log.e("setWindowLayoutType", e.toString());
+            }
+//        }
+    }*/
+
+    private OnLayoutChangeListener mOnLayoutChangeListener = new OnLayoutChangeListener() {
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            if(mShowing){
+                int[] location = new int[2];
+                mAnchor.getLocationOnScreen(location);
+                Rect anchorRect = new Rect(left, top, right, bottom);
+                mWindow.update(location[0],location[1],MeasureSpec.makeMeasureSpec(anchorRect.width(),MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(anchorRect.height(), MeasureSpec.EXACTLY),true);
+
+                /*updateWindow();*/
+
+            }
+        }
+    };
+
+    private View.OnClickListener mPlayButtonListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(mPlayer == null){
+                return;
+            }
+
+            switchPlayMode();
+        }
+    };
+
+    private SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (!fromUser) {
+                // We're not interested in programmatically generated changes to
+                // the progress bar's position.
+                return;
+            }
+
+            if(mPlayer == null){
+                return;
+            }
+
+            long duration = mPlayer.getDuration();
+            long newposition = (duration * progress) / PROGRESS_BAR_MAX;
+            mPlayer.seekTo( (int) newposition);
+            mCurrentTimeTextView.setText(stringForTime( (int) newposition));
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+            show(3600000);
+
+            mHandler.removeMessages(SHOW_PROGRESS);
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            setProgress();
+//            updatePlayState();
+            show(sDefaultTimeout);
+            mHandler.sendEmptyMessage(SHOW_PROGRESS);
+        }
+    };
+
+    private void switchPlayMode(){
+        if(mPlayer == null){
+            return;
+        }
+
+        if(mPlayer.isPlaying()){
+            mPlayer.pause();
+        }else if(mPlayer.getCurrentPosition() > 0){/*暂时用于判断是否为可播放状态*/
+            mPlayer.start();
+        }else {/*暂时用于判断是否为准备状态，及MediaPlayer is preparing*/
+            return;
+        }
+
+        updatePlayState();
+    }
+
+
+
+    private void updatePlayState(){
+        if(mPlayer != null && mPlayer.isPlaying()){
+            //TODO pause picture
+            mPlayButton.setImageResource(android.R.drawable.ic_media_pause);
+        }else {
+            //TODO play picture
+            mPlayButton.setImageResource(android.R.drawable.ic_media_play);
+        }
+    }
+
+
+
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -174,7 +495,7 @@ public class MediaController extends FrameLayout{
                     break;
                 case SHOW_PROGRESS:
                     pos = setProgress();
-                    if (mShowing &&mPlayer!=null && mPlayer.isPlaying()) {
+                    if (mShowing &&mPlayer!=null/* && mPlayer.isPlaying()*/) {
                         msg = obtainMessage(SHOW_PROGRESS);
                         sendMessageDelayed(msg, 1000 - (pos % 1000));
                     }
