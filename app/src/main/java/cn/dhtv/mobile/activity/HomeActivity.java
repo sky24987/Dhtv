@@ -1,6 +1,7 @@
 package cn.dhtv.mobile.activity;
 
 import android.app.Activity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -44,7 +45,7 @@ public class HomeActivity extends ActionBarActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(LOG_TAG,"create activety");
+        Log.v(LOG_TAG, "create activety");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);

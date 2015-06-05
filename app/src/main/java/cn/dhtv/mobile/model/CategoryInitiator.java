@@ -49,7 +49,7 @@ public class CategoryInitiator {
     private boolean audioChannelCategorySync = false;
 
     private ExecutorService mExecutorService = Singletons.getExecutorService();
-    private RequestQueue mRequestQueue = NetUtils.getRequestQueue();
+    private RequestQueue mRequestQueue = Singletons.getRequestQueue();
     private CategoryAccessor mCategoryAccessor = new CategoryAccessor();
 
 

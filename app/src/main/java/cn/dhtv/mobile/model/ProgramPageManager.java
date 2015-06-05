@@ -7,7 +7,7 @@ import cn.dhtv.mobile.entity.Category;
 /**
  * Created by Jack on 2015/3/26.
  */
-public class ProgramPageManager extends AbsPageManager<ProgramCollector> {
+public class ProgramPageManager extends AbsPageManager<ProgramCollector2> {
 
     @Override
     public void setUp() {
@@ -47,7 +47,7 @@ public class ProgramPageManager extends AbsPageManager<ProgramCollector> {
         categories.addAll(list);
         mListMap.clear();
         for(Category cat:categories){
-            mListMap.put(cat,new ProgramCollector(cat, this));
+            mListMap.put(cat,new ProgramCollector2(cat, this));
         }
     }
 

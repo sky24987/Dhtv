@@ -15,6 +15,7 @@
         android:layout_margin="3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textSize="@dimen/text_size_title_subtitle"/>
 
 </cn.dhtv.mobile.ui.widget.PromptBar>

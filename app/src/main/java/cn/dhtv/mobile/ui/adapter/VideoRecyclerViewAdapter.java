@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso;
 
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.VideoOverview;
 import cn.dhtv.mobile.network.NetUtils;
 
@@ -23,7 +24,7 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
     private final boolean DEBUG = false;
 
     private ItemViewDataSet mItemViewDataSet;
-    private ImageLoader mImageLoader = NetUtils.getImageLoader();
+    private ImageLoader mImageLoader = Singletons.getImageLoader();
 
     public VideoRecyclerViewAdapter(ItemViewDataSet mItemViewDataSet) {
         this.mItemViewDataSet = mItemViewDataSet;
@@ -50,7 +51,7 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
         VideoOverview item = (VideoOverview)mItemViewDataSet.getItem(position);
         holder.title.setText(item.getTitle());
         holder.dataline.setText(item.getDateline());
-        holder.durition.setText(""+item.getDuration());
+        holder.durition.setText("" + item.getDuration());
         Picasso.with(holder.imageView.getContext()).load(item.getPic()).placeholder(R.drawable.default_image).into(holder.imageView);
         holder.url = item.getUrl();
         holder.videoUrl = item.getVideo();

@@ -88,6 +88,7 @@ public class VideoPlayerFragment extends Fragment {
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         mMediaController.setMediaPlayer(mVideoView);
         mMediaController.setAnchorView(mVideoViewFather);
+        mVideoView.setKeepScreenOn(true);
         return view;
     }
 
@@ -138,7 +139,7 @@ public class VideoPlayerFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mVideoView.getHolder().setSizeFromLayout();
+        mMediaController.hide();
     }
 
     public void setVideoPath(String path){

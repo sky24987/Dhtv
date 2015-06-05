@@ -6,9 +6,13 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
+import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.Database.Contract;
+import cn.dhtv.mobile.Database.DBUtils;
 import cn.dhtv.mobile.Database.VideoAccessor;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.VideoOverview;
 import cn.dhtv.mobile.network.VideoClient;
@@ -80,21 +84,22 @@ public class VideoListCollector2 extends AbsListCollector  {
 
         mState = STATE_PROCESSING;
         mMode = MODE_APPEND;
-        new VideoAsyncTask(VideoAsyncTask.MODE_TRY_DB_THEN_NET).execute();
+        /*new VideoAsyncTask(VideoAsyncTask.MODE_TRY_DB_THEN_NET).execute();*/
+        new VideoAsyncTask(VideoAsyncTask.MODE_DB).execute();
     }
 
     @Override
     public void asyncRefresh() {
         if(isProcessing()){
             if(mCallBacks != null){
-                mCallBacks.onFirstFetchFails(category, null);
+                mCallBacks.onRefreshFails(category, null);
                 return;
             }
         }
 
         mState = STATE_PROCESSING;
         mMode = MODE_REFRESH;
-        new VideoAsyncTask(VideoAsyncTask.MODE_TRY_NET_THEN_DB).execute();
+        new VideoAsyncTask(VideoAsyncTask.MODE_NET).execute();
     }
 
 
@@ -125,6 +130,7 @@ public class VideoListCollector2 extends AbsListCollector  {
                 endAppend();
                 break;
             case MODE_REFRESH:
+
                 endRefresh();
                 break;
             case MODE_INIT:
@@ -135,10 +141,18 @@ public class VideoListCollector2 extends AbsListCollector  {
 
     private void endAppend(){
         switch (mState){
+            case STATE_PROCESSING_NET:
+            case STATE_PROCESSING_DB:
             case STATE_PROCESSING:
                 videoOverviews.addAll(cache);
                 if(mCallBacks != null){
                     mCallBacks.onAppend(category,null);
+                }
+                reset();
+                break;
+            case STATE_ERROR_DB_PROBLEM_NULL:
+                if(mCallBacks != null){
+                    mCallBacks.onAppendFails(category, SyncFlag.DB_NULL);
                 }
                 reset();
                 break;
@@ -154,17 +168,19 @@ public class VideoListCollector2 extends AbsListCollector  {
 
     private void endRefresh(){
         switch (mState){
+            case STATE_PROCESSING_NET:
             case STATE_PROCESSING:
+                updateTime();
                 videoOverviews.clear();
                 videoOverviews.addAll(cache);
                 if(mCallBacks != null){
-                    mCallBacks.onRefresh(category,null);
+                    mCallBacks.onRefresh(category, null);
                 }
                 reset();
                 break;
             default:
                 if(mCallBacks != null){
-                    mCallBacks.onRefreshFails(category,null);
+                    mCallBacks.onRefreshFails(category, null);
                 }
                 reset();
                 break;
@@ -175,6 +191,7 @@ public class VideoListCollector2 extends AbsListCollector  {
     private void endFirstFetch(){
         switch (mState){
             case STATE_PROCESSING_NET:
+                updateTime();
             case STATE_PROCESSING_DB:
             case STATE_PROCESSING:
                 videoOverviews.clear();
@@ -195,6 +212,17 @@ public class VideoListCollector2 extends AbsListCollector  {
         }
     }
 
+    private void updateTime(){
+        category.setUpdateTime(new Date());
+        DBUtils.asyncUpdate(category);
+    }
+
+    private void calculateState(){
+        if(videoOverviews.size() > 0) {
+            minId = videoOverviews.get(videoOverviews.size() - 1).getAvid();
+        }
+    }
+
 
     public boolean isProcessing(){
         if(mState != STATE_IDLE){
@@ -209,6 +237,8 @@ public class VideoListCollector2 extends AbsListCollector  {
         mState = STATE_IDLE;
         mMode = MODE_IDLE;
         cache.clear();
+
+        calculateState();
     }
 
 
@@ -236,8 +266,10 @@ public class VideoListCollector2 extends AbsListCollector  {
                     tryDbThenNet();
                     break;
                 case MODE_DB:
+                    getFromDb();
                     break;
                 case MODE_NET:
+                    getFromNet();
                     break;
 
             }
@@ -259,7 +291,7 @@ public class VideoListCollector2 extends AbsListCollector  {
 
             }catch (JSONException e){
                 mState = STATE_ERROR_NET_PROBLEM_JSON;
-            }catch (Exception e){
+            }catch (IOException e){
                 mState = STATE_ERROR_NET_PROBLEM_IO;
             }
 
@@ -269,19 +301,26 @@ public class VideoListCollector2 extends AbsListCollector  {
 
             if(list !=null && list.size() > 0){
 
+                mVideoAccessor.clear(category);
                 /*存入数据库*/
                 for (VideoOverview videoOverview : list){
                     mVideoAccessor.insertOrReplace(videoOverview);
                 }
 
+                int size = list.size();
+                size = size > Data.VIDEO_PAGE_SIZE ? Data.VIDEO_PAGE_SIZE : size;
                 mList = list;
-                cache = list;
+                cache.addAll(list.subList(0,size));
                 return;
             }
 
             mState = STATE_PROCESSING_DB;//TODO
             /*try db*/
             list = mVideoAccessor.findVideos(category, 0,0);
+            if(list == null ||list.size() == 0){
+                mState = STATE_ERROR_DB_PROBLEM_NULL;
+                return;
+            }
             mList = list;
             cache = list;
             return;
@@ -300,6 +339,7 @@ public class VideoListCollector2 extends AbsListCollector  {
 
             /*try net*/
             try {
+                mState = STATE_PROCESSING_NET;
                 list = mVideoClient.getVideoOverviews(category, 0);
             }catch (JSONException e){
                 mState = STATE_ERROR_NET_PROBLEM_JSON;
@@ -318,11 +358,62 @@ public class VideoListCollector2 extends AbsListCollector  {
             return;
         }
 
-        private void Db(){
+        private void getFromDb(){
+            //TODO:数据库操作过快，等一会
+            try {
+                Thread.sleep(700);
+            }catch (InterruptedException e){
 
+            }
+
+            mState = STATE_PROCESSING_DB;
+            ArrayList<VideoOverview> list = null;
+            list = mVideoAccessor.findVideos(category, minId,0);
+            if(list != null && list.size() > 0){
+                mList = list;
+                cache = list;
+                return;
+            }else {
+                mState = STATE_ERROR_DB_PROBLEM_NULL;
+                return;
+            }
         }
 
-        private void Net(){
+
+
+        private void getFromNet(){
+            mState = STATE_PROCESSING_NET;
+            ArrayList<VideoOverview> list = null;
+            try {
+                list = mVideoClient.getVideoOverviews(category, 0);
+
+            }catch (JSONException e){
+                mState = STATE_ERROR_NET_PROBLEM_JSON;
+            }catch (Exception e){
+                mState = STATE_ERROR_NET_PROBLEM_IO;
+            }
+
+            if(list != null && list.size() == 0){
+                mState = STATE_ERROR_NET_PROBLEM_NULL;
+            }
+
+            if(list !=null && list.size() > 0){
+
+                mVideoAccessor.clear(category);
+                /*存入数据库*/
+                for (VideoOverview videoOverview : list){
+                    mVideoAccessor.insertOrReplace(videoOverview);
+                }
+
+                int size = list.size();
+                size = size > Data.VIDEO_PAGE_SIZE ? Data.VIDEO_PAGE_SIZE : size;
+                mList = list;
+                cache.addAll(list.subList(0,size));
+                return;
+            }
+
+            mState = -100;//暂定,无特殊意义
+            return;
 
         }
     }

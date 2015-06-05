@@ -2,6 +2,7 @@ package cn.dhtv.mobile.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,6 +20,14 @@ public class FooterRefreshView extends RelativeLayout {
 
     public FooterRefreshView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mStatus == Status.CLICKABLE || mStatus == Status.FORCE_CLICK){
+                    setStatus(Status.REFRESHING);
+                }
+            }
+        });
     }
 
     @Override
@@ -26,6 +35,10 @@ public class FooterRefreshView extends RelativeLayout {
         super.onFinishInflate();
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         textHint = (TextView) findViewById(R.id.refresh_footer_hint);
+        setStatus(Status.CLICKABLE);
+    }
+
+    public void reset(){
         setStatus(Status.CLICKABLE);
     }
 
@@ -38,6 +51,7 @@ public class FooterRefreshView extends RelativeLayout {
             case CLICKABLE:
                 textHint.setText(R.string.refresh_footer_clickable);
                 mProgressBar.setVisibility(GONE);
+                setClickable(true);
                 break;
             case REFRESHING:
                 textHint.setText(R.string.refresh_footer_refreshing);
@@ -45,14 +59,17 @@ public class FooterRefreshView extends RelativeLayout {
                 if(mRefreshingListener != null){
                     mRefreshingListener.onRefreshing();
                 }
+                setClickable(false);
                 break;
             case FORCE_CLICK:
                 textHint.setText(R.string.refresh_footer_clickable);
                 mProgressBar.setVisibility(GONE);
+                setClickable(true);
                 break;
             case NO_MORE:
                 textHint.setText(R.string.refresh_footer_no_more);
                 mProgressBar.setVisibility(GONE);
+                setClickable(false);
                 break;
         }
     }

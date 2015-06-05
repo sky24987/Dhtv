@@ -27,13 +27,20 @@ public class RatioImageView extends ImageView {
         /*int widthWeight = attrs.getAttributeIntValue(R.attr.ratio_width_weight,0);
         int heightWeight = attrs.getAttributeIntValue(R.attr.ratio_height_weight,0);*/
 
-        TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.RatioImageView);
-        int widthWeight = a.getInt(R.styleable.RatioImageView_ratio_width_weight,0);
-        int heightWeight = a.getInt(R.styleable.RatioImageView_ratio_height_weight,0);
-        a.recycle();
-        if(widthWeight > 0 && heightWeight > 0){
-            mRatio = ((float)widthWeight)/heightWeight;
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RatioImageView);
+        float ratio = a.getFloat(R.styleable.RatioImageView_ratio, -1);
+        if(ratio > 0){
+            mRatio = ratio;
+        }else {
+            int widthWeight = a.getInt(R.styleable.RatioImageView_ratio_width_weight,0);
+            int heightWeight = a.getInt(R.styleable.RatioImageView_ratio_height_weight,0);
+
+            if(widthWeight > 0 && heightWeight > 0){
+                mRatio = ((float)widthWeight)/heightWeight;
+            }
         }
+        a.recycle();
+
     }
 
     public float getRatio() {

@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 
 import cn.dhtv.mobile.Database.ArticleAccessor;
 import cn.dhtv.mobile.Database.CategoryAccessor;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.util.TextUtils;
@@ -57,7 +58,7 @@ public class DataSyncHelper {
 
     public DataSyncHelper(Context context) {
         mContext = context.getApplicationContext();
-        mRequestQueue = NetUtils.getRequestQueue(context);//需要在NetUtils setup()之后调用
+        mRequestQueue = Singletons.getRequestQueue();//需要在NetUtils setup()之后调用
         init();
 
     }
@@ -205,7 +206,7 @@ public class DataSyncHelper {
 
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.e(LOG_TAG,error.getMessage());
+            Log.e(LOG_TAG,error.toString());
 
         }
     }

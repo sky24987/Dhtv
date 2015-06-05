@@ -2,7 +2,7 @@
 <resources>
 
 
-    <string name="app_name">东海网</string>
+    <string name="app_name">东海网dev</string>
     <string name="title_activity_home">HomeActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -12,13 +12,19 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web">WebActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_web_view">Web</string>
+    <string name="title_activity_web_view">@string/app_name</string>
 
     <!--应用初始化对话框-->
     <string name="init_dialog_hint">初始化失败，请检查网络</string>
     <string name="init_dialog_positive">重试</string>
     <string name="init_dialog_negative">退出</string>
     <!--应用初始化对话框-->
+
+    <!--更新提醒对话框-->
+    <string name="dialog_upgrade_negative">忽略</string>
+    <string name="dialog_upgrade_positive">升级</string>
+    <string name="dialog_upgrade_toast">后台正在下载更新包...</string>
+    <!--更新提醒对话框-->
 
 
     <!--底部刷新组件提示文本-->
@@ -41,6 +47,23 @@
     <string name="empty_view_hint">正在更新</string>
     <!--空视图组件文本-->
 
+    <!--网页重试按钮提示-->
+    <string name="button_web_retry">重试</string>
+    <!--网页重试按钮提示-->
+
+    <!--网页错误提示-->
+    <string name="error_message_io">无法访问，请检查网络</string>
+    <string name="error_message_file_not_found">抱歉，您访问的页面不存在</string>
+    <string name="error_message_unknown">未知错误，页面无法显示</string>
+    <string name="error_message_connect">网络不佳，请重试</string>
+    <!--网页错误提示-->
+
+    <!--app安装更新Dialog-->
+    <string name="title_dialog_app_install">已准备好新版本的安装文件，是否安装</string>
+    <string name="title_dialog_app_download">检测到新版本，是否下载</string>
+    <!--app安装更新Dialog-->
+
+
 
     <!--导读fragment标题-->
     <string name="title_section1">新闻</string>
@@ -56,6 +79,6 @@
     <string name="title_fragment_news">新闻</string>
     <string name="title_activity_program_detail">ProgramDetailActivity</string>
     <string name="title_activity_video_player">VideoPlayerActivity</string>
-    <string name="title_activity_tvlist">TVListActivity</string>
+    <string name="title_activity_tvlist">电视节目</string>
 
 </resources>

@@ -79,6 +79,10 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
             mCallBack = callBacks;
         }
 
+        public void stop(){
+            mMediaPlayer.stop();
+        }
+
         public boolean isPlaying(){
             return mMediaPlayer.isPlaying();
         }

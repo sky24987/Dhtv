@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
@@ -35,6 +36,7 @@ public class FMAdapter extends BaseRecyclerViewAdapter<FMAdapter.ViewHolder> {
     public FMAdapter.ViewHolder onCreateVH(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_fm, parent, false);
         ViewHolder holder = new ViewHolder(v,0);
+        holder.itemView = (ViewGroup) v;
         holder.networkImageView = (NetworkImageView) v.findViewById(R.id.network_image);
         holder.title = (TextView) v.findViewById(R.id.title);
         return holder;
@@ -47,9 +49,11 @@ public class FMAdapter extends BaseRecyclerViewAdapter<FMAdapter.ViewHolder> {
         holder.networkImageView.setDefaultImageResId(R.drawable.default_image);
         holder.title.setText(fm.getCatname());
         if(stateData.selectedFm != null && stateData.selectedFm.getCatid() == fm.getCatid()){
-            holder.title.setSelected(true);
+            /*holder.title.setSelected(true);*/
+            holder.itemView.setSelected(true);
         }else {
-            holder.title.setSelected(false);
+            /*holder.title.setSelected(false);*/
+            holder.itemView.setSelected(false);
         }
     }
 
@@ -60,6 +64,7 @@ public class FMAdapter extends BaseRecyclerViewAdapter<FMAdapter.ViewHolder> {
 
 
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder{
+        public ViewGroup itemView;
         public NetworkImageView networkImageView;
         public TextView title;
 

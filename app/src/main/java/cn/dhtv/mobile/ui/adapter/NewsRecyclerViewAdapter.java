@@ -10,6 +10,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.NetUtils;
 
@@ -21,7 +22,7 @@ public class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<NewsRecycle
     private final boolean DEBUG = false;
 
     private ItemViewDataSet mItemViewDataSet;
-    private ImageLoader mImageLoader = NetUtils.getImageLoader();
+    private ImageLoader mImageLoader = Singletons.getImageLoader();
 
     public NewsRecyclerViewAdapter(ItemViewDataSet mItemViewDataSet) {
         this.mItemViewDataSet = mItemViewDataSet;
@@ -56,6 +57,8 @@ public class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<NewsRecycle
     public int itemViewType(int position) {
         return mItemViewDataSet.viewType(position);
     }
+
+
 
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder{
         public String url;

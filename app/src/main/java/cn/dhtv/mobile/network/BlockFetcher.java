@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
@@ -33,7 +34,7 @@ public class BlockFetcher {
     private final boolean DEBUG = true;
     
     private ObjectMapper mObjectMapper = new ObjectMapper();
-    private RequestQueue mRequestQueue = NetUtils.getRequestQueue();
+    private RequestQueue mRequestQueue = Singletons.getRequestQueue();
 
     public void asyncGetBlockData(Category category,WeakReference<CallBacks> callBacksWeakReference){
         BlockResponseListener blockResponseListener = new BlockResponseListener(callBacksWeakReference);

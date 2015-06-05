@@ -65,22 +65,30 @@ public class NewsPageManager extends AbsPageManager<NewsListCollector2> {
 
     @Override
     public void onAppend(Category category, AbsListCollector.SyncFlag syncFlag) {
+        CallBackFlag callBackFlag = null;
+        if(syncFlag == AbsListCollector.SyncFlag.DB_NULL){
+            callBackFlag = CallBackFlag.DB_NULL;
+        }
         if(mCallBacks != null){
-            mCallBacks.onAppend(category, null);
+            mCallBacks.onAppend(category, callBackFlag);
         }
     }
 
     @Override
     public void onRefreshFails(Category category, AbsListCollector.SyncFlag syncFlag) {
         if(mCallBacks != null){
-            mCallBacks.onRefresh(category, null);
+            mCallBacks.onRefreshFails(category, null);
         }
     }
 
     @Override
     public void onAppendFails(Category category, AbsListCollector.SyncFlag syncFlag) {
+        CallBackFlag callBackFlag = null;
+        if(syncFlag == AbsListCollector.SyncFlag.DB_NULL){
+            callBackFlag = CallBackFlag.DB_NULL;
+        }
         if(mCallBacks != null){
-            mCallBacks.onAppendFails(category, null);
+            mCallBacks.onAppendFails(category, callBackFlag);
         }
     }
 

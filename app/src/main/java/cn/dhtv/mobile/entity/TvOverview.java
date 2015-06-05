@@ -1,5 +1,7 @@
 package cn.dhtv.mobile.entity;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -37,6 +39,7 @@ public class TvOverview {
 
     public void setTv_pic(Category category){
         tv_pic = TextUtils.URL_RES_TV+category.getUpid()+"/"+dir+".jpg";
+        Log.d("........tv_pic:",tv_pic);
     }
 
     @JsonSetter(value = "dir")

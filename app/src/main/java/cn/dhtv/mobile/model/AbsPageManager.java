@@ -106,6 +106,6 @@ public abstract class AbsPageManager<L extends AbsListCollector> implements AbsL
     }
 
     public static enum CallBackFlag{
-
+        DB_NULL
     }
 }

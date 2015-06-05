@@ -47,7 +47,7 @@ public class TVListActivity extends ActionBarActivity {
     private RatioFrameLayout mRatioFrameLayout;
     private ImageButton mFullScreenButton;
 
-
+    private String mContentTitle;
     private ArrayList<TvOverview> mTvOverviews = new ArrayList<>();
     private StateDate mStateDate = new StateDate();
 
@@ -99,6 +99,8 @@ public class TVListActivity extends ActionBarActivity {
             });
         }
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         asyncFetchTvs();
     }
@@ -106,7 +108,11 @@ public class TVListActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_tvlist, menu);
+        /*getMenuInflater().inflate(R.menu.menu_tvlist, menu);*/
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if(mContentTitle != null) {
+            actionBar.setTitle(mContentTitle);
+        }
         return true;
     }
 
@@ -120,6 +126,10 @@ public class TVListActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+
+        if(id == android.R.id.home){
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -166,6 +176,7 @@ public class TVListActivity extends ActionBarActivity {
 
     private void init(){
         Intent intent = getIntent();
+        mContentTitle = intent.getStringExtra("title");
         category = (Category) intent.getSerializableExtra("program");
         mFragmentManager = getFragmentManager();
     }

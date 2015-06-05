@@ -5,7 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.zip.Inflater;
@@ -42,6 +45,7 @@ public class TvRecyclerViewAdapter extends BaseRecyclerViewAdapter<TvRecyclerVie
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_tv,parent,false);
         ViewHolder viewHolder = new ViewHolder(view, viewType);
         viewHolder.textView = (TextView) view.findViewById(R.id.title);
+        viewHolder.imageView = (ImageView) view.findViewById(R.id.image);
         return viewHolder;
     }
 
@@ -50,6 +54,7 @@ public class TvRecyclerViewAdapter extends BaseRecyclerViewAdapter<TvRecyclerVie
         TvOverview tvOverview= tvOverviews.get(position);
         holder.tvOverview = tvOverview;
         holder.textView.setText(tvOverview.getTitle());
+        Picasso.with(holder.imageView.getContext()).load(tvOverview.getTv_pic()).placeholder(R.drawable.default_image).into(holder.imageView);
         if(stateDate.selectedTv != null && tvOverview.getTvid() == stateDate.selectedTv.getTvid()){
             holder.textView.setSelected(true);
         }else {
@@ -65,6 +70,7 @@ public class TvRecyclerViewAdapter extends BaseRecyclerViewAdapter<TvRecyclerVie
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder {
         public TvOverview tvOverview;
         public TextView textView;
+        public ImageView imageView;
 
         public ViewHolder(View itemView, int viewType) {
             super(itemView, viewType);

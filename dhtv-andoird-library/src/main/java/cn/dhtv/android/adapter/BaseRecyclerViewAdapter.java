@@ -106,6 +106,8 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
         return itemViewType;
     }
 
+
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
     }
@@ -140,6 +142,10 @@ public abstract class BaseRecyclerViewAdapter<VH extends BaseRecyclerViewAdapter
     }
 
     public void removeEmptyView(VH vh){
+        emptyView = null;
+    }
+
+    public void removeEmptyView(){
         emptyView = null;
     }
 

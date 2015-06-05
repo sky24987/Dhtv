@@ -5,6 +5,7 @@ import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.ui.adapter.AbstractListAdapter;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.entity.Category;
@@ -25,11 +26,12 @@ public abstract class AbsListCollector implements AbstractListAdapter.ListViewDa
 
     protected Category category;
     protected Context context;
-    protected RequestQueue mRequestQueue = NetUtils.getRequestQueue();
+    protected RequestQueue mRequestQueue = Singletons.getRequestQueue();
     protected CallBacks mCallBacks;
 
     protected ObjectMapper mObjectMapper = new ObjectMapper();
 
+    protected int minId = -1;
     protected boolean newData = false;
     protected boolean hasMore = true;
     protected int currentPage = 0;
@@ -101,6 +103,6 @@ public abstract class AbsListCollector implements AbstractListAdapter.ListViewDa
     }
 
     public enum SyncFlag{
-
+        DB_NULL
     }
 }

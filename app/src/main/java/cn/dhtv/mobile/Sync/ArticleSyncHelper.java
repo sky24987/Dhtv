@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import cn.dhtv.mobile.Database.ArticleAccessor;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.NetUtils;
@@ -40,7 +41,7 @@ public class ArticleSyncHelper {
     private ExecutorService mExecutorService;
 
     private ObjectMapper mObjectMapper = new ObjectMapper();
-    private RequestQueue mRequestQueue = NetUtils.getRequestQueue();
+    private RequestQueue mRequestQueue = Singletons.getRequestQueue();
 
 
 

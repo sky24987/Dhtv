@@ -63,19 +63,24 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector2> {
     @Override
     public void onRefreshFails(Category category, AbsListCollector.SyncFlag syncFlag) {
         if(mCallBacks != null){
-            mCallBacks.onRefresh(category, null);
+            mCallBacks.onRefreshFails(category, null);
         }
     }
 
     @Override
     public void onAppendFails(Category category, AbsListCollector.SyncFlag syncFlag) {
+        CallBackFlag callBackFlag = null;
+        if(syncFlag == AbsListCollector.SyncFlag.DB_NULL){
+            callBackFlag = CallBackFlag.DB_NULL;
+        }
         if(mCallBacks != null){
-            mCallBacks.onAppendFails(category, null);
+            mCallBacks.onAppendFails(category, callBackFlag);
         }
     }
 
     @Override
     public void onFirstFetch(Category category, AbsListCollector.SyncFlag syncFlag) {
+
         if(mCallBacks != null){
             mCallBacks.onFirstFetch(category, null);
         }
@@ -84,7 +89,7 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector2> {
     @Override
     public void onFirstFetchFails(Category category, AbsListCollector.SyncFlag syncFlag) {
         if(mCallBacks != null){
-            mCallBacks.onRefreshFails(category, null);
+            mCallBacks.onFirstFetchFails(category, null);
         }
     }
 }

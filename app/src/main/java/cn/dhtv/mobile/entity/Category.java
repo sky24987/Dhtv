@@ -3,7 +3,10 @@ package cn.dhtv.mobile.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 
+import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.entity.inner.Live;
 
 /**
@@ -21,9 +24,17 @@ public class Category implements Serializable {
     private int topid;
     private int catid;
     private int bid;
+    private Date updateTime;
     private transient Live live = new Live();//直播
 
 
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public Live getLive() {
         return live;

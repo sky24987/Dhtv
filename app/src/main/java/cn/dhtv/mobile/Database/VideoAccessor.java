@@ -23,7 +23,12 @@ public class VideoAccessor {
         if(size == 0){
             size = DEFAULT_SIZE;
         }
+
         String selection =Contract.Video.COLUMN_NAME_CAT_ID +" = "+category.getCatid();
+        if(minId > 0){
+            selection += " and "+ Contract.Video.COLUMN_NAME_AVID + " < " +minId;
+        }
+
         Cursor cursor = getDb().query(Contract.Video.TABLE_NAME,null,selection,null,null,null, Contract.Video.COLUMN_NAME_AVID+" desc",""+size);
         ArrayList<VideoOverview> list = toList(cursor);
         cursor.close();
@@ -34,6 +39,13 @@ public class VideoAccessor {
         ContentValues contentValues = makeContentValues(videoOverview);
         return getDb().replace(Contract.Video.TABLE_NAME,null,contentValues);
 //        return getDb().insert(Contract.Video.TABLE_NAME,null,contentValues);
+    }
+
+    public void clear(Category category){
+        getDb().beginTransaction();
+        getDb().delete(Contract.Video.TABLE_NAME, Contract.Video.COLUMN_NAME_CAT_ID+" = ?",new String[]{""+category.getCatid()});
+        getDb().setTransactionSuccessful();
+        getDb().endTransaction();
     }
 
     public static ContentValues makeContentValues(VideoOverview videoOverview){

@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.bumptech.glide.Glide;
 
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.Data;
@@ -40,7 +40,8 @@ public class ProgramRecyclerViewAdapter extends BaseRecyclerViewAdapter<ProgramR
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_program,parent,false);
         ViewHolder viewHolder = new ViewHolder(v,viewType);
 //        viewHolder.mNetworkImageView = (NetworkImageView) v.findViewById(R.id.image);
-        viewHolder.mSimpleDraweeView = (SimpleDraweeView) v.findViewById(R.id.image);
+//        viewHolder.mSimpleDraweeView = (SimpleDraweeView) v.findViewById(R.id.image);
+        viewHolder.imageView = (ImageView) v.findViewById(R.id.image);
         viewHolder.textViewTitle = (TextView) v.findViewById(R.id.title);
         return viewHolder;
     }
@@ -49,9 +50,10 @@ public class ProgramRecyclerViewAdapter extends BaseRecyclerViewAdapter<ProgramR
     public void onBindVH(ProgramRecyclerViewAdapter.ViewHolder holder, int position) {
         Category category = (Category) mItemViewDataSet.getItem(position);
         holder.textViewTitle.setText(category.getCatname());
-//        holder.mNetworkImageView.setDefaultImageResId(R.drawable.default_image);
-//        holder.mNetworkImageView.setImageUrl(TextUtils.URL_RES_IMG+category.getName()+".jpg", NetUtils.getImageLoader());
-        holder.mSimpleDraweeView.setImageURI(Uri.parse(TextUtils.URL_RES_IMG+category.getName()+".jpg"));
+//        myAppInfo.mNetworkImageView.setDefaultImageResId(R.drawable.default_image);
+//        myAppInfo.mNetworkImageView.setImageUrl(TextUtils.URL_RES_IMG+category.getName()+".jpg", NetUtils.getImageLoader());
+//        myAppInfo.mSimpleDraweeView.setImageURI(Uri.parse(TextUtils.URL_RES_IMG+category.getName()+".jpg"));
+        Glide.with(holder.imageView.getContext()).load(TextUtils.URL_RES_IMG+category.getName()+".jpg").placeholder(R.drawable.default_image).into(holder.imageView);
         holder.category = category;
     }
 
@@ -67,8 +69,9 @@ public class ProgramRecyclerViewAdapter extends BaseRecyclerViewAdapter<ProgramR
 //        public Category program;
 
         public Category category;
+        public ImageView imageView;
 //        public NetworkImageView mNetworkImageView;
-        public SimpleDraweeView mSimpleDraweeView;
+//        public SimpleDraweeView mSimpleDraweeView;
         public TextView textViewTitle;
 
         public ViewHolder(View itemView, int viewType) {

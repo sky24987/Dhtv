@@ -16,12 +16,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
-import java.security.Provider;
-
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.model.CategoryInitiator;
 import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.provider.MyContentProvider;
+import cn.dhtv.mobile.service.DailyService2;
 
 public class WelcomeActivity extends Activity {
 
@@ -46,7 +45,9 @@ public class WelcomeActivity extends Activity {
         setContentView(mLayout);
         init();
 
-        mAccount = CreateSyncAccount(this);
+        Intent dailyServiceIntent = new Intent(this, DailyService2.class);
+        startService(dailyServiceIntent);
+        mAccount = createSyncAccount(this);
         /*test();*/
         /*mAppPreferences.edit().putBoolean(Data.PREFERENCE_KEY_APP_INITIATED,true).commit();*/
         if(mAppPreferences.getBoolean(Data.PREFERENCE_KEY_APP_INITIATED,false) == false){
@@ -136,7 +137,7 @@ public class WelcomeActivity extends Activity {
         finish();
     }
 
-    public static Account CreateSyncAccount(Context context) {
+    public static Account createSyncAccount(Context context) {
         // Create the account type and default account
         Account newAccount = new Account(
                 Data.DUMMY_ACCOUNT, Data.ACCOUNT_TYPE);
@@ -176,6 +177,7 @@ public class WelcomeActivity extends Activity {
         settingsBundle.putBoolean(
                 ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(mAccount, MyContentProvider.AUTHORITY,settingsBundle);
+
     }
 
 

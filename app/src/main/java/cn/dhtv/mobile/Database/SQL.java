@@ -66,7 +66,8 @@ public class SQL {
             Contract.Category.COLUMN_NAME_NAME+TEXT_TYPE+COMMA_SEP+
             Contract.Category.COLUMN_NAME_BID+INTEGER_TYPE+COMMA_SEP+
             Contract.Category.COLUMN_NAME_M3U8+TEXT_TYPE+COMMA_SEP+
-            Contract.Category.COLUMN_NAME_RTMP+TEXT_TYPE+
+            Contract.Category.COLUMN_NAME_RTMP+TEXT_TYPE+COMMA_SEP+
+            Contract.Category.COLUMN_NAME_UPDATE_TIME+INTEGER_TYPE+
             ");";
 
     public static final String SQL_CREATE_BLOCK = "CREATE TABLE "+ Contract.Block.TABLE_NAME+" ("+

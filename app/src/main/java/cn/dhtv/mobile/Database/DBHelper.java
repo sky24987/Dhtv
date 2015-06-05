@@ -48,6 +48,8 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Article.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Block.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Video.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+Contract.Category.TABLE_NAME);
+        db.execSQL(SQL.SQL_CREATE_CATEGORY);
         db.execSQL(SQL.SQL_CREATE_ARTICLE);
         db.execSQL(SQL.SQL_CREATE_BLOCK);
         db.execSQL(SQL.SQL_CREATE_VIDEO);
@@ -55,9 +57,12 @@ public class DBHelper extends SQLiteOpenHelper{
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        db.execSQL("DROP TABLE IF EXISTS "+Contract.Category.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Article.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Block.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+Contract.Video.TABLE_NAME);
+        db.execSQL(SQL.SQL_CREATE_CATEGORY);
         db.execSQL(SQL.SQL_CREATE_ARTICLE);
         db.execSQL(SQL.SQL_CREATE_BLOCK);
         db.execSQL(SQL.SQL_CREATE_VIDEO);

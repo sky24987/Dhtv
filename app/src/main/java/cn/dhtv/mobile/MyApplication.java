@@ -2,10 +2,16 @@ package cn.dhtv.mobile;
 
 import android.app.Application;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.preference.Preference;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
+
+import com.squareup.picasso.Picasso;
 
 import cn.dhtv.mobile.Database.DBHelper;
 import cn.dhtv.mobile.Sync.DataSyncHelper;
@@ -22,6 +28,8 @@ public class MyApplication extends Application {
     private  final String LOG_TAG = getClass().getSimpleName();
     private  final boolean DEBUG = true;
 
+    private int versionCode;
+
     private MediaPlayer mMediaPlayer;
 
     private NewsPageManager mNewsPageManager;
@@ -31,8 +39,15 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fresco.initialize(this);
-        NetUtils.setup(this);
+        init();
+
+
+
+        Singletons.setUp(this);
+
+        Picasso.with(this).setIndicatorsEnabled(true);
+//        Fresco.initialize(this);
+//        NetUtils.setup(this);
         DBHelper.setUp(this);
         DataSyncHelper.setUp(this);
         mNewsPageManager = new NewsPageManager();
@@ -85,6 +100,32 @@ public class MyApplication extends Application {
     public void releaseMediaPlayer(){
         mMediaPlayer.release();
         mMediaPlayer = null;
+    }
+
+    public void init(){
+        SharedPreferences sharedPreferences = getSharedPreferences(Data.PREFERENCE_NAME_APP, MODE_PRIVATE);
+
+        versionCode = sharedPreferences.getInt(Data.PREFERENCE_KEY_APP_VERSION_CODE,0);
+        if(versionCode == 0){
+            try {
+                PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                versionCode = packageInfo.versionCode;
+            }catch (PackageManager.NameNotFoundException e){
+                versionCode = 0;
+            }
+        }
+
+        String deviceId = sharedPreferences.getString(Data.PREFERENCE_KEY_APP_DEVICE_ID,"0");
+        if(deviceId.equals("0")){
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            deviceId = telephonyManager.getDeviceId();
+        }
+        sharedPreferences.edit().putInt(Data.PREFERENCE_KEY_APP_VERSION_CODE,versionCode);
+        sharedPreferences.edit().putString(Data.PREFERENCE_KEY_APP_DEVICE_ID, deviceId)
+                .commit();
+
+        Data.myAppInfo.setVersionCode(versionCode);
+        Data.myAppInfo.setDeviceId(deviceId);
     }
 
 

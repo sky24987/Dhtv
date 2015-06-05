@@ -44,7 +44,7 @@ public class ProgramCollector extends AbsListCollector {
             return;
         }
 
-        isProcessing = false;
+        isProcessing = true;
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -96,7 +96,7 @@ public class ProgramCollector extends AbsListCollector {
             return;
         }
 
-        isProcessing = false;
+        isProcessing = true;
         /*Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

@@ -32,6 +32,7 @@ import cn.dhtv.mobile.Database.CategoryAccessor;
 import cn.dhtv.mobile.Database.Contract;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.activity.ProgramDetailActivity;
 import cn.dhtv.mobile.activity.TVListActivity;
 import cn.dhtv.mobile.provider.MyContentProvider;
@@ -93,7 +94,8 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mProgramPageManager = ((MyApplication)getActivity().getApplication()).getProgramPageManager();
-        mImageLoader = NetUtils.getImageLoader(getActivity());
+        mProgramPageManager.setCallBacks(this);
+        mImageLoader = Singletons.getImageLoader();
 
         View view =  inflater.inflate(R.layout.pager_with_tab, container, false);//View view =  inflater.inflate(R.layout.tab_pager, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
@@ -127,13 +129,19 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     @Override
     public void onResume() {
         super.onResume();
-        mProgramPageManager.setCallBacks(this);
+        /*mProgramPageManager.setCallBacks(this);*/
 //        mProgramPageManager.refresh();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        /*mProgramPageManager.setCallBacks(null);*/
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         mProgramPageManager.setCallBacks(null);
     }
 
@@ -182,12 +190,24 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
 
     @Override
     public void onFirstFetch(Category category, AbsPageManager.CallBackFlag flag) {
+        MyPage page = (MyPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.mProgramRecyclerViewAdapter.notifyDataSetChanged();
+        page.emptyView.setStateIdle();
+        page.mProgramRecyclerViewAdapter.removeEmptyView();
     }
 
     @Override
     public void onFirstFetchFails(Category category, AbsPageManager.CallBackFlag flag) {
+        MyPage page = (MyPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.emptyView.setStateFail();
     }
 
     @Override
@@ -200,8 +220,9 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
             return;
         }
 
-        page.mSwipeRefreshLayout.setRefreshing(false);
+//        page.mSwipeRefreshLayout.setRefreshing(false);
         page.mProgramRecyclerViewAdapter.notifyDataSetChanged();
+        page.emptyView.setStateIdle();
     }
 
     @Override
@@ -211,7 +232,15 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
 
     @Override
     public void onRefreshFails(Category category, AbsPageManager.CallBackFlag flag) {
+        if(DEBUG){
+            Log.d(LOG_TAG,"onRefreshFails");
+        }
+        MyPage page = (MyPage) mPageHolder.get(category.getCatname());
+        if(page == null){
+            return;
+        }
 
+        page.emptyView.setStateFail();
     }
 
     @Override
@@ -249,7 +278,7 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
             @Override
             public void onClick(View v) {
                 EmptyView emptyView = (EmptyView) v;
-                if (emptyView.isIdle()) {
+                if (emptyView.isFail()) {
                     emptyView.setStateProcessing();
                 }
             }
@@ -287,6 +316,7 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
 //        Intent intent = new Intent(getActivity(), ProgramDetailActivity.class);
         Intent intent = new Intent(getActivity(), TVListActivity.class);
         intent.putExtra("program",category);
+        intent.putExtra("title",category.getCatname());
         getActivity().startActivity(intent);
     }
 
@@ -332,13 +362,13 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
         /*FooterRefreshView*/
         @Override
         public void onRefreshing() {
-            mProgramPageManager.append(category);
+//            mProgramPageManager.append(category);
         }
 
         /*EmptyView*/
         @Override
         public void onProcessing() {
-            mProgramPageManager.refresh(category);
+            mProgramPageManager.firstFetch(category);
         }
 
         /*BaseRecyclerViewAdapter*/
@@ -360,13 +390,17 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
                /* if(DEBUG){
                     Log.d(LOG_TAG,"emptyView attach");
                 }*/
-                emptyView.setStateProcessing();
+                if(emptyView.isActive()) {
+                    emptyView.setStateProcessing();
+                }
             }
         }
 
         @Override
         public void onItemDetachListener(View view) {
-
+            if(view == emptyView){
+                emptyView.setStateActive();
+            }
         }
     }
 

@@ -12,11 +12,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
+import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.Database.ArticleAccessor;
 import cn.dhtv.mobile.Database.BlockAccessor;
+import cn.dhtv.mobile.Database.DBUtils;
 import cn.dhtv.mobile.Sync.ArticleSyncHelper;
 import cn.dhtv.mobile.Sync.BlockSyncHelper;
 import cn.dhtv.mobile.Sync.SyncHelperFactory;
@@ -66,6 +69,8 @@ public class NewsListCollector2 extends AbsListCollector {
     private Cache mCache = new Cache();
     private Object mNetTag = new Object();
 
+
+
     private int mState = STATE_IDLE;
     private int mMode;
 
@@ -83,12 +88,12 @@ public class NewsListCollector2 extends AbsListCollector {
         mMode = MODE_APPEND;
         if(mState != STATE_IDLE){
             onFails();
-            resetProcessing();
+//            resetProcessing();
             return;
         }
 
         mState = STATE_PROCESSING_APPEND;
-        mExecutorService.submit(new DBFindArticleTask(category, 0,true));
+        mExecutorService.submit(new DBFindArticleTask(category, minId, false));
     }
 
 
@@ -97,7 +102,7 @@ public class NewsListCollector2 extends AbsListCollector {
         mMode = MODE_INIT;
         if(mState != STATE_IDLE){
             onFails();
-            resetProcessing();
+//            resetProcessing();
             return;
         }
 
@@ -116,7 +121,7 @@ public class NewsListCollector2 extends AbsListCollector {
         mMode = MODE_REFRESH;
         if(mState != STATE_IDLE){
             onFails();
-            resetProcessing();
+//            resetProcessing();
             return;
         }
 
@@ -130,6 +135,11 @@ public class NewsListCollector2 extends AbsListCollector {
         mRequestQueue.add(blockRequest);
     }
 
+    @Override
+    public boolean isProcessing() {
+        return mState != STATE_IDLE;
+    }
+
     private void onFails(){
         switch (mMode){
             case MODE_REFRESH:
@@ -139,7 +149,11 @@ public class NewsListCollector2 extends AbsListCollector {
                 break;
             case MODE_APPEND:
                 if(mCallBacks != null){
-                    mCallBacks.onAppendFails(category, null);
+                    if(mState == STATE_ERROR_DB_PROBLEM_NULL) {
+                        mCallBacks.onAppendFails(category, SyncFlag.DB_NULL);
+                    }else {
+                        mCallBacks.onAppendFails(category,null);
+                    }
                 }
                 break;
             case MODE_INIT:
@@ -153,8 +167,11 @@ public class NewsListCollector2 extends AbsListCollector {
     }
 
     private void onSync(){
+        minId = newsOverviews.get(newsOverviews.size() -1).getAaid();
+
         switch (mMode){
             case MODE_REFRESH:
+
                 if(mCallBacks != null){
                     mCallBacks.onRefresh(category, null);
                 }
@@ -172,6 +189,11 @@ public class NewsListCollector2 extends AbsListCollector {
             case MODE_IDLE:
                 break;
         }
+    }
+
+    private void updateTime(){
+        category.setUpdateTime(new Date());
+        DBUtils.asyncUpdate(category);
     }
 
 
@@ -200,7 +222,7 @@ public class NewsListCollector2 extends AbsListCollector {
 
     @Override
     public int getDataId(int position) {
-        return 0;
+        return newsOverviews.get(position).getAaid();
     }
 
 
@@ -231,14 +253,18 @@ public class NewsListCollector2 extends AbsListCollector {
     }
 
     private void completeProcessing(int state){
+        int size;
         switch (state){
             case STATE_PROCESSING_UPDATE:
                 blockArrayList.clear();
                 newsOverviews.clear();
                 blockArrayList.addAll(mCache.blocks);
-                newsOverviews.addAll(mCache.newsOverviews);
+                size = mCache.newsOverviews.size();
+                size = size > Data.PAGE_SIZE ? Data.PAGE_SIZE : size;
+                newsOverviews.addAll(mCache.newsOverviews.subList(0,size));
                 if(mCache.newsOrigin == Cache.FROM_NET){
                     mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    updateTime();
                 }
                 if(mCache.blockOrigin == Cache.FROM_NET) {
                     mExecutorService.execute(new DBUpDateBlockTask(mCache.blocks,category));
@@ -251,9 +277,12 @@ public class NewsListCollector2 extends AbsListCollector {
                 blockArrayList.clear();
                 newsOverviews.clear();
                 blockArrayList.addAll(mCache.blocks);
-                newsOverviews.addAll(mCache.newsOverviews);
+                size = mCache.newsOverviews.size();
+                size = size > Data.PAGE_SIZE ? Data.PAGE_SIZE : size;
+                newsOverviews.addAll(mCache.newsOverviews.subList(0,size));
                 if(mCache.newsOrigin == Cache.FROM_NET){
                     mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    updateTime();
                 }
                 if(mCache.blockOrigin == Cache.FROM_NET) {
                     mExecutorService.execute(new DBUpDateBlockTask(mCache.blocks,category));
@@ -263,9 +292,9 @@ public class NewsListCollector2 extends AbsListCollector {
                 break;
             case STATE_PROCESSING_APPEND:
                 newsOverviews.addAll(mCache.newsOverviews);
-                if(mCache.newsOrigin == Cache.FROM_NET){
+                /*if(mCache.newsOrigin == Cache.FROM_NET){
                     mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
-                }
+                }*/
                 onSync();
                 resetProcessing();
                 break;
@@ -332,7 +361,20 @@ public class NewsListCollector2 extends AbsListCollector {
 
         @Override
         public void run() {
-            ArrayList<NewsOverview> list =  (ArrayList<NewsOverview>) mArticleAccessor.findArticles(category, minId);
+            //TODO:数据库操作过快，等一会
+            try {
+                Thread.sleep(700);
+            }catch (InterruptedException e){
+
+            }
+
+
+            ArrayList<NewsOverview> list;
+            if(minId == -1){
+                list =  (ArrayList<NewsOverview>) mArticleAccessor.findArticles(category,0);
+            }else {
+                list =  (ArrayList<NewsOverview>) mArticleAccessor.findArticles(category, minId,0);
+            }
             if(list.size() == 0){
                 if(attemptNetWork){
                     JsonObjectRequest newsRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeNewsOverviewUrl(category, 1),null,new ArticleResponseListener(),new ErrorListener());
@@ -446,10 +488,8 @@ public class NewsListCollector2 extends AbsListCollector {
                 if(mMode == MODE_INIT){
                     /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
                     cancelTask();
-                    mExecutorService.execute(new DBFindArticleTask(category, 0, false));
+                    mExecutorService.execute(new DBFindArticleTask(category, -1, false));
                     mExecutorService.execute(new DBFindBlockTask(category,false));
-
-
                 }
 
 
@@ -474,7 +514,7 @@ public class NewsListCollector2 extends AbsListCollector {
                 if(mMode == MODE_INIT){
                     /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
                     cancelTask();
-                    mExecutorService.execute(new DBFindArticleTask(category, 0, false));
+                    mExecutorService.execute(new DBFindArticleTask(category, -1, false));
                     mExecutorService.execute(new DBFindBlockTask(category,false));
 
                 }
@@ -500,8 +540,8 @@ public class NewsListCollector2 extends AbsListCollector {
         public void onErrorResponse(VolleyError volleyError) {
 //            mState = STATE_ERROR_NET_PROBLEM;
             cancelTask();
-            if(mMode == MODE_INIT || mMode == MODE_REFRESH){
-                mExecutorService.execute(new DBFindArticleTask(category, 0, false));
+            if(mMode == MODE_INIT /*|| mMode == MODE_REFRESH*/){
+                mExecutorService.execute(new DBFindArticleTask(category, -1, false));
                 mExecutorService.execute(new DBFindBlockTask(category,false));
                 return;
             }else {

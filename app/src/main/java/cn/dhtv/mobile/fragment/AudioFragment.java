@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,10 +26,10 @@ import java.util.List;
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.ui.adapter.FMAdapter;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.service.AudioService;
 
 
@@ -38,7 +38,7 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     private final boolean DEBUG = true;
 
 
-    public  final String title = "新闻";
+    public  final String title = "广播";
 
     private boolean autoPaused = true;//是否手动暂停
     private boolean audioBound = false;
@@ -57,13 +57,14 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
 
 
 
-    private RequestQueue mRequestQueue = NetUtils.getRequestQueue();
+    private RequestQueue mRequestQueue = Singletons.getRequestQueue();
     private ObjectMapper mObjectMapper = new ObjectMapper();
 
     ImageView mImageView;
     ImageView mPlayButton;
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
+    TextView mFmName;
 
     public AudioFragment() {
         fmCategory = new Category();
@@ -197,7 +198,7 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         if(playButtonOn == true){
             play();
         }else {
-            pause();
+            /*pause();*/stop();
         }
     }
 
@@ -209,6 +210,7 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         fmToBeSet = false;
 
         if(mStateData.selectedFm != null){
+            mFmName.setText(mStateData.selectedFm.getCatname());
             try {
                 setAudio(mStateData.selectedFm.getLive().getM3u8());
             }catch (IOException e){
@@ -235,11 +237,18 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     private void play(){
 
         mAudioBinder.play();
+
     }
 
     private void pause(){
 
         mAudioBinder.pause();
+
+    }
+
+    private void stop(){
+        mAudioBinder.stop();
+        audioPrepared = false;
     }
 
 
@@ -332,6 +341,11 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         radioButtonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!audioBound){
+                    return;
+                }
+
+
                 boolean selected = v.isSelected();
                 if(selected == true){
                     buttonOff();
@@ -347,11 +361,14 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     }
 
     private void initView(View view){
-        mLayoutManager =  new GridLayoutManager(getActivity(),3,LinearLayoutManager.VERTICAL,false);
+        /*mLayoutManager =  new GridLayoutManager(getActivity(),3,LinearLayoutManager.VERTICAL,false);*/
+        mLayoutManager =  new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mImageView = (ImageView) view.findViewById(R.id.fm);
+        mFmName = (TextView) view.findViewById(R.id.fm_name);
         mPlayButton = mImageView;
         mPlayButton.setOnClickListener(radioButtonClickListener);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+//        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
         mRecyclerView.setAdapter(mFmAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
     }
@@ -378,10 +395,18 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         if(playButtonOn == true){
             if(isAudioPlayable()){
                 play();
+            }else {
+                try {
+                    setAudio(mStateData.selectedFm.getLive().getM3u8());
+                }catch (IOException  e){
+                    //TODO
+                }
+
             }
         }else {
             if(isAudioPlayable()){
-                pause();
+                /*pause();*/stop();
+
             }
         }
     }

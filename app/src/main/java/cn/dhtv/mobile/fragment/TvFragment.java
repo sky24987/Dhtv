@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.ui.adapter.TvListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.TvOverview;
@@ -49,7 +50,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
-    RequestQueue mRequestQueue = NetUtils.getRequestQueue();
+    RequestQueue mRequestQueue = Singletons.getRequestQueue();
     ObjectMapper mObjectMapper = new ObjectMapper();
 
     Category mProgram;

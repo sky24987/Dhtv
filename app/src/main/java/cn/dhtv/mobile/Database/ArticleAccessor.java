@@ -26,7 +26,7 @@ public class ArticleAccessor {
             size = DEFAULT_SIZE;
         }
         String selection =Contract.Article.COLUMN_NAME_CAT_ID +" = "+category.getCatid();
-        Cursor cursor = getDb().query(Contract.Article.TABLE_NAME,null,selection,null,null,null, Contract.Article.COLUMN_NAME_AAID,""+size);
+        Cursor cursor = getDb().query(Contract.Article.TABLE_NAME,null,selection,null,null,null, Contract.Article.COLUMN_NAME_AAID+" desc",""+size);
         List<NewsOverview> list = toList(cursor);
         cursor.close();
         return list;
@@ -40,10 +40,10 @@ public class ArticleAccessor {
             size = DEFAULT_SIZE;
         }
         String selection = Contract.Article.COLUMN_NAME_CAT_ID +" = "+category.getCatid() + " and "+
-                Contract.Article.COLUMN_NAME_AAID + " > " + minId;
+                Contract.Article.COLUMN_NAME_AAID + " < " + minId;
         Cursor cursor = null;
         try {
-           cursor = getDb().query(Contract.Article.TABLE_NAME,null,selection,null,null,null, Contract.Article.COLUMN_NAME_AID,""+size);
+           cursor = getDb().query(Contract.Article.TABLE_NAME,null,selection,null,null,null, Contract.Article.COLUMN_NAME_AAID+" desc",""+size);
 
         }catch (Error error){
             Log.e(LOG_TAG,error.toString());
@@ -65,10 +65,11 @@ public class ArticleAccessor {
         values.put(Contract.Article.COLUMN_NAME_TITLE,newsOverview.getTitle());
         values.put(Contract.Article.COLUMN_NAME_DATELINE,newsOverview.getDateline());
         values.put(Contract.Article.COLUMN_NAME_FROM,newsOverview.getFrom());
-        values.put(Contract.Article.COLUMN_NAME_UID,newsOverview.getUid());
-        values.put(Contract.Article.COLUMN_NAME_URL,newsOverview.getUrl());
-        values.put(Contract.Article.COLUMN_NAME_PIC_URL,newsOverview.getPic_url());
-        values.put(Contract.Article.COLUMN_NAME_CHECKED,newsOverview.isChecked());
+        values.put(Contract.Article.COLUMN_NAME_UID, newsOverview.getUid());
+        values.put(Contract.Article.COLUMN_NAME_URL, newsOverview.getUrl());
+        values.put(Contract.Article.COLUMN_NAME_PIC_URL, newsOverview.getPic_url());
+        values.put(Contract.Article.COLUMN_NAME_USER_NAME,newsOverview.getUsername());
+        values.put(Contract.Article.COLUMN_NAME_CHECKED, newsOverview.isChecked());
         return getDb().replace(Contract.Article.TABLE_NAME,null,values);
     }
 
@@ -83,7 +84,7 @@ public class ArticleAccessor {
         return DBHelper.getInstance().getWritableDatabase();
     }
 
-    public static String[] getProjection(){
+    /*public static String[] getProjection(){
         return new String[]{
                 Contract.Article._ID,
                 Contract.Article.COLUMN_NAME_AID,
@@ -98,7 +99,7 @@ public class ArticleAccessor {
                 Contract.Article.COLUMN_NAME_USER_NAME,
                 Contract.Article.COLUMN_NAME_CHECKED
         };
-    }
+    }*/
 
 
     public static List<NewsOverview> toList(Cursor cursor){
@@ -111,6 +112,7 @@ public class ArticleAccessor {
 
     public static NewsOverview toArticle(Cursor cursor){
         NewsOverview newsOverview = new NewsOverview();
+        newsOverview.setAaid(cursor.getInt(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_AAID)));
         newsOverview.setAid(cursor.getInt(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_AID)));
         newsOverview.setCatid(cursor.getInt(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_CAT_ID)));
         newsOverview.setTitle(cursor.getString(cursor.getColumnIndex(Contract.Article.COLUMN_NAME_TITLE)));

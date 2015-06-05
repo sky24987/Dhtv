@@ -12,6 +12,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.model.AbsListCollector;
@@ -27,7 +28,7 @@ public class drop_NewsListAdapter2 extends RecyclerView.Adapter<drop_NewsListAda
 
     private Category category;
     private AbstractListAdapter.ListViewDataList listViewDataList;
-    private ImageLoader mImageLoader = NetUtils.getImageLoader();
+    private ImageLoader mImageLoader = Singletons.getImageLoader();
     private FooterRefreshView mFooterRefreshView;
     private View mHeaderView;
     private View mEmptyView;

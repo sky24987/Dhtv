@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import cn.dhtv.mobile.entity.inner.Live;
  */
 public class CategoryAccessor {
 
-    public List<Category> getSubCategories(Category category){
+    public ArrayList<Category> getSubCategories(Category category){
         Cursor cursor = getDb().query(Contract.Category.TABLE_NAME, null, Contract.Category.COLUMN_NAME_UP_ID + "=?", new String[]{"" + category.getCatid()}, null, null, Contract.Category.COLUMN_NAME_CAT_ID);
         return toList(cursor);
     }
@@ -33,7 +34,7 @@ public class CategoryAccessor {
         values.put(Contract.Category.COLUMN_NAME_BID,category.getBid());
         values.put(Contract.Category.COLUMN_NAME_M3U8,category.getLive().getM3u8());
         values.put(Contract.Category.COLUMN_NAME_RTMP,category.getLive().getRtmp());*/
-        return getDb().replace(Contract.Category.TABLE_NAME,null,values);
+        return getDb().replace(Contract.Category.TABLE_NAME, null, values);
     }
 
     public ContentValues makeContentValues(Category category){
@@ -47,7 +48,15 @@ public class CategoryAccessor {
         values.put(Contract.Category.COLUMN_NAME_BID,category.getBid());
         values.put(Contract.Category.COLUMN_NAME_M3U8,category.getLive().getM3u8());
         values.put(Contract.Category.COLUMN_NAME_RTMP,category.getLive().getRtmp());
+        values.put(Contract.Category.COLUMN_NAME_UPDATE_TIME,category.getUpdateTime() == null ? 0 :category.getUpdateTime().getTime());
         return values;
+    }
+
+    public void clear(Category category){
+        getDb().beginTransaction();
+        getDb().delete(Contract.Category.TABLE_NAME, Contract.Category.COLUMN_NAME_UP_ID+" = ?",new String[]{""+category.getCatid()});
+        getDb().setTransactionSuccessful();
+        getDb().endTransaction();
     }
 
 
@@ -69,8 +78,8 @@ public class CategoryAccessor {
                 };
     }
 
-    public static List<Category> toList(Cursor cursor){
-        List<Category> list = new ArrayList<Category>();
+    public static ArrayList<Category> toList(Cursor cursor){
+        ArrayList<Category> list = new ArrayList<Category>();
         while (cursor.moveToNext()){
             list.add(toCategory(cursor));
         }
@@ -88,6 +97,8 @@ public class CategoryAccessor {
         live.setM3u8(cursor.getString(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_M3U8)));
         live.setRtmp(cursor.getString(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_RTMP)));
         category.setLive(live);
+        long time = cursor.getLong(cursor.getColumnIndex(Contract.Category.COLUMN_NAME_UPDATE_TIME));
+        category.setUpdateTime(time == 0 ? null : new Date(time));
         return category;
     }
 

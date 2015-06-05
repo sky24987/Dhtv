@@ -2,10 +2,12 @@
 <resources>
     <attr name="ratio_width_weight" format="integer"/>
     <attr name="ratio_height_weight" format="integer"/>
+    <attr name="ratio" format="float" />
 
     <declare-styleable name="RatioImageView">
         <attr name="ratio_width_weight"/>
         <attr name="ratio_height_weight"/>
+        <attr name="ratio" />
     </declare-styleable>
     
 </resources>

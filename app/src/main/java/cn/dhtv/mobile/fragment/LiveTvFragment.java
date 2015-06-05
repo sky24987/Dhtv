@@ -133,6 +133,11 @@ public class LiveTvFragment extends SectionFragment {
             mChannelAdapter.notifyDataSetChanged();
             mVideoView.setVideoPath(category.getLive().getM3u8());
             //mVideoView.setVideoPath("http://data.wztv.cn/tv/17/201504/26_1428401975.mp4");
+//            mVideoView.setVideoPath("http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8");
+//            mVideoView.setVideoPath("http://live.3gv.ifeng.com/zixun.m3u8");
+//            mVideoView.setVideoPath("http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8");
+            mVideoView.setVideoPath("http://hls.dhtv.cn:8080/live/v1_15.m3u8");
+
         }
     }
 

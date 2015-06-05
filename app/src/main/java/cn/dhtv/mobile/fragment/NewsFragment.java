@@ -26,6 +26,7 @@ import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.activity.WebViewActivity;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.ui.adapter.NewsRecyclerViewAdapter;
@@ -117,7 +118,7 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mNewsPageManager = ((MyApplication)getActivity().getApplication()).getNewsPageManager();
-        mImageLoader = NetUtils.getImageLoader(getActivity());
+        mImageLoader = Singletons.getImageLoader();
 
         View view = inflater.inflate(R.layout.pager_with_tab, container, false);//View view =  inflater.inflate(R.layout.tab_pager, container, false);
 
@@ -178,12 +179,18 @@ public class NewsFragment extends SectionFragment implements BasePagerAdapter.Pa
     @Override
     public void onResume() {
         super.onResume();
-        mNewsPageManager.setCallBacks(this);
+        /*mNewsPageManager.setCallBacks(this);*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        /*mNewsPageManager.setCallBacks(null);*/
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         mNewsPageManager.setCallBacks(null);
     }
 
