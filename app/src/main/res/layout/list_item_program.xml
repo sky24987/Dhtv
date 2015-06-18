@@ -21,11 +21,17 @@
         fresco:placeholderImageScaleType="fitXY"
         fresco:viewAspectRatio="1.33"
         />-->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_gravity="center_horizontal" />
+
     <cn.dhtv.android.view.RatioImageView
         android:id="@+id/image"
         app:ratio="1.33"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="2dp"
         android:scaleType="fitXY"/>
     <TextView

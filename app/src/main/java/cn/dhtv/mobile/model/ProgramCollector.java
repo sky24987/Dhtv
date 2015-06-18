@@ -1,32 +1,53 @@
 package cn.dhtv.mobile.model;
 
-import android.util.Log;
+import android.os.AsyncTask;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.fasterxml.jackson.core.type.TypeReference;
+import org.json.JSONException;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.Executor;
 
-import cn.dhtv.mobile.Sync.DataSyncHelper;
+import cn.dhtv.mobile.Database.CategoryAccessor;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.Program;
+import cn.dhtv.mobile.network.CategoryClient;
+import cn.dhtv.mobile.util.TimeUtils;
 
 /**
- * Created by Jack on 2015/3/26.
+ * Created by Jack on 2015/5/22.
  */
 public class ProgramCollector extends AbsListCollector {
-
-
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
+    private static final int MODE_APPEND = 1;
+    private static final int MODE_REFRESH = 2;
+    private static final int MODE_INIT = 3;
+    private static final int MODE_IDLE = 0;
+
+    private static final int APPROACH_DB = 1;
+    private static final int APPROACH_NET = 2;
+    private static final int APPROACH_DB_NET = 3;
+    private static final int APPROACH_NET_DB = 4;
+    private static final int APPROACH_NOT_SPECIFIC = 0;
+
+    private static final int STATE_IDLE = 0;
+    private static final int STATE_ERROR_NULL = -1;
+    private static final int STATE_ERROR_IO = -2;
+    private static final int STATE_ERROR_JSON = -3;
+    private static final int STATE_SUCCESS = 1;
+//    private static final int STATE_ERROR_DB = -4;
+
+
+    private int mMode = MODE_IDLE;
+    private int mApproach = APPROACH_NOT_SPECIFIC;
+    private int mNetState = STATE_IDLE;
+    private int mDBState = STATE_IDLE;
+
     private ArrayList<Category> programs = new ArrayList<>();
+    private CategoryAccessor mCategoryAccessor = new CategoryAccessor();
+    private CategoryClient mCategoryClient = new CategoryClient();
+    private Executor asyncTaskExecutor = AsyncTask.THREAD_POOL_EXECUTOR;
 
     public ProgramCollector(Category category, CallBacks callBacks) {
         super(category, callBacks);
@@ -38,103 +59,55 @@ public class ProgramCollector extends AbsListCollector {
     }
 
     @Override
-    public void asyncAppend() {
+    public void asyncFirstFetch() {
         if(isProcessing()){
-            onAppendFails(null);
-            return;
+            if(mCallBacks != null){
+                mCallBacks.onFirstFetchFails(category, null);
+                return;
+            }
         }
 
-        isProcessing = true;
+        mMode = MODE_INIT;
+        if(TimeUtils.reachUpdateTimeGap(category.getUpdateTime())){
+            mApproach = APPROACH_NET_DB;
+        }else {
+            mApproach = APPROACH_DB_NET;
+        }
 
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ArrayList<Program> list;
-                if(DEBUG){
-                    Log.d(LOG_TAG, "append request json:" + response);
-                }
-                try {
-                    list = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("children").toString(), new TypeReference<List<Program>>() {
-                    });
-                    if(DEBUG){
-                        Log.d(LOG_TAG, list.toString());
-                    }
-                    programs.addAll(list);
-                    onAppend(null);
-                } catch (Exception e) {
-                    onAppendFails(null);
-                    e.printStackTrace();
-                    Log.e(LOG_TAG, e.getMessage());
-                }finally{
+        new SyncProgramAsyncTask().executeOnExecutor(asyncTaskExecutor);
 
-                }
-            }
-        };
 
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(LOG_TAG,error.getMessage());
-                onAppendFails(null);
-            }
-        };
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeProgramURL(nextPage()), null,responseListener,errorListener);
-        jsonObjectRequest.setTag(category);
-        mRequestQueue.add(jsonObjectRequest);
     }
 
     @Override
-    public void asyncFirstFetch() {
+    public void asyncAppend() {
 
     }
 
     @Override
     public void asyncRefresh() {
         if(isProcessing()){
-            onRefreshFails(null);
-            return;
+            if(mCallBacks != null){
+                mCallBacks.onRefreshFails(category, null);
+                return;
+            }
         }
 
-        isProcessing = true;
-        /*Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ArrayList<Program> list;
-                try {
-                    list = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("children").toString(), new TypeReference<List<Program>>() {
-                    });
-                    if(DEBUG){
-                        Log.d(LOG_TAG, list.toString());
-                    }
-                    programs.clear();
-                    programs.addAll(list);
-                    onRefresh(null);
-                } catch (Exception e) {
-                    onRefreshFails(null);
-                    e.printStackTrace();
-                    Log.e(LOG_TAG, e.getMessage());
-                }finally{
-
-                }
+        /*if(!TimeUtils.reachRefreshTimeGap(category.getUpdateTime())){
+            if(mCallBacks != null){
+                mCallBacks.onRefreshFails(category,null);
             }
-        };
+        }*/
 
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(LOG_TAG,error.getMessage());
-                onRefreshFails(null);
-            }
-        };
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeProgramURL(1),null,responseListener,errorListener);
-        jsonObjectRequest.setTag(category);
-        mRequestQueue.add(jsonObjectRequest);*/
-
-        DataSyncHelper.getInstance().SyncCategoryFirstFromDB(category,mCategorySyncCallBacks);
+        mMode = MODE_REFRESH;
+        mApproach = APPROACH_NET;
+        new SyncProgramAsyncTask().executeOnExecutor(asyncTaskExecutor);
 
     }
+
+
+
+
 
     @Override
     public Object getItem(int position) {
@@ -156,55 +129,166 @@ public class ProgramCollector extends AbsListCollector {
         return programs.get(position).getCatid();
     }
 
-    private void onRefresh(SyncFlag syncFlag){
-        isProcessing = false;
 
-        currentPage = 1;
-        if(mCallBacks != null){
-            mCallBacks.onRefresh(category,null);
+    public boolean isProcessing(){
+        if(mMode != MODE_IDLE){
+            return true;
+        }else {
+            return false;
         }
     }
 
-    private void onAppend(SyncFlag syncFlag){
-        isProcessing = false;
-
-        currentPage++;
-        if(mCallBacks != null){
-            mCallBacks.onAppend(category,null);
-        }
+    private void reset(){
+        mMode = MODE_IDLE;
+        mApproach = APPROACH_NOT_SPECIFIC;
+        mNetState = STATE_IDLE;
+        mDBState = STATE_IDLE;
     }
 
-    private void onRefreshFails(SyncFlag syncFlag){
-        isProcessing = false;
-
-
-        if(mCallBacks != null){
-            mCallBacks.onRefreshFails(category,null);
+    private boolean isSuccessful(){
+        if(mDBState == STATE_SUCCESS || mNetState == STATE_SUCCESS){
+            return true;
         }
+
+        return false;
     }
 
-    private void onAppendFails(SyncFlag syncFlag){
-        isProcessing = false;
-        if(mCallBacks != null){
-            mCallBacks.onAppendFails(category,null);
-        }
-    }
 
-    private DataSyncHelper.CategorySyncCallBacks mCategorySyncCallBacks = new DataSyncHelper.CategorySyncCallBacks() {
-        @Override
-        public void onSync(List<Category> list) {
-            programs.clear();
-            programs.addAll(list);
-            onRefresh(null);
-        }
+    private class SyncProgramAsyncTask extends AsyncTask<Object,Object,ArrayList<Category>>{
+        private ArrayList<Category> result;
 
         @Override
-        public void onError(int flag) {
+        protected ArrayList<Category> doInBackground(Object... params) {
+            if(mApproach == APPROACH_NET_DB){
+                if(tryNet()){
+                    return result;
+                }
 
+                if(tryDb()){
+                    return result;
+                }
+
+                return null;
+            }
+
+            if(mApproach == APPROACH_DB_NET){
+                if(tryDb()){
+                    return result;
+                }
+
+                if(tryNet()){
+                    return result;
+                }
+
+                return null;
+            }
+
+            if(mApproach == APPROACH_NET){
+                if(tryNet()){
+                    return result;
+                }
+
+                return null;
+            }
+
+            if(mApproach == APPROACH_DB){
+                if(tryDb()){
+                    return result;
+                }
+
+                return null;
+            }
+
+            return null;
         }
-    };
 
-    private String makeProgramURL(int page){
-        return Category.URL+"?"+"catid="+category.getCatid()+"&page="+page+"&level=1";
+        @Override
+        protected void onPostExecute(ArrayList<Category> categories) {
+            if(isSuccessful()){
+                switch (mMode){
+                    case MODE_INIT:
+                        programs.clear();
+                        programs.addAll(categories);
+                        if(mCallBacks != null){
+                            mCallBacks.onFirstFetch(category,null);
+                        }
+                        reset();
+                        break;
+                    case MODE_APPEND:
+                        reset();
+                        break;
+                    case MODE_REFRESH:
+                        programs.clear();
+                        programs.addAll(categories);
+                        if(mCallBacks != null){
+                            mCallBacks.onRefresh(category,null);
+                        }
+                        reset();
+                        break;
+                    default:
+                        reset();
+                }
+            }else {
+                switch (mMode){
+                    case MODE_INIT:
+                        if(mCallBacks != null){
+                            mCallBacks.onFirstFetchFails(category,null);
+                        }
+                        reset();
+                        break;
+                    case MODE_APPEND:
+                        reset();
+                        break;
+                    case MODE_REFRESH:
+                        if(mCallBacks != null){
+                            mCallBacks.onRefreshFails(category,null);
+                        }
+                        reset();
+                        break;
+
+                }
+            }
+        }
+
+        private boolean tryNet(){
+            try {
+                ArrayList<Category> categories = mCategoryClient.fetchCategories(category);
+                if(categories.size() == 0){
+                    mNetState = STATE_ERROR_NULL;
+                    return false;
+                }
+                mNetState = STATE_SUCCESS;
+                result = categories;
+                mCategoryAccessor.clear(category);
+                for(Category category:categories){
+                    mCategoryAccessor.insertOrReplace(category);
+                }
+                return true;
+            }catch (JSONException e){
+                mNetState = STATE_ERROR_JSON;
+                return false;
+            }catch (IOException e){
+                mNetState = STATE_ERROR_IO;
+                return false;
+            }
+        }
+
+        private boolean tryDb(){
+            try {
+                ArrayList<Category> categories = mCategoryAccessor.getSubCategories(category);
+                if(categories.size() == 0){
+                    mDBState = STATE_ERROR_NULL;
+                    return false;
+                }
+
+                mDBState = STATE_SUCCESS;
+                result = categories;
+
+                return true;
+            }catch (Exception e){
+                mDBState = STATE_ERROR_IO;
+                return false;
+            }
+        }
     }
 }

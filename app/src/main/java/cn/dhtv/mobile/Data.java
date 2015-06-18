@@ -18,6 +18,9 @@ public class Data {
     public static final String PREFERENCE_KEY_APP_USER_CANCEL_UPGRADE_TIMESTAMP = "app_cancel_upgrade_timestamp";
 
     public static final String PREFERENCE_NAME_USER = "user";
+    public static final String PREFERENCE_KEY_USER_NAME = "name";
+    public static final String PREFERENCE_KEY_USER_TOKEN = "token";
+    public static final String PREFERENCE_KEY_USER_UID = "uid";
 
 
     public static final String ACCOUNT_TYPE = "dhtv.cn";
@@ -28,12 +31,15 @@ public class Data {
     public static final int PAGE_SIZE = 10;
     public static final int NEWS_PAGE_SIZE = PAGE_SIZE;
     public static final int VIDEO_PAGE_SIZE = PAGE_SIZE;
+    public static final int FACT_PAGE_SIZE = PAGE_SIZE;
+    public static final int FAVORITE_PAGE_SIZE = PAGE_SIZE;
 
     public static final int TOTAL_PAGE_SIZE = PAGE_SIZE * 5;
     public static final int TOTAL_PAGE_SIZE_NEWS = TOTAL_PAGE_SIZE;
     public static final int TOTAL_PAGE_SIZE_VIDEO = TOTAL_PAGE_SIZE;
 
 
+    public static final int weiVideoId = 264;
 
     public static final Category newsFatherCategory;
     public static final Category videoFatherCategory;

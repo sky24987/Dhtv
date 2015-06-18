@@ -39,6 +39,8 @@ public class MediaController extends FrameLayout{
     private final boolean DEBUG = true;
 
 
+
+
     private static final int PROGRESS_BAR_MAX = 1000;
     private static final int    sDefaultTimeout = 4000;
     private static final int FADE_OUT = 1;
@@ -51,6 +53,9 @@ public class MediaController extends FrameLayout{
     private boolean mShowing = false;
 
     private android.widget.MediaController.MediaPlayerControl mPlayer;
+
+    private boolean mShowFullScreenButton = true;
+    private boolean mEnableSeekBar = true;
 
 
     private View mAnchor;
@@ -343,7 +348,13 @@ public class MediaController extends FrameLayout{
     private void initView(View parent){
         mPlayButton = (ImageButton) parent.findViewById(R.id.button_play);
         mScreenCfgButton = (ImageButton) parent.findViewById(R.id.button_screen_configure);
+        if(mShowFullScreenButton == false){
+            mScreenCfgButton.setVisibility(GONE);
+        }
         mSeekBar = (SeekBar) parent.findViewById(R.id.seek_bar);
+        if(mEnableSeekBar == false){
+            mSeekBar.setEnabled(false);
+        }
         mCurrentTimeTextView = (TextView) parent.findViewById(R.id.time_current);
         mTimeTextView = (TextView) parent.findViewById(R.id.time);
 

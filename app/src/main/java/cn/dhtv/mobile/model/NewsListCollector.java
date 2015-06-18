@@ -1,25 +1,25 @@
 package cn.dhtv.mobile.model;
 
-import android.content.Context;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.Database.ArticleAccessor;
 import cn.dhtv.mobile.Database.BlockAccessor;
+import cn.dhtv.mobile.Database.DBUtils;
 import cn.dhtv.mobile.Sync.ArticleSyncHelper;
 import cn.dhtv.mobile.Sync.BlockSyncHelper;
 import cn.dhtv.mobile.Sync.SyncHelperFactory;
@@ -27,21 +27,30 @@ import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.network.BlockClient;
+import cn.dhtv.mobile.network.NewsClient;
 import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.util.TextUtils;
 
 /**
- * Created by Jack on 2015/3/17.
+ * Created by Jack on 2015/4/23.
  */
-public class NewsListCollector extends AbsListCollector{
-    /*private static final String URL_NEWS = "http://api.dhtv.cn/mobile/article/";*/
+public class NewsListCollector extends AbsListCollector {
     private static final int STATE_PROCESSING_APPEND = 1;
     private static final int STATE_PROCESSING_UPDATE = 2;
     private static final int STATE_PROCESSING_INIT = 3;
     private static final int STATE_IDLE = 0;
     private static final int STATE_ERROR_NET_PROBLEM = -1;
     private static final int STATE_ERROR_JSON_PROBLEM = -3;
-    private static final int STATE_ERROR_DB_PROBLEM = -2;
+    private static final int STATE_ERROR_DB_PROBLEM_NULL = -2;
+
+    private static final int MODE_APPEND = 1;
+    private static final int MODE_REFRESH = 2;
+    private static final int MODE_INIT = 3;
+    private static final int MODE_IDLE = 0;
+
+    private static final int MESSAGE_SUCCESS = 1;
+    private static final int MESSAGE_NULL = 0;
+
 
 
     private final String LOG_TAG = getClass().getSimpleName();
@@ -60,26 +69,138 @@ public class NewsListCollector extends AbsListCollector{
     private Cache mCache = new Cache();
     private Object mNetTag = new Object();
 
+
+
     private int mState = STATE_IDLE;
+    private int mMode;
 
-
-
-    public NewsListCollector(Category category,CallBacks callBacks) {
-        this.category = category;
-        this.mCallBacks = callBacks;
+    public NewsListCollector(Category category, CallBacks callBacks) {
+        super(category, callBacks);
     }
 
-    public NewsListCollector(Category category,Context context,RequestQueue requestQueue) {
-        this(category, context, requestQueue,null);
+    @Override
+    public void clear() {
+
     }
 
-    public NewsListCollector(Category category,Context context,RequestQueue requestQueue,CallBacks callBacks) {
-        this.context = context;
-        this.category = category;
-        this.mRequestQueue = requestQueue;
-        this.mCallBacks = callBacks;
+    @Override
+    public void asyncAppend() {
+        mMode = MODE_APPEND;
+        if(mState != STATE_IDLE){
+            onFails();
+//            resetProcessing();
+            return;
+        }
+
+        mState = STATE_PROCESSING_APPEND;
+        mExecutorService.submit(new DBFindArticleTask(category, minId, false));
     }
 
+
+    @Override
+    public void asyncFirstFetch(){
+        mMode = MODE_INIT;
+        if(mState != STATE_IDLE){
+            onFails();
+//            resetProcessing();
+            return;
+        }
+
+        mState = STATE_PROCESSING_INIT;
+
+        JsonObjectRequest newsRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeNewsOverviewUrl(category, 1),null,new ArticleResponseListener(),new ErrorListener());
+        JsonObjectRequest blockRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeBlockQueryUrl(category),null,new BlockResponseListener(),new ErrorListener());
+        newsRequest.setTag(mNetTag);
+        blockRequest.setTag(mNetTag);
+        mRequestQueue.add(newsRequest);
+        mRequestQueue.add(blockRequest);
+    }
+
+    @Override
+    public void asyncRefresh() {
+        mMode = MODE_REFRESH;
+        if(mState != STATE_IDLE){
+            onFails();
+//            resetProcessing();
+            return;
+        }
+
+        mState = STATE_PROCESSING_UPDATE;
+
+        JsonObjectRequest newsRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeNewsOverviewUrl(category, 1),null,new ArticleResponseListener(),new ErrorListener());
+        JsonObjectRequest blockRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeBlockQueryUrl(category),null,new BlockResponseListener(),new ErrorListener());
+        newsRequest.setTag(mNetTag);
+        blockRequest.setTag(mNetTag);
+        mRequestQueue.add(newsRequest);
+        mRequestQueue.add(blockRequest);
+    }
+
+    @Override
+    public boolean isProcessing() {
+        return mState != STATE_IDLE;
+    }
+
+    private void onFails(){
+        switch (mMode){
+            case MODE_REFRESH:
+                if(mCallBacks != null){
+                    mCallBacks.onRefreshFails(category, null);
+                }
+                break;
+            case MODE_APPEND:
+                if(mCallBacks != null){
+                    if(mState == STATE_ERROR_DB_PROBLEM_NULL) {
+                        mCallBacks.onAppendFails(category, SyncFlag.DB_NULL);
+                    }else {
+                        mCallBacks.onAppendFails(category,null);
+                    }
+                }
+                break;
+            case MODE_INIT:
+                if(mCallBacks != null){
+                    mCallBacks.onFirstFetchFails(category, null);
+                }
+                break;
+            case MODE_IDLE:
+                break;
+        }
+    }
+
+    private void onSync(){
+        minId = newsOverviews.get(newsOverviews.size() -1).getAaid();
+
+        switch (mMode){
+            case MODE_REFRESH:
+
+                if(mCallBacks != null){
+                    mCallBacks.onRefresh(category, null);
+                }
+                break;
+            case MODE_APPEND:
+                if(mCallBacks != null){
+                    mCallBacks.onAppend(category, null);
+                }
+                break;
+            case MODE_INIT:
+                if(mCallBacks != null){
+                    mCallBacks.onFirstFetch(category, null);
+                }
+                break;
+            case MODE_IDLE:
+                break;
+        }
+    }
+
+    private void updateTime(){
+        category.setUpdateTime(new Date());
+        DBUtils.asyncUpdate(category);
+    }
+
+
+
+    public ArrayList<Block> getBlockArrayList(){
+        return blockArrayList;
+    }
 
 
 
@@ -105,115 +226,6 @@ public class NewsListCollector extends AbsListCollector{
     }
 
 
-
-
-
-
-    @Override
-    public void clear() {
-        newsOverviews.clear();
-        resetState();
-    }
-
-    @Override
-    public void asyncAppend() {
-        if(isProcessing()){
-            onAppendFails(null);
-            return;
-        }
-
-        isProcessing = true;
-
-        /*Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ArrayList<NewsOverview> newsList;
-                try {
-                    newsList = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<NewsOverview>>() {
-                    });
-                    if(DEBUG){
-                        Log.d(LOG_TAG, newsList.toString());
-                    }
-                    newsOverviews.addAll(newsList);
-                    onAppend(null);
-                } catch (Exception e) {
-                    onAppendFails(null);
-                    e.printStackTrace();
-                    Log.e(LOG_TAG, e.getMessage());
-                }finally{
-
-                }
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(LOG_TAG,error.getMessage());
-                onAppendFails(null);
-            }
-        };
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,makeNewsURL(nextPage()),null,responseListener,errorListener);
-        jsonObjectRequest.setTag(category);
-        mRequestQueue.add(jsonObjectRequest);*/
-        mArticleSyncHelper.syncFirstFromDB(category,nextPage(),mArticleSyncCallBacks);
-    }
-
-    @Override
-    public void asyncRefresh() {
-        if(isProcessing()){
-            onRefreshFails(null);
-            return;
-        }
-
-        isProcessing = false;
-        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ArrayList<NewsOverview> newsList;
-                try {
-                    newsList = mObjectMapper.readValue(response.getJSONObject("data").getJSONArray("list").toString(), new TypeReference<List<NewsOverview>>() {
-                    });
-                    if(DEBUG){
-                        Log.d(LOG_TAG, newsList.toString());
-                    }
-                    newsOverviews.clear();
-                    newsOverviews.addAll(newsList);
-                    onRefresh(null);
-                } catch (Exception e) {
-                    onRefreshFails(null);
-                    e.printStackTrace();
-                    Log.e(LOG_TAG, e.getMessage());
-                }finally{
-
-                }
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(LOG_TAG,error.getMessage());
-                onRefreshFails(null);
-            }
-        };
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeNewsOverviewUrl(category,1),null,responseListener,errorListener);
-        jsonObjectRequest.setTag(category);
-        mRequestQueue.add(jsonObjectRequest);
-
-    }
-
-    @Override
-    public void asyncFirstFetch() {
-
-    }
-
-    private void asyncFetchBlocks(){
-
-    }
-
     private void checkCache(){
         switch (mState){
             case STATE_PROCESSING_UPDATE:
@@ -231,40 +243,73 @@ public class NewsListCollector extends AbsListCollector{
                     completeProcessing(mState);
                 }
                 break;
+
         }
     }
 
     private void resetProcessing(){
-        mCache.blocks = null;
-        mCache.newsOverviews = null;
+        mCache.clear();
         mState = STATE_IDLE;
     }
 
     private void completeProcessing(int state){
+        int size;
         switch (state){
             case STATE_PROCESSING_UPDATE:
                 blockArrayList.clear();
                 newsOverviews.clear();
                 blockArrayList.addAll(mCache.blocks);
-                newsOverviews.addAll(mCache.newsOverviews);
-                mExecutorService.submit(new DBUpDateBlockTask(mCache.blocks,category));
-                mExecutorService.submit(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                size = mCache.newsOverviews.size();
+                size = size > Data.PAGE_SIZE ? Data.PAGE_SIZE : size;
+                newsOverviews.addAll(mCache.newsOverviews.subList(0,size));
+                if(mCache.newsOrigin == Cache.FROM_NET){
+                    mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    updateTime();
+                }
+                if(mCache.blockOrigin == Cache.FROM_NET) {
+                    mExecutorService.execute(new DBUpDateBlockTask(mCache.blocks,category));
+                }
+                onSync();
                 resetProcessing();
                 break;
             case STATE_PROCESSING_INIT:
+                //TODO
+                blockArrayList.clear();
+                newsOverviews.clear();
+                blockArrayList.addAll(mCache.blocks);
+                size = mCache.newsOverviews.size();
+                size = size > Data.PAGE_SIZE ? Data.PAGE_SIZE : size;
+                newsOverviews.addAll(mCache.newsOverviews.subList(0,size));
+                if(mCache.newsOrigin == Cache.FROM_NET){
+                    mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                    updateTime();
+                }
+                if(mCache.blockOrigin == Cache.FROM_NET) {
+                    mExecutorService.execute(new DBUpDateBlockTask(mCache.blocks,category));
+                }
+                onSync();
+                resetProcessing();
                 break;
             case STATE_PROCESSING_APPEND:
+                newsOverviews.addAll(mCache.newsOverviews);
+                /*if(mCache.newsOrigin == Cache.FROM_NET){
+                    mExecutorService.execute(new DBUpDateArticleTask(category, mCache.newsOverviews));
+                }*/
+                onSync();
+                resetProcessing();
                 break;
         }
 
 
     }
 
-
-
     private void cancelTask(){
         mRequestQueue.cancelAll(mNetTag);
-        resetProcessing();
+        mBlockHandler.removeMessages(MESSAGE_SUCCESS);
+        mBlockHandler.removeMessages(MESSAGE_NULL);
+        mArticleHandler.removeMessages(MESSAGE_SUCCESS);
+        mArticleHandler.removeMessages(MESSAGE_NULL);
+
     }
 
     private class DBUpDateBlockTask implements Runnable{
@@ -303,22 +348,188 @@ public class NewsListCollector extends AbsListCollector{
         }
     }
 
+    private class DBFindArticleTask implements Runnable{
+        private Category category;
+        private int minId;
+        private boolean attemptNetWork = false;
 
+        private DBFindArticleTask(Category category, int minId, boolean attemptNetWork) {
+            this.category = category;
+            this.minId = minId;
+            this.attemptNetWork = attemptNetWork;
+        }
+
+        @Override
+        public void run() {
+            //TODO:数据库操作过快，等一会
+            try {
+                Thread.sleep(700);
+            }catch (InterruptedException e){
+
+            }
+
+
+            ArrayList<NewsOverview> list;
+            if(minId == -1){
+                list =  (ArrayList<NewsOverview>) mArticleAccessor.findArticles(category,0);
+            }else {
+                list =  (ArrayList<NewsOverview>) mArticleAccessor.findArticles(category, minId,0);
+            }
+            if(list.size() == 0){
+                if(attemptNetWork){
+                    JsonObjectRequest newsRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeNewsOverviewUrl(category, 1),null,new ArticleResponseListener(),new ErrorListener());
+                    newsRequest.setTag(mNetTag);
+                    mRequestQueue.add(newsRequest);
+                }else {
+                    mArticleHandler.sendMessage(mArticleHandler.obtainMessage(MESSAGE_NULL));
+                }
+            }else {
+                mArticleHandler.sendMessage(mArticleHandler.obtainMessage(MESSAGE_SUCCESS,list));
+            }
+        }
+    }
+
+    private class DBFindBlockTask implements Runnable{
+        private Category category;
+        private boolean attemptNetWork = false;
+
+        private DBFindBlockTask(Category category, boolean attemptNetWork) {
+            this.category = category;
+            this.attemptNetWork = attemptNetWork;
+        }
+
+        @Override
+        public void run() {
+            ArrayList<Block> list = mBlockAccessor.findBlocks(category);
+            if(list.size() == 0){
+                if(attemptNetWork){
+                    JsonObjectRequest blockRequest = new JsonObjectRequest(Request.Method.GET, TextUtils.makeBlockQueryUrl(category),null,new BlockResponseListener(),new ErrorListener());
+                    blockRequest.setTag(mNetTag);
+                    mRequestQueue.add(blockRequest);
+                }else {
+                    mBlockHandler.sendMessage(mBlockHandler.obtainMessage(MESSAGE_NULL));
+                }
+            }else {
+                mBlockHandler.sendMessage(mBlockHandler.obtainMessage(MESSAGE_SUCCESS,list));
+            }
+        }
+    }
+
+    /*private class DBFindBlockTask implements Runnable{
+        private Category category;
+        private boolean attemptNet = false;
+
+        private DBFindBlockTask(Category category, boolean attemptNet) {
+            this.category = category;
+            this.attemptNet = attemptNet;
+        }
+
+        @Override
+        public void run() {
+            mBlockAccessor.findBlocks(category);
+        }
+    }*/
+
+    private Handler mArticleHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case  MESSAGE_SUCCESS:
+                    mCache.newsOverviews = (ArrayList<NewsOverview>) msg.obj;
+                    mCache.newsOrigin = Cache.FROM_DB;
+                    checkCache();
+                    break;
+                case MESSAGE_NULL:
+                    mState = STATE_ERROR_DB_PROBLEM_NULL;
+                    cancelTask();
+                    onFails();
+                    resetProcessing();
+                    break;
+
+            }
+        }
+    };
+
+    private Handler mBlockHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case  MESSAGE_SUCCESS:
+                    mCache.blocks = (ArrayList<Block>) msg.obj;
+                    mCache.blockOrigin = Cache.FROM_DB;
+                    checkCache();
+                    break;
+                case MESSAGE_NULL:
+                    mState = STATE_ERROR_DB_PROBLEM_NULL;
+                    cancelTask();
+                    onFails();
+                    resetProcessing();
+                    break;
+            }
+        }
+    };
+
+    private class ArticleResponseListener implements Response.Listener<JSONObject>{
+        @Override
+        public void onResponse(JSONObject jsonObject) {
+            try {
+                ArrayList<NewsOverview> list = NewsClient.toList(jsonObject);
+                mCache.newsOverviews = list;
+                mCache.newsOrigin = Cache.FROM_NET;
+                checkCache();
+            } catch (JSONException e) {
+                mState = STATE_ERROR_JSON_PROBLEM;
+                cancelTask();
+                onFails();
+                resetProcessing();
+                e.printStackTrace();
+            } catch (IOException e) {
+
+                if(mMode == MODE_INIT){
+                    /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
+                    cancelTask();
+                    mExecutorService.execute(new DBFindArticleTask(category, -1, false));
+                    mExecutorService.execute(new DBFindBlockTask(category,false));
+                }
+
+
+                mState = STATE_ERROR_NET_PROBLEM;
+                cancelTask();
+                onFails();
+                resetProcessing();
+                e.printStackTrace();
+            }
+        }
+    }
 
     private class BlockResponseListener implements Response.Listener<JSONObject>{
         @Override
         public void onResponse(JSONObject jsonObject) {
             try {
-                ArrayList<Block> list = BlockClient.toList(jsonObject);
+                ArrayList<Block> list = Block.injectFromBid(BlockClient.toList(jsonObject),category);
                 mCache.blocks = list;
+                mCache.blockOrigin = Cache.FROM_NET;
                 checkCache();
             } catch (JSONException e) {
+                if(mMode == MODE_INIT){
+                    /*如果为初始刷新状态，遇到网络失败，则尝试从数据库取*/
+                    cancelTask();
+                    mExecutorService.execute(new DBFindArticleTask(category, -1, false));
+                    mExecutorService.execute(new DBFindBlockTask(category,false));
+
+                }
+
+
                 mState = STATE_ERROR_JSON_PROBLEM;
                 cancelTask();
+                onFails();
+                resetProcessing();
                 e.printStackTrace();
             } catch (IOException e) {
                 mState = STATE_ERROR_NET_PROBLEM;
                 cancelTask();
+                onFails();
+                resetProcessing();
                 e.printStackTrace();
             }
         }
@@ -327,76 +538,38 @@ public class NewsListCollector extends AbsListCollector{
     private class ErrorListener implements Response.ErrorListener{
         @Override
         public void onErrorResponse(VolleyError volleyError) {
-            mState = STATE_ERROR_NET_PROBLEM;
+//            mState = STATE_ERROR_NET_PROBLEM;
             cancelTask();
+            if(mMode == MODE_INIT /*|| mMode == MODE_REFRESH*/){
+                mExecutorService.execute(new DBFindArticleTask(category, -1, false));
+                mExecutorService.execute(new DBFindBlockTask(category,false));
+                return;
+            }else {
+
+                onFails();
+                resetProcessing();
+            }
         }
     }
 
+
     private class Cache{
+        public static final int FROM_NET = 1;
+        public static final int FROM_DB = 2;
+
         public ArrayList<NewsOverview> newsOverviews;
         public ArrayList<Block> blocks;
+
+        public int newsOrigin;
+        public int blockOrigin;
 
         public void clear(){
             newsOverviews = null;
             blocks = null;
+            newsOrigin = 0;
+            blockOrigin= 0;
         }
     }
 
 
-    private ArticleSyncHelper.ArticleSyncCallBacks mArticleSyncCallBacks = new ArticleSyncHelper.ArticleSyncCallBacks() {
-        @Override
-        public void onSync(List<NewsOverview> list) {
-            newsOverviews.addAll(list);
-            onAppend(null);
-        }
-
-        @Override
-        public void onError(int flag) {
-            onAppendFails(null);
-        }
-    };
-
-    private void onRefresh(SyncFlag syncFlag){
-
-
-        currentPage = 1;
-        if(mCallBacks != null){
-            mCallBacks.onRefresh(category,null);
-        }
-
-        isProcessing = false;
-    }
-
-    private void onAppend(SyncFlag syncFlag){
-
-
-        currentPage++;
-        if(mCallBacks != null){
-            mCallBacks.onAppend(category,null);
-        }
-        isProcessing = false;
-    }
-
-    private void onRefreshFails(SyncFlag syncFlag){
-
-
-
-        if(mCallBacks != null){
-            mCallBacks.onRefreshFails(category,null);
-        }
-        isProcessing = false;
-    }
-
-    private void onAppendFails(SyncFlag syncFlag){
-        isProcessing = false;
-        if(mCallBacks != null){
-            mCallBacks.onAppendFails(category,null);
-        }
-    }
-
-
-
-    /*private String makeNewsURL(int page){
-        return URL_NEWS+"?"+"catid="+category.getCatid()+"&page="+page+"&size="+PAGE_SIZE;
-    }*/
 }

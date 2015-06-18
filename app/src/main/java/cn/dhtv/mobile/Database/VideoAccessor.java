@@ -3,14 +3,11 @@ package cn.dhtv.mobile.Database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.entity.Category;
-import cn.dhtv.mobile.entity.NewsOverview;
 import cn.dhtv.mobile.entity.VideoOverview;
 
 /**
@@ -69,7 +66,7 @@ public class VideoAccessor {
     }
 
     private SQLiteDatabase getDb(){
-        return DBHelper.getInstance().getWritableDatabase();
+        return DBOpenHelper.getInstance().getWritableDatabase();
     }
 
     public static ArrayList<VideoOverview> toList(Cursor cursor){

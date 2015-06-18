@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="cn.dhtv.mobile.activity.UserCenterActivity">
+
+    <ImageView
+        android:id="@+id/head"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="15dp"
+        android:layout_gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/my_fact"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/text_my_fact"
+                />
+            <TextView
+                android:id="@+id/my_comment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/text_my_comment"
+                />
+            <TextView
+                android:id="@+id/my_favorite"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/text_my_favorite"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/to_fact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_send_fact"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/log_out"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_log_out"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

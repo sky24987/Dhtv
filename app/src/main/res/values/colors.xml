@@ -1,6 +1,7 @@
 <resources>
     <color name="white">#ffffffff</color>
     <color name="black">#ff000000</color>
+    <color name="red">#ffea3f1a</color>
 
     <color name="acton_bar_background">#ff2347a3</color>
 
@@ -17,6 +18,7 @@
     <color name="text_tab_default">#ff858585</color>
     <color name="text_tab_selected">#ff266fcf</color>
     <color name="text_body_gray">#ff707070</color>
+    <color name="text_error">@color/red</color>
 
 
 

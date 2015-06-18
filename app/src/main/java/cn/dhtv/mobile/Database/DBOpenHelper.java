@@ -9,19 +9,19 @@ import cn.dhtv.mobile.exception.NotSetUpException;
 /**
  * Created by Jack on 2015/1/27.
  */
-public class DBHelper extends SQLiteOpenHelper{
-    private static DBHelper instance;
+public class DBOpenHelper extends SQLiteOpenHelper{
+    private static DBOpenHelper instance;
     private static Context context;
 
     private static final String DB_NAME = "dhtv";
     private static final int DB_VERSION = 2;
 
-    public static DBHelper getInstance(){
+    public static DBOpenHelper getInstance(){
         if(instance == null){
             if(context == null){
                 throw new NotSetUpException();
             }
-            instance = new DBHelper(context);
+            instance = new DBOpenHelper(context);
         }
         return instance;
     }
@@ -31,7 +31,7 @@ public class DBHelper extends SQLiteOpenHelper{
         context = c.getApplicationContext();
     }
 
-    private DBHelper(Context context) {
+    private DBOpenHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 

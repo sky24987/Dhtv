@@ -7,7 +7,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_example">Example action</string>
+    <string name="action_user">个人中心</string>
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_web">WebActivity</string>
@@ -42,9 +42,19 @@
     <string name="prompt_bar_append_fail">加载失败</string>
     <!--内容更新提示组件文本-->
 
+
+    <!--广播错误提示-->
+    <string name="fm_error_io">网络异常，请重试</string>
+    <string name="fm_error_time_out">网络不佳，请重试</string>
+    <string name="fm_error_unsupported">不支持该媒体格式</string>
+    <string name="fm_error_unknown">未知错误</string>
+    <!--广播错误提示-->
+
     <!--空视图组件文本-->
     <string name="empty_view_fail">加载失败，点击重试</string>
     <string name="empty_view_hint">正在更新</string>
+    <string name="empty_view_idle">暂无内容</string>
+    <string name="empty_view_active">暂无内容</string>
     <!--空视图组件文本-->
 
     <!--网页重试按钮提示-->
@@ -64,6 +74,40 @@
     <!--app安装更新Dialog-->
 
 
+    <!--登录页面-->
+    <string name="hint_login_user_name">用户名/邮箱</string>
+    <string name="hint_login_password">密码</string>
+    <string name="login">登录</string>
+    <string name="link_register">注册</string>
+    <!--登录页面-->
+
+    <!--用户中心-->
+    <string name="text_my_fact">我的爆料</string>
+    <string name="text_my_favorite">我的收藏</string>
+    <string name="text_my_comment">我的评论</string>
+    <string name="button_log_out">登出</string>
+    <string name="button_send_fact">我要爆料</string>
+    <!--用户中心-->
+
+    <!--注册-->
+    <string name="hint_register_user_name">用户名</string>
+    <string name="hint_register_password">密码</string>
+    <string name="hint_register_repeat_password">再次输入密码</string>
+    <string name="hint_register_email">邮箱</string>
+    <string name="button_register">注册</string>
+    <string name="button_get_sms_code">免费获取短信</string>
+    <string name="hint_register_mobile">手机号码</string>
+    <string name="hint_register_sms_code">短信验证码</string>
+    <string name="hint_sms_resend">秒后重发</string>
+    <string name="message_wrong_phone_number">手机号码有误</string>
+    <string name="message_wrong_user_name">用户名有误</string>
+    <string name="message_wrong_password">密码有误</string>
+    <string name="message_wrong_passwrod_different">密码不一致</string>
+    <string name="message_wrong_email">请填写有效的邮箱</string>
+    <string name="message_wrong_sms_code">验证码有误</string>
+    <!--注册-->
+
+
 
     <!--导读fragment标题-->
     <string name="title_section1">新闻</string>
@@ -71,8 +115,12 @@
     <string name="title_section3">点播</string>
     <string name="title_section4">广播</string>
     <string name="title_section5">直播</string>
-    <string name="title_section6">Section 3</string>
+    <string name="title_section6">微电影</string>
     <!--导读fragment标题-->
+
+    <!--ProcessingDialog-->
+    <string name="hint_dialog_processing">正在处理...</string>
+    <!--ProcessingDialog-->
 
 
 
@@ -80,5 +128,12 @@
     <string name="title_activity_program_detail">ProgramDetailActivity</string>
     <string name="title_activity_video_player">VideoPlayerActivity</string>
     <string name="title_activity_tvlist">电视节目</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_comment">CommentActivity</string>
+    <string name="title_activity_fact">FactActivity</string>
+    <string name="title_activity_favorite">FavoriteActivity</string>
+    <string name="title_activity_user_center">UserCenterActivity</string>
+    <string name="title_activity_send_fact">SendFactActivity</string>
 
 </resources>

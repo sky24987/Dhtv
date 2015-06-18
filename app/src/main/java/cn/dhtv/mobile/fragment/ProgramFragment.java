@@ -33,7 +33,6 @@ import cn.dhtv.mobile.Database.Contract;
 import cn.dhtv.mobile.MyApplication;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.Singletons;
-import cn.dhtv.mobile.activity.ProgramDetailActivity;
 import cn.dhtv.mobile.activity.TVListActivity;
 import cn.dhtv.mobile.provider.MyContentProvider;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
@@ -41,13 +40,10 @@ import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
-import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.ui.adapter.ProgramRecyclerViewAdapter;
 import cn.dhtv.mobile.ui.widget.EmptyView;
-import cn.dhtv.mobile.ui.widget.FooterRefreshListView;
 import cn.dhtv.mobile.ui.widget.FooterRefreshView;
 import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -313,7 +309,6 @@ public class ProgramFragment extends SectionFragment implements BasePagerAdapter
     }
 
     private void startProgram(Category category){
-//        Intent intent = new Intent(getActivity(), ProgramDetailActivity.class);
         Intent intent = new Intent(getActivity(), TVListActivity.class);
         intent.putExtra("program",category);
         intent.putExtra("title",category.getCatname());

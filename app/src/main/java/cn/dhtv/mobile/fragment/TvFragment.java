@@ -30,13 +30,16 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
+import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.ui.adapter.TvListAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.TvOverview;
 import cn.dhtv.mobile.network.NetUtils;
+import cn.dhtv.mobile.ui.widget.EmptyView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,8 +78,9 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
 
 
     VideoSurfaceView playView;
-    RecyclerView listView;
+    BaseRecyclerView listView;
     Button button;
+    EmptyView emptyView;
 
 
     public static TvFragment newInstance() {
@@ -114,7 +118,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         init();
-        asyncRequestProgramList(mProgram,tvList);
+        /*asyncRequestProgramList(mProgram,tvList);*/
     }
 
     @Override
@@ -125,6 +129,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
         }
         View view =  inflater.inflate(R.layout.fragment_video_player, container, false);
         initView(view);
+        emptyView.setStateProcessing();
         return view;
     }
 
@@ -518,8 +523,9 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
     }
 
     private void initView(View parent){
+
         playView = (VideoSurfaceView) parent.findViewById(R.id.player);
-        playView.setVideoWidthHeightRatio(16.0f/9);//设置视频宽高比
+        playView.setVideoWidthHeightRatio(16.0f / 9);//设置视频宽高比
         playView.getHolder().addCallback(surfaceHolderCallBack);
         /*playView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -532,15 +538,32 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
 
             }
         });*/
-        listView = (RecyclerView) parent.findViewById(R.id.list);
-        listView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+        listView = (BaseRecyclerView) parent.findViewById(R.id.list);
+        listView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         listView.setAdapter(mTvListAdapter);
+        emptyView = (EmptyView) LayoutInflater.from(parent.getContext()).inflate(R.layout.widget_empty_view,listView, false);
+        emptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EmptyView emptyView = (EmptyView) v;
+                if (emptyView.isFail()) {
+                    emptyView.setStateProcessing();
+                }
+            }
+        });
+        emptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
+            @Override
+            public void onProcessing() {
+                asyncRequestProgramList(mProgram,tvList);
+            }
+        });
+
         mMediaController = new MediaController(getActivity());
         mMediaController.setMediaPlayer(mediaPlayerControl);
         mMediaController.setAnchorView(playView);
 
 
-        button = (Button) parent.findViewById(R.id.test);
+        /*button = (Button) parent.findViewById(R.id.test);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -554,7 +577,7 @@ public class TvFragment extends Fragment implements MediaPlayer.OnPreparedListen
                     Log.d(LOG_TAG,"first activity is destroyed");
                 }
             }
-        });
+        });*/
     }
 
     private void releaseView(){

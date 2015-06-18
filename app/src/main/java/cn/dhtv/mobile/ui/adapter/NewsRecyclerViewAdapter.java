@@ -51,6 +51,7 @@ public class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<NewsRecycle
         holder.title.setText(item.getTitle());
         holder.summary.setText(item.getSummary());
         holder.url = item.getUrl();
+        holder.newsOverview = item;
     }
 
     @Override
@@ -62,6 +63,7 @@ public class NewsRecyclerViewAdapter extends BaseRecyclerViewAdapter<NewsRecycle
 
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder{
         public String url;
+        public NewsOverview newsOverview;
         public NetworkImageView imageView;
         public TextView title;
         public TextView summary;

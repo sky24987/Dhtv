@@ -1,6 +1,7 @@
 package cn.dhtv.mobile;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
@@ -9,6 +10,7 @@ import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.OkHttpClient;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +31,9 @@ public class Singletons {
 
     private static ExecutorService executorService = Executors.newFixedThreadPool(3);
     private static ExecutorService dbExecutorService = Executors.newSingleThreadExecutor();
+
+    private static Executor asyncTaskThreadPoolExecutor = AsyncTask.THREAD_POOL_EXECUTOR;
+    private static Executor asyncTaskSerialExecutor = AsyncTask.SERIAL_EXECUTOR;
 
     public static void setUp(Context context){
         appContext = context.getApplicationContext();
@@ -81,6 +86,14 @@ public class Singletons {
 
     public static ExecutorService getDBExecutor(){
         return dbExecutorService;
+    }
+
+    public static Executor getAsyncTaskThreadPoolExecutor(){
+        return asyncTaskThreadPoolExecutor;
+    }
+
+    public static Executor getAsyncTaskSerialExecutor(){
+        return asyncTaskSerialExecutor;
     }
 
 }

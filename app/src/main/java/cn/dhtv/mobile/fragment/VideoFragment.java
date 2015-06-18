@@ -17,8 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 
@@ -37,20 +35,15 @@ import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.activity.VideoPlayerActivity;
 import cn.dhtv.mobile.provider.MyContentProvider;
 import cn.dhtv.mobile.ui.adapter.ItemViewDataSet;
-import cn.dhtv.mobile.ui.adapter.NewsRecyclerViewAdapter;
 
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.model.AbsPageManager;
 import cn.dhtv.mobile.ui.adapter.VideoRecyclerViewAdapter;
 import cn.dhtv.mobile.ui.widget.EmptyView;
-import cn.dhtv.mobile.ui.widget.FooterRefreshListView;
 import cn.dhtv.mobile.model.VideoPageManager;
-import cn.dhtv.mobile.network.NetUtils;
 import cn.dhtv.mobile.ui.widget.FooterRefreshView;
 import cn.dhtv.mobile.ui.widget.MySmartTabLayout;
 import cn.dhtv.mobile.ui.widget.PromptBar;
-import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
@@ -61,8 +54,10 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
  * Use the {@link VideoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks,android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> {
+public class VideoFragment extends SectionFragment implements BasePagerAdapter.PageFactory, AbsPageManager.CallBacks,android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_VIDEO_CATEGORY = 1;
+
+    private static final String ARGS_FIRST_PAGE_ID ="first_page_id";
 
 
     private final String LOG_TAG = getClass().getSimpleName();
@@ -79,6 +74,8 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
     private VideoPageManager mVideoPageManager;
     private ImageLoader mImageLoader;
 
+    private int mFirstPageId;
+
     private OnFragmentInteractionListener mListener;
 
     /**
@@ -89,18 +86,29 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
      * @return A new instance of fragment VideoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static VideoFragment2 newInstance() {
-        VideoFragment2 fragment = new VideoFragment2();
+    public static VideoFragment newInstance(int firstShowCatId) {
+
+        VideoFragment fragment = new VideoFragment();
+        if(firstShowCatId != 0){
+            Bundle args = new Bundle();
+            args.putInt(ARGS_FIRST_PAGE_ID,firstShowCatId);
+            fragment.setArguments(args);
+        }
         return fragment;
     }
 
-    public VideoFragment2() {
+    public VideoFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if(args != null){
+            mFirstPageId = args.getInt(ARGS_FIRST_PAGE_ID,0);
+        }
+
         getLoaderManager().initLoader(LOADER_VIDEO_CATEGORY,null,this);
     }
 
@@ -195,6 +203,18 @@ public class VideoFragment2 extends SectionFragment implements BasePagerAdapter.
         mVideoPageManager.change(titles);
         mPagerAdapter.notifyDataSetChanged();
         mMySmartTabLayout.setViewPager(mViewPager);
+        if(mFirstPageId != 0){
+            //TODO
+            Category category;
+            for(int i = 0;i<titles.size();++i){
+                category = titles.get(i);
+                if(category.getCatid() == mFirstPageId){
+                    mViewPager.setCurrentItem(i);
+                    break;
+                }
+            }
+            mFirstPageId = 0;
+        }
     }
 
     @Override

@@ -64,11 +64,6 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.ProgramDetailActivity"
-            android:hardwareAccelerated="true"
-            android:label="@string/title_activity_program_detail" >
-        </activity>
 
         <service android:name=".service.AudioService" >
         </service>
@@ -121,10 +116,6 @@
 
         <service
             android:name=".service.DailyService"
-            android:exported="false" >
-        </service>
-        <service
-            android:name=".service.DailyService2"
             android:enabled="true"
             android:exported="false" >
         </service>
@@ -149,12 +140,42 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
             </intent-filter>
-            <!--<intent-filter>
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_"
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </receiver>
+
+        <activity
+            android:name=".activity.LoginActivity"
+            android:label="@string/title_activity_login" >
+        </activity>
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:label="@string/title_activity_register" >
+        </activity>
+        <activity
+            android:name=".activity.CommentActivity"
+            android:label="@string/title_activity_comment" >
+        </activity>
+        <activity
+            android:name=".activity.FactActivity"
+            android:label="@string/title_activity_fact" >
+        </activity>
+        <activity
+            android:name=".activity.FavoriteActivity"
+            android:label="@string/title_activity_favorite" >
+        </activity>
+        <activity
+            android:name=".activity.UserCenterActivity"
+            android:label="@string/title_activity_user_center" >
+        </activity>
+        <activity
+            android:name=".activity.SendFactActivity"
+            android:label="@string/title_activity_send_fact" >
+        </activity>
     </application>
 
 </manifest>

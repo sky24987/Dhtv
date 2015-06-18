@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import cn.dhtv.mobile.Database.Contract;
-import cn.dhtv.mobile.Database.DBHelper;
+import cn.dhtv.mobile.Database.DBOpenHelper;
 
 public class MyContentProvider extends ContentProvider {
     public static final String AUTHORITY = "cn.dhtv.mobile.provider";
@@ -55,7 +55,7 @@ public class MyContentProvider extends ContentProvider {
         // TODO: Implement this to handle requests to insert a new row.
         switch (sUriMatcher.match(uri)){
             case MATCH_ID_CATEGORY:
-                DBHelper.getInstance().getWritableDatabase().replace(Contract.Category.TABLE_NAME,null,values);
+                DBOpenHelper.getInstance().getWritableDatabase().replace(Contract.Category.TABLE_NAME,null,values);
         }
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -74,11 +74,11 @@ public class MyContentProvider extends ContentProvider {
         Cursor cursor;
         switch (sUriMatcher.match(uri)){
             case MATCH_ID_QUERY_SUB_CATEGORY:
-                cursor = DBHelper.getInstance().getReadableDatabase().query(Contract.Category.TABLE_NAME,null, Contract.Category.COLUMN_NAME_UP_ID+"=?",new String[]{uri.getLastPathSegment()},null,null,sortOrder);
+                cursor = DBOpenHelper.getInstance().getReadableDatabase().query(Contract.Category.TABLE_NAME,null, Contract.Category.COLUMN_NAME_UP_ID+"=?",new String[]{uri.getLastPathSegment()},null,null, Contract.Category.COLUMN_NAME_CAT_ID);
                 return cursor;
 
             case MATCH_ID_CATEGORY:
-                cursor = DBHelper.getInstance().getReadableDatabase().query(Contract.Category.TABLE_NAME,projection,selection,selectionArgs,null,null,sortOrder);
+                cursor = DBOpenHelper.getInstance().getReadableDatabase().query(Contract.Category.TABLE_NAME,projection,selection,selectionArgs,null,null,Contract.Category.COLUMN_NAME_CAT_ID);
                 return cursor;
         }
         throw new UnsupportedOperationException("Not yet implemented");

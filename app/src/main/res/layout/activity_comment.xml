@@ -1,0 +1,14 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cn.dhtv.mobile.activity.CommentActivity">
+
+    <fragment
+        android:id="@+id/fragment_comment"
+        android:name="cn.dhtv.mobile.fragment.CommentFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_comment"
+        />
+
+</RelativeLayout>

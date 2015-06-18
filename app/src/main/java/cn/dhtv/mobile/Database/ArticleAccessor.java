@@ -81,7 +81,7 @@ public class ArticleAccessor {
     }
 
     private SQLiteDatabase getDb(){
-        return DBHelper.getInstance().getWritableDatabase();
+        return DBOpenHelper.getInstance().getWritableDatabase();
     }
 
     /*public static String[] getProjection(){

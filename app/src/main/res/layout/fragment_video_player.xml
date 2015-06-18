@@ -8,15 +8,15 @@
         android:id="@+id/player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <android.support.v7.widget.RecyclerView
+    <cn.dhtv.android.widget.BaseRecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
-    <Button
+    <!--<Button
         android:id="@+id/test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="looping?"/>
+        android:text="looping?"/>-->
 
 </LinearLayout>

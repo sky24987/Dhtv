@@ -78,8 +78,18 @@ public class EmptyView extends RelativeLayout {
     }
 
     public void setStateIdle(){
+        setStateIdle(null);
+    }
+
+    public void setStateIdle(String content){
+        String text = hint.getContext().getString(R.string.empty_view_idle);
+        if(content != null){
+            text = content;
+        }
+
         mState = STATE_IDLE;
         setClickable(false);
+        hint.setText(text);
         hint.setVisibility(VISIBLE);
         progressBar.setVisibility(GONE);
     }
@@ -90,9 +100,18 @@ public class EmptyView extends RelativeLayout {
     }
 
     public void setStateProcessing(){
+        setStateProcessing(null);
+    }
+
+    public void setStateProcessing(String content){
+        String text = getContext().getString(R.string.empty_view_hint);
+        if(content != null){
+            text = content;
+        }
+
         mState = STATE_PROCESSING;
         setClickable(false);
-        hint.setText(getContext().getString(R.string.empty_view_hint));
+        hint.setText(text);
         hint.setVisibility(VISIBLE);
         progressBar.setVisibility(VISIBLE);
         if(mOnProcessingListener !=null){
@@ -101,9 +120,18 @@ public class EmptyView extends RelativeLayout {
     }
 
     public void setStateFail(){
+        setStateFail(null);
+    }
+
+    public void setStateFail(String content){
+        String text = getContext().getString(R.string.empty_view_fail);
+        if(content != null){
+            text = content;
+        }
+
         mState = STATE_FAIL;
         setClickable(true);
-        hint.setText(getContext().getString(R.string.empty_view_fail));
+        hint.setText(text);
         hint.setVisibility(VISIBLE);
         progressBar.setVisibility(GONE);
     }

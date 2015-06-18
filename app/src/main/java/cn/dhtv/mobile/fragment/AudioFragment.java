@@ -1,9 +1,11 @@
 package cn.dhtv.mobile.fragment;
 
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -31,6 +33,7 @@ import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.ui.adapter.FMAdapter;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.service.AudioService;
+import cn.dhtv.mobile.ui.widget.EmptyView;
 
 
 public class AudioFragment extends SectionFragment implements ServiceConnection,AudioService.CallBacks,BaseRecyclerViewAdapter.OnItemClickListener{
@@ -65,6 +68,8 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
     TextView mFmName;
+    TextView mFmErrorMessage;
+    EmptyView mEmptyView;
 
     public AudioFragment() {
         fmCategory = new Category();
@@ -82,14 +87,13 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         super.onCreate(savedInstanceState);
         init();
         ((MyApplication)(getActivity().getApplication())).startAudioService();
-        requestFm();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
        View view = inflater.inflate(R.layout.fragment_audio,container,false);
         initView(view);
-
+        mEmptyView.setStateProcessing();
         return view;
     }
 
@@ -143,12 +147,16 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         public void onSync(List<Category> list) {
             fmProgramList.clear();
             fmProgramList.addAll(list);
+            if(fmProgramList.size() == 0){
+                onError(0);
+                return;
+            }
             onFmGot();
         }
 
         @Override
         public void onError(int flag) {
-
+            mEmptyView.setStateFail();
         }
     };
 
@@ -235,7 +243,7 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     }
 
     private void play(){
-
+        hideErrorMessage();
         mAudioBinder.play();
 
     }
@@ -283,6 +291,44 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         audioPrepared = true;
         //autoPlay();
         queryAudioPrepared();
+    }
+
+    private void showErrorMessage(int resId){
+        mFmErrorMessage.setText(resId);
+        mFmErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void hideErrorMessage(){
+        mFmErrorMessage.setText(null);
+        mFmErrorMessage.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+
+        buttonOff();
+        refreshButtonState();
+        refreshPlayState();
+
+        switch (extra){
+            case MediaPlayer.MEDIA_ERROR_IO:
+                showErrorMessage(R.string.fm_error_io);
+                return true;
+            case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
+                showErrorMessage(R.string.fm_error_time_out);
+                return true;
+            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                showErrorMessage(R.string.fm_error_unsupported);
+                return true;
+        }
+
+        switch (what){
+            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
+                showErrorMessage(R.string.fm_error_unknown);
+                return true;
+        }
+
+        return false;
     }
 
     private void requestFm(){
@@ -365,12 +411,28 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
         mLayoutManager =  new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
         mImageView = (ImageView) view.findViewById(R.id.fm);
         mFmName = (TextView) view.findViewById(R.id.fm_name);
+        mFmErrorMessage = (TextView) view.findViewById(R.id.fm_error_message);
         mPlayButton = mImageView;
         mPlayButton.setOnClickListener(radioButtonClickListener);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 //        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(R.drawable.shape_divider_line),false,false));
         mRecyclerView.setAdapter(mFmAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mEmptyView = (EmptyView) LayoutInflater.from(view.getContext()).inflate(R.layout.widget_empty_view,mRecyclerView,false);
+        mEmptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
+            @Override
+            public void onProcessing() {
+                requestFm();
+            }
+        });
+        mEmptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mEmptyView.isFail()){
+                    mEmptyView.setStateProcessing();
+                }
+            }
+        });
     }
 
     private boolean isAudioPlayable(){
@@ -424,6 +486,7 @@ public class AudioFragment extends SectionFragment implements ServiceConnection,
     public String getTitle() {
         return title;
     }
+
 
     public class StateData{
         public Category firstTm;

@@ -26,7 +26,7 @@
             <cn.dhtv.android.view.RatioImageView
                 android:id="@+id/image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:padding="@dimen/abc_control_padding_material"
                 dhtv:ratio_width_weight="16"
                 dhtv:ratio_height_weight="10"

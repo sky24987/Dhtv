@@ -3,11 +3,9 @@ package cn.dhtv.mobile.Database;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 
 import java.util.Date;
 import java.util.ArrayList;
-import java.util.List;
 
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.inner.Live;
@@ -61,7 +59,7 @@ public class CategoryAccessor {
 
 
     public SQLiteDatabase getDb(){
-         return DBHelper.getInstance().getWritableDatabase();
+         return DBOpenHelper.getInstance().getWritableDatabase();
     }
 
     public static String[] getProjection(){

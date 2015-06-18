@@ -1,8 +1,6 @@
 package cn.dhtv.mobile.service;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,10 +15,10 @@ import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.model.UpGrader;
 import cn.dhtv.mobile.util.TimeUtils;
 
-public class DailyService2 extends Service {
+public class DailyService extends Service {
     private boolean processing = false;
 
-    public DailyService2() {
+    public DailyService() {
     }
 
     @Override
@@ -79,13 +77,13 @@ public class DailyService2 extends Service {
                     localIntent.putExtra("ver",upGradeInfo.getVer());
                     localIntent.putExtra("desc",upGradeInfo.getDesc());
                     localIntent.putExtra("upGradeInfo", upGradeInfo);
-                    LocalBroadcastManager.getInstance(DailyService2.this).sendBroadcast(localIntent);
-                    DailyService2.this.sendBroadcast(localIntent);
+                    LocalBroadcastManager.getInstance(DailyService.this).sendBroadcast(localIntent);
+                    DailyService.this.sendBroadcast(localIntent);
                 }
                 sharedPreferences.edit().putLong(Data.PREFERENCE_KEY_APP_LAST_CHECK_UPGRADE_TIMESTAMP,System.currentTimeMillis()).commit();
             }
 
-            synchronized (DailyService2.this){
+            synchronized (DailyService.this){
                 setProcessing(false);
             }
         }

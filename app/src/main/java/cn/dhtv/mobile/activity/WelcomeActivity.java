@@ -20,7 +20,7 @@ import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.model.CategoryInitiator;
 import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.provider.MyContentProvider;
-import cn.dhtv.mobile.service.DailyService2;
+import cn.dhtv.mobile.service.DailyService;
 
 public class WelcomeActivity extends Activity {
 
@@ -45,7 +45,7 @@ public class WelcomeActivity extends Activity {
         setContentView(mLayout);
         init();
 
-        Intent dailyServiceIntent = new Intent(this, DailyService2.class);
+        Intent dailyServiceIntent = new Intent(this, DailyService.class);
         startService(dailyServiceIntent);
         mAccount = createSyncAccount(this);
         /*test();*/
@@ -145,6 +145,7 @@ public class WelcomeActivity extends Activity {
         AccountManager accountManager =
                 (AccountManager) context.getSystemService(
                         ACCOUNT_SERVICE);
+
         /*
          * Add the account and account type, no password or user data
          * If successful, return the Account object, otherwise report an error.

@@ -7,7 +7,7 @@ import cn.dhtv.mobile.entity.Category;
 /**
  * Created by Jack on 2015/3/20.
  */
-public class VideoPageManager extends AbsPageManager<VideoListCollector2> {
+public class VideoPageManager extends AbsPageManager<VideoListCollector> {
     @Override
     public void setUp() {
         Category cat1 = new Category();
@@ -28,7 +28,7 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector2> {
         categories.add(cat3);
         categories.add(cat4);
         for(Category cat:categories){
-            mListMap.put(cat,new VideoListCollector2(cat, this));
+            mListMap.put(cat,new VideoListCollector(cat, this));
         }
     }
 
@@ -41,7 +41,7 @@ public class VideoPageManager extends AbsPageManager<VideoListCollector2> {
         clear();
         categories.addAll(list);
         for(Category cat:categories){
-            mListMap.put(cat,new VideoListCollector2(cat, this));
+            mListMap.put(cat,new VideoListCollector(cat, this));
         }
     }
 

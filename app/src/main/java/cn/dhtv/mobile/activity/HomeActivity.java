@@ -1,7 +1,7 @@
 package cn.dhtv.mobile.activity;
 
 import android.app.Activity;
-import android.support.v4.content.LocalBroadcastManager;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -15,15 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import cn.dhtv.mobile.Data;
 import cn.dhtv.mobile.fragment.AudioFragment;
 import cn.dhtv.mobile.fragment.LiveTvFragment;
 import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
 import cn.dhtv.mobile.R;
 
-import cn.dhtv.mobile.fragment.NewsFragment2;
+import cn.dhtv.mobile.fragment.NewsFragment;
 import cn.dhtv.mobile.fragment.ProgramFragment;
 import cn.dhtv.mobile.fragment.SectionFragment;
-import cn.dhtv.mobile.fragment.VideoFragment2;
+import cn.dhtv.mobile.fragment.VideoFragment;
 
 
 public class HomeActivity extends ActionBarActivity
@@ -73,15 +74,17 @@ public class HomeActivity extends ActionBarActivity
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();*/
         if(position == 0){
-            fragmentManager.beginTransaction().replace(R.id.container, NewsFragment2.newInstance(null, null)).commit();
+            fragmentManager.beginTransaction().replace(R.id.container, NewsFragment.newInstance(null, null)).commit();
         }else if(position == 1){
-            fragmentManager.beginTransaction().replace(R.id.container, VideoFragment2.newInstance()).commit();
+            fragmentManager.beginTransaction().replace(R.id.container, VideoFragment.newInstance(0)).commit();
         }else if(position == 2){
             fragmentManager.beginTransaction().replace(R.id.container, ProgramFragment.newInstance()).commit();
         }else if(position == 3){
             fragmentManager.beginTransaction().replace(R.id.container, AudioFragment.newInstance()).commit();
         }else if(position == 4){
             fragmentManager.beginTransaction().replace(R.id.container, LiveTvFragment.newInstance()).commit();
+        }else if(position == 5){
+            fragmentManager.beginTransaction().replace(R.id.container, VideoFragment.newInstance(Data.weiVideoId)).commit();
         }
         else{
             fragmentManager.beginTransaction()
@@ -115,7 +118,7 @@ public class HomeActivity extends ActionBarActivity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            /*getMenuInflater().inflate(R.menu.home, menu);*/
+            getMenuInflater().inflate(R.menu.home, menu);
             restoreActionBar();
             return true;
         }
@@ -130,11 +133,40 @@ public class HomeActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(id == R.id.action_user){
+            Intent intent = new Intent(this,UserCenterActivity.class);
+            startActivity(intent);
             return true;
         }
 
+        if(id == R.id.action_comment){
+            Intent intent = new Intent(this,CommentActivity.class);
+            startActivity(intent);
+        }
+
+        if(id == R.id.action_fact){
+            Intent intent = new Intent(this,FactActivity.class);
+            startActivity(intent);
+        }
+
+        if(id == R.id.action_favorite){
+            Intent intent = new Intent(this,FavoriteActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.action_settings) {
+
+            return true;
+        }
+
+
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startLoginActivity(){
+        Intent intent = new Intent(this,LoginActivity.class);
+        startActivity(intent);
     }
 
     @Override

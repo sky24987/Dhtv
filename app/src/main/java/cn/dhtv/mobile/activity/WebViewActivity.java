@@ -17,11 +17,15 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
+import cn.dhtv.mobile.Contract;
 import cn.dhtv.mobile.R;
 
 
 public class WebViewActivity extends ActionBarActivity {
     private String url;
+    private String title;
+    private String summary;
+    private String picUrl;
 
     private ViewGroup container;
     private String mContentTitle;
@@ -55,6 +59,9 @@ public class WebViewActivity extends ActionBarActivity {
         Intent intent = getIntent();
         Uri uri = intent.getData();
         url = uri.toString();
+        title = intent.getStringExtra(Intent.EXTRA_TITLE);
+        summary = intent.getStringExtra(Intent.EXTRA_TEXT);
+        picUrl = intent.getStringExtra(Contract.INTENT_EXTRA_IMG_URL);
         mContentTitle = intent.getStringExtra("title");
         mWebView.loadUrl(url);
 
@@ -77,13 +84,13 @@ public class WebViewActivity extends ActionBarActivity {
 
             @Override
             public void onLoadResource(WebView view, String url) {
-                mContentLoadingProgressBar.show();
-                mErrorView.setVisibility(View.GONE);
+
             }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-               /* mContentLoadingProgressBar.show();*/
+                mContentLoadingProgressBar.show();
+                mErrorView.setVisibility(View.GONE);
             }
 
             @Override

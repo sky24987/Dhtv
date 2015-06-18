@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import cn.dhtv.mobile.entity.Block;
 import cn.dhtv.mobile.entity.Category;
@@ -57,7 +56,7 @@ public class BlockAccessor {
 
 
     private SQLiteDatabase getDb(){
-        return DBHelper.getInstance().getWritableDatabase();
+        return DBOpenHelper.getInstance().getWritableDatabase();
     }
 
     public static ArrayList<Block> toList(Cursor cursor){

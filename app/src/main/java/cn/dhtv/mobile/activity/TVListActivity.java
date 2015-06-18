@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,8 +38,10 @@ import cn.dhtv.mobile.entity.TvOverview;
 import cn.dhtv.mobile.fragment.LiveTvFragment;
 import cn.dhtv.mobile.fragment.VideoPlayerFragment;
 import cn.dhtv.mobile.network.TvClient;
+import cn.dhtv.mobile.ui.adapter.NewsRecyclerViewAdapter;
 import cn.dhtv.mobile.ui.adapter.TvListAdapter;
 import cn.dhtv.mobile.ui.adapter.TvRecyclerViewAdapter;
+import cn.dhtv.mobile.ui.widget.EmptyView;
 
 public class TVListActivity extends ActionBarActivity {
     private BaseRecyclerView mBaseRecyclerView;
@@ -46,6 +49,7 @@ public class TVListActivity extends ActionBarActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private RatioFrameLayout mRatioFrameLayout;
     private ImageButton mFullScreenButton;
+    private EmptyView mEmptyView;
 
     private String mContentTitle;
     private ArrayList<TvOverview> mTvOverviews = new ArrayList<>();
@@ -82,6 +86,22 @@ public class TVListActivity extends ActionBarActivity {
         mBaseRecyclerView = (BaseRecyclerView) findViewById(R.id.recyclerView);
         mBaseRecyclerView.setLayoutManager(mLayoutManager);
         mBaseRecyclerView.setAdapter(mTvRecyclerViewAdapter);
+        mEmptyView = (EmptyView) LayoutInflater.from(this).inflate(R.layout.widget_empty_view,mBaseRecyclerView,false);
+        mEmptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
+            @Override
+            public void onProcessing() {
+                asyncFetchTvs();
+            }
+        });
+        mEmptyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mEmptyView.isFail()) {
+                    mEmptyView.setStateProcessing();
+                }
+            }
+        });
+        mTvRecyclerViewAdapter.setEmptyView(new TvRecyclerViewAdapter.ViewHolder(mEmptyView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_EMPTY));
 
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment) mFragmentManager.findFragmentById(R.id.fragment_video);
         if(videoPlayerFragment != null) {
@@ -101,8 +121,7 @@ public class TVListActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        asyncFetchTvs();
+        mEmptyView.setStateProcessing();/* asyncFetchTvs();*/
     }
 
     @Override
@@ -252,7 +271,12 @@ public class TVListActivity extends ActionBarActivity {
                 mTvOverviews.addAll(tvOverviews);
                 if(mTvOverviews.size() > 0) {
                     selectTv(mTvOverviews.get(0));
+                    mEmptyView.setStateIdle();
+                }else {
+                    mEmptyView.setStateFail();
                 }
+            }else {
+                mEmptyView.setStateFail();
             }
         }
 

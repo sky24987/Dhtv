@@ -6,14 +6,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.preference.Preference;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 
 import com.squareup.picasso.Picasso;
 
-import cn.dhtv.mobile.Database.DBHelper;
+import cn.dhtv.mobile.Database.DBOpenHelper;
 import cn.dhtv.mobile.Sync.DataSyncHelper;
 import cn.dhtv.mobile.model.NewsPageManager;
 import cn.dhtv.mobile.model.ProgramPageManager;
@@ -48,7 +47,7 @@ public class MyApplication extends Application {
         Picasso.with(this).setIndicatorsEnabled(true);
 //        Fresco.initialize(this);
 //        NetUtils.setup(this);
-        DBHelper.setUp(this);
+        DBOpenHelper.setUp(this);
         DataSyncHelper.setUp(this);
         mNewsPageManager = new NewsPageManager();
 //        mNewsPageManager.setUp();

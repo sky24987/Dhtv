@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -12,6 +13,9 @@ import java.io.IOException;
  * Created by Jack on 2015/4/7.
  */
 public class AudioService extends Service implements MediaPlayer.OnPreparedListener{
+    private final String LOG_TAG = getClass().getSimpleName();
+    private final boolean DEBUG = true;
+
     private LocalBinder mLocalBinder = new LocalBinder();
     private CallBacks mCallBack;
     private MediaPlayer mMediaPlayer;
@@ -35,6 +39,7 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
 
         mMediaPlayer.setDataSource(url);
         mMediaPlayer.setOnPreparedListener(this);
+        mMediaPlayer.setOnErrorListener(mMediaPlayerErrorListener);
         audioPrepared = false;
         mMediaPlayer.prepareAsync();
     }
@@ -57,6 +62,20 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
             mCallBack.onAudioPrepared();
         }
     }
+
+    private MediaPlayer.OnErrorListener mMediaPlayerErrorListener = new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mp, int what, int extra) {
+            if(DEBUG){
+                Log.e(LOG_TAG,"mediaplayer error: "+what+";"+extra);
+            }
+            if(mCallBack == null){
+                return false;
+            }else {
+                return mCallBack.onError(mp, what, extra);
+            }
+        }
+    };
 
     public void setCallBack(CallBacks callBack) {
         this.mCallBack = callBack;
@@ -95,5 +114,6 @@ public class AudioService extends Service implements MediaPlayer.OnPreparedListe
 
     public interface CallBacks {
         void onAudioPrepared();
+        boolean onError(MediaPlayer mp,int what, int extra);
     }
 }

@@ -53,25 +53,50 @@ public class RatioImageView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width =  MeasureSpec.getSize(widthMeasureSpec);
+        /*int width =  MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
+
 
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         if(layoutParams.width != ViewGroup.LayoutParams.WRAP_CONTENT){
             width = MeasureSpec.getSize(widthMeasureSpec);
             height = (int) (width / mRatio);
             setMeasuredDimension(width,height);
+//            super.onMeasure(MeasureSpec.makeMeasureSpec(width,MeasureSpec.getMode(widthMeasureSpec)),MeasureSpec.makeMeasureSpec(height,MeasureSpec.getMode(heightMeasureSpec)));
             return;
         }else if(layoutParams.height !=ViewGroup.LayoutParams.WRAP_CONTENT){
             height = MeasureSpec.getSize(heightMeasureSpec);
             width = (int) (height*mRatio);
             setMeasuredDimension(width,height);
+//            super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.getMode(widthMeasureSpec)), MeasureSpec.makeMeasureSpec(height, MeasureSpec.getMode(heightMeasureSpec)));
             return;
         }else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
+*/
 
+        int layoutWidth = getLayoutParams().width;
+        int layoutHeight = getLayoutParams().height;
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+
+        if(layoutWidth == 0){
+            width = (int) (height*mRatio);
+            setMeasuredDimension(width,height);
+//            super.onMeasure(MeasureSpec.makeMeasureSpec(width,heightMode),heightMeasureSpec);
+            return;
+        }else if(layoutHeight == 0){
+            height = (int) (width / mRatio);
+            setMeasuredDimension(width,height);
+//            super.onMeasure(widthMeasureSpec,MeasureSpec.makeMeasureSpec(height,widthMode));
+            return;
+        }else {
+            super.onMeasure(widthMeasureSpec,heightMeasureSpec);
+            return;
+        }
 
     }
 }
