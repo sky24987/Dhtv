@@ -1,27 +1,21 @@
 package cn.dhtv.mobile.activity;
 
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import org.json.JSONException;
@@ -32,14 +26,12 @@ import java.util.ArrayList;
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.android.view.RatioFrameLayout;
 import cn.dhtv.android.widget.BaseRecyclerView;
+import cn.dhtv.android.widget.MediaController;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.entity.Category;
 import cn.dhtv.mobile.entity.TvOverview;
-import cn.dhtv.mobile.fragment.LiveTvFragment;
 import cn.dhtv.mobile.fragment.VideoPlayerFragment;
 import cn.dhtv.mobile.network.TvClient;
-import cn.dhtv.mobile.ui.adapter.NewsRecyclerViewAdapter;
-import cn.dhtv.mobile.ui.adapter.TvListAdapter;
 import cn.dhtv.mobile.ui.adapter.TvRecyclerViewAdapter;
 import cn.dhtv.mobile.ui.widget.EmptyView;
 
@@ -48,7 +40,8 @@ public class TVListActivity extends ActionBarActivity {
     private TvRecyclerViewAdapter mTvRecyclerViewAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RatioFrameLayout mRatioFrameLayout;
-    private ImageButton mFullScreenButton;
+//    private ImageButton mFullScreenButton;
+    private MediaController mMediaController;
     private EmptyView mEmptyView;
 
     private String mContentTitle;
@@ -58,6 +51,10 @@ public class TVListActivity extends ActionBarActivity {
     private FragmentManager mFragmentManager;
 
     Category category;
+    private String mCurrentTitle;
+    private String mCurrentSummary;
+    private String mCurrentUrl;
+    private String mCurrentPic_url;
 
     private TvRecyclerViewAdapter.OnItemClickListener mOnItemClickListener = new BaseRecyclerViewAdapter.OnItemClickListener() {
         @Override
@@ -105,7 +102,26 @@ public class TVListActivity extends ActionBarActivity {
 
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment) mFragmentManager.findFragmentById(R.id.fragment_video);
         if(videoPlayerFragment != null) {
-            mFullScreenButton = videoPlayerFragment.getScreenCfgButton();
+            mMediaController = videoPlayerFragment.getMediaController();
+            mMediaController.setMediaControllerCallBacks(new MediaController.MediaControllerCallBacks() {
+                @Override
+                public void onFullScreenButtonClick(View fullScreenButton) {
+                    if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                        mMediaController.setFullScreen(false);
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+                    } else if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                        mMediaController.setFullScreen(true);
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    }
+                }
+
+                @Override
+                public void onCancelButtonClick(View cancelButton) {
+                    finish();
+                }
+            });
+            /*mFullScreenButton = videoPlayerFragment.getScreenCfgButton();
             mFullScreenButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -116,7 +132,7 @@ public class TVListActivity extends ActionBarActivity {
                     }
 
                 }
-            });
+            });*/
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -211,6 +227,7 @@ public class TVListActivity extends ActionBarActivity {
         }
 
         if(mStateDate.selectedTv != tvOverview){
+            mCurrentTitle = tvOverview.getTitle();
             mStateDate.selectedTv = tvOverview;
             mTvRecyclerViewAdapter.notifyDataSetChanged();
             playTv(tvOverview);
@@ -221,6 +238,7 @@ public class TVListActivity extends ActionBarActivity {
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment) mFragmentManager.findFragmentById(R.id.fragment_video);
         if(videoPlayerFragment != null) {
             videoPlayerFragment.setVideoURI(Uri.parse(tvOverview.getTv_url()));
+            mMediaController.setTitle(tvOverview.getTitle());
         }
     }
 

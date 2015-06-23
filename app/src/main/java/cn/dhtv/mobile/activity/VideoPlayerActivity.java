@@ -3,14 +3,18 @@ package cn.dhtv.mobile.activity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 
+import cn.dhtv.android.widget.MediaController;
+import cn.dhtv.mobile.Contract;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.fragment.VideoPlayerFragment;
 
@@ -20,8 +24,13 @@ public class VideoPlayerActivity extends ActionBarActivity {
 
     private VideoPlayerFragment mVideoPlayerFragment;
     private FragmentManager mFragmentManager;
+    private MediaController mMediaController;
 
     private Uri mVideoUri;
+    private String mVideoTitle;//视频标题
+    private String mSummary;//视频简介
+    private String mPic_url;//图片地址
+    private String mWeb_url;//网页地址
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +47,27 @@ public class VideoPlayerActivity extends ActionBarActivity {
         }*/
         setContentView(R.layout.activity_video_player);
         mVideoUri = getIntent().getData();
+        mVideoTitle = getIntent().getStringExtra(Intent.EXTRA_TITLE);
+        mSummary = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        mPic_url = getIntent().getStringExtra(Contract.INTENT_EXTRA_IMG_URL);
+        mWeb_url = getIntent().getStringExtra(Intent.EXTRA_ORIGINATING_URI);
         mFragmentManager = getFragmentManager();
         VideoPlayerFragment videoPlayerFragment = (VideoPlayerFragment) mFragmentManager.findFragmentById(R.id.fragment_video);
+        mMediaController = videoPlayerFragment.getMediaController();
+        mMediaController.disableFullScreenButton();
+        mMediaController.setHeaderMode(MediaController.HEADER_MODE_AWAYS_SHOW);
+        mMediaController.setTitle(mVideoTitle);
+        mMediaController.setMediaControllerCallBacks(new MediaController.MediaControllerCallBacks() {
+            @Override
+            public void onFullScreenButtonClick(View fullScreenButton) {
+
+            }
+
+            @Override
+            public void onCancelButtonClick(View cancelButton) {
+                finish();
+            }
+        });
         videoPlayerFragment.setVideoURI(mVideoUri);
     }
 

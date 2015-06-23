@@ -65,6 +65,8 @@ public class VideoPlayerFragment extends Fragment {
         init();
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -140,6 +142,10 @@ public class VideoPlayerFragment extends Fragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mMediaController.hide();
+    }
+
+    public MediaController getMediaController(){
+        return  mMediaController;
     }
 
     public void setVideoPath(String path){

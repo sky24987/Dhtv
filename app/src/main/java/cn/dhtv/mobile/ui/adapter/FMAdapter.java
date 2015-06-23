@@ -49,10 +49,10 @@ public class FMAdapter extends BaseRecyclerViewAdapter<FMAdapter.ViewHolder> {
         holder.networkImageView.setDefaultImageResId(R.drawable.default_image);
         holder.title.setText(fm.getCatname());
         if(stateData.selectedFm != null && stateData.selectedFm.getCatid() == fm.getCatid()){
-            /*holder.title.setSelected(true);*/
+            /*holder.titleView.setSelected(true);*/
             holder.itemView.setSelected(true);
         }else {
-            /*holder.title.setSelected(false);*/
+            /*holder.titleView.setSelected(false);*/
             holder.itemView.setSelected(false);
         }
     }

@@ -37,7 +37,7 @@ public class HomeActivity extends ActionBarActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     * Used to store the last screen titleView. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
 
@@ -139,20 +139,7 @@ public class HomeActivity extends ActionBarActivity
             return true;
         }
 
-        if(id == R.id.action_comment){
-            Intent intent = new Intent(this,CommentActivity.class);
-            startActivity(intent);
-        }
 
-        if(id == R.id.action_fact){
-            Intent intent = new Intent(this,FactActivity.class);
-            startActivity(intent);
-        }
-
-        if(id == R.id.action_favorite){
-            Intent intent = new Intent(this,FavoriteActivity.class);
-            startActivity(intent);
-        }
 
         if (id == R.id.action_settings) {
 

@@ -3,12 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context="cn.dhtv.mobile.activity.HomeActivity">
     <item android:id="@+id/action_user" android:title="@string/action_user"
         app:showAsAction="withText|ifRoom" />
-    <item android:id="@+id/action_comment" android:title="评论测试"
-        app:showAsAction="withText|ifRoom" />
-    <item android:id="@+id/action_fact" android:title="爆料测试"
-        app:showAsAction="withText|ifRoom" />
-    <item android:id="@+id/action_favorite" android:title="收藏测试"
-        app:showAsAction="withText|ifRoom" />
-    <!--<item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <!--<item android:id="@+id/action_settings" android:titleView="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />-->
 </menu>

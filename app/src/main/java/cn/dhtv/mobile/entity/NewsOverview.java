@@ -166,7 +166,7 @@ public class NewsOverview {
             //newsOverview.setDateline(new Date(jsonObject.getString("dateline")));
             newsOverview.setFrom(jsonObject.getString("from"));
             newsOverview.setSummary(jsonObject.getString("summary"));
-            newsOverview.setTitle(jsonObject.getString("title"));
+            newsOverview.setTitle(jsonObject.getString("titleView"));
             newsOverview.setFrom(jsonObject.getString("from"));
         }catch (JSONException e){
             //TODO:

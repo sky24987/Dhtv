@@ -2,28 +2,20 @@ package cn.dhtv.android.widget;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.internal.widget.FitWindowsViewGroup;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.lang.reflect.Method;
-import java.util.Deque;
 import java.util.Formatter;
 import java.util.Locale;
 
@@ -46,6 +38,11 @@ public class MediaController extends FrameLayout{
     private static final int FADE_OUT = 1;
     private static final int SHOW_PROGRESS = 2;
 
+    public static final int HEADER_MODE_AUTO = 1;
+    public static final int HEADER_MODE_AWAYS_HIDE = 2;
+    public static final int HEADER_MODE_AWAYS_SHOW = 3;
+
+
     private boolean mMotionCaptureDown = false;
     private boolean mMotionCaptureUp = false;
     private boolean mMotionCaptureCancel = false;
@@ -56,15 +53,28 @@ public class MediaController extends FrameLayout{
 
     private boolean mShowFullScreenButton = true;
     private boolean mEnableSeekBar = true;
+    private boolean mEnableCancelButton = true;
+    private boolean mShowHeader = true;
+
+    private int mHeaderMode =HEADER_MODE_AUTO;
+    private boolean mFullScreen = false;
+
+
+    private MediaControllerCallBacks mMediaControllerCallBacks;
 
 
     private View mAnchor;
     private View mRoot;
     private PopupWindow mWindow;
+
+
     private ImageButton mPlayButton;
-    private ImageButton mScreenCfgButton;
+    private ImageButton mFullScreenButton;
     private SeekBar mSeekBar;
     private TextView mCurrentTimeTextView, mTimeTextView;
+    private TextView mTitle;
+    private ImageButton mCancelButton;
+    private View mHeader;
 
 
     StringBuilder mFormatBuilder = new StringBuilder();
@@ -94,6 +104,8 @@ public class MediaController extends FrameLayout{
         mWindow.setContentView(mRoot);
 
         mShowing = false;
+
+        setHeaderMode(mHeaderMode);
         /*setVisibility(GONE);*/
 
     }
@@ -107,6 +119,83 @@ public class MediaController extends FrameLayout{
     public void setMediaPlayer(android.widget.MediaController.MediaPlayerControl player){
         mPlayer = player;
         updatePlayState();
+    }
+
+    public void setMediaControllerCallBacks(MediaControllerCallBacks mediaControllerCallBacks) {
+        this.mMediaControllerCallBacks = mediaControllerCallBacks;
+    }
+
+    public void setTitle(String title){
+        mTitle.setText(title);
+    }
+
+    public void setHeaderMode(int mode){
+        mHeaderMode = mode;
+        switch (mHeaderMode){
+            case HEADER_MODE_AUTO:
+                if(mFullScreen){
+                    showHeader();
+                }else {
+                    hideHeader();
+                }
+                break;
+            case HEADER_MODE_AWAYS_HIDE:
+                hideHeader();
+                break;
+            case HEADER_MODE_AWAYS_SHOW:
+                showHeader();
+                break;
+        }
+    }
+
+    public void showHeader(){
+
+        mHeader.setVisibility(VISIBLE);
+        mShowHeader = true;
+    }
+
+    public void hideHeader(){
+
+        mHeader.setVisibility(GONE);
+        mShowHeader = false;
+    }
+
+    public void enableCancelButton(){
+        mEnableCancelButton = true;
+        mCancelButton.setVisibility(VISIBLE);
+    }
+
+    public void disableCancelButton(){
+        mEnableCancelButton = false;
+        mCancelButton.setVisibility(GONE);
+    }
+
+    public void enableFullScreenButton(){
+        mShowFullScreenButton = true;
+        if(mFullScreenButton != null) {
+            mFullScreenButton.setVisibility(VISIBLE);
+        }
+    }
+
+    public void disableFullScreenButton(){
+        mShowFullScreenButton = false;
+        if(mFullScreenButton != null) {
+            mFullScreenButton.setVisibility(GONE);
+        }
+    }
+
+    public void enableSeekBar(){
+        mEnableSeekBar = true;
+        if(mSeekBar != null){
+            mSeekBar.setEnabled(true);
+        }
+    }
+
+    public void disableSeekBar(){
+        mEnableSeekBar = false;
+        if(mSeekBar != null){
+            mSeekBar.setEnabled(false);
+        }
     }
 
     public void show(){
@@ -202,14 +291,25 @@ public class MediaController extends FrameLayout{
     }
 
     public ImageButton getScreenCfgButton(){
-        return  mScreenCfgButton;
+        return mFullScreenButton;
     }
 
     public void setFullScreen(boolean fullScreen){
-        if(fullScreen){
+        mFullScreen = fullScreen;
+        if(mFullScreen){
             //TODO È«ÆÁ
+            switch (mHeaderMode){
+                case HEADER_MODE_AUTO:
+                    showHeader();
+                    break;
+            }
         }else {
             //TODO ²»È«ÆÁ
+            switch (mHeaderMode){
+                case HEADER_MODE_AUTO:
+                    hideHeader();
+                    break;
+            }
         }
     }
 
@@ -347,9 +447,17 @@ public class MediaController extends FrameLayout{
 
     private void initView(View parent){
         mPlayButton = (ImageButton) parent.findViewById(R.id.button_play);
-        mScreenCfgButton = (ImageButton) parent.findViewById(R.id.button_screen_configure);
+        mFullScreenButton = (ImageButton) parent.findViewById(R.id.button_screen_configure);
+        mFullScreenButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mMediaControllerCallBacks != null) {
+                    mMediaControllerCallBacks.onFullScreenButtonClick(mFullScreenButton);
+                }
+            }
+        });
         if(mShowFullScreenButton == false){
-            mScreenCfgButton.setVisibility(GONE);
+            mFullScreenButton.setVisibility(GONE);
         }
         mSeekBar = (SeekBar) parent.findViewById(R.id.seek_bar);
         if(mEnableSeekBar == false){
@@ -364,6 +472,17 @@ public class MediaController extends FrameLayout{
 
         mPlayButton.setOnClickListener(mPlayButtonListener);
         mSeekBar.setOnSeekBarChangeListener(mSeekListener);
+        mHeader = parent.findViewById(R.id.header);
+        mTitle = (TextView) parent.findViewById(R.id.title);
+        mCancelButton = (ImageButton) parent.findViewById(R.id.cancel);
+        mCancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMediaControllerCallBacks != null){
+                    mMediaControllerCallBacks.onCancelButtonClick(mCancelButton);
+                }
+            }
+        });
     }
 
     private View makeControllerView(Context context){
@@ -514,6 +633,11 @@ public class MediaController extends FrameLayout{
             }
         }
     };
+
+    public interface MediaControllerCallBacks{
+        void onFullScreenButtonClick(View fullScreenButton);
+        void onCancelButtonClick(View cancelButton);
+    }
 
 
 

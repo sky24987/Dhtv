@@ -7,14 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 import com.squareup.picasso.Picasso;
 
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.entity.VideoOverview;
-import cn.dhtv.mobile.network.NetUtils;
 
 /**
  * Created by Jack on 2015/4/29.
@@ -40,7 +38,7 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
         View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_video, null);
         ViewHolder viewHolder = new ViewHolder(view,viewType);
         viewHolder.imageView = (ImageView) view.findViewById(R.id.image);
-        viewHolder.title = (TextView) view.findViewById(R.id.title);
+        viewHolder.titleView = (TextView) view.findViewById(R.id.title);
         viewHolder.durition = (TextView) view.findViewById(R.id.duration);
         viewHolder.dataline = (TextView) view.findViewById(R.id.dateline);
         return viewHolder;
@@ -49,12 +47,15 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
     @Override
     public void onBindVH(ViewHolder holder, int position) {
         VideoOverview item = (VideoOverview)mItemViewDataSet.getItem(position);
-        holder.title.setText(item.getTitle());
+        holder.titleView.setText(item.getTitle());
         holder.dataline.setText(item.getDateline());
         holder.durition.setText("" + item.getDuration());
         Picasso.with(holder.imageView.getContext()).load(item.getPic()).placeholder(R.drawable.default_image).into(holder.imageView);
         holder.url = item.getUrl();
         holder.videoUrl = item.getVideo();
+        holder.pic_url = item.getPic();
+        holder.title = item.getTitle();
+        holder.summary = item.getSummary();
     }
 
     @Override
@@ -65,8 +66,11 @@ public class VideoRecyclerViewAdapter extends BaseRecyclerViewAdapter<VideoRecyc
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder{
         public String url;
         public String videoUrl;
+        public String pic_url;
+        public String title;
+        public String summary;
         public ImageView imageView;
-        public TextView title;
+        public TextView titleView;
         public TextView dataline;
         public TextView durition;
 

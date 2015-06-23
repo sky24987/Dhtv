@@ -1,7 +1,5 @@
 package cn.dhtv.mobile.ui.adapter;
 
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +9,11 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 import cn.dhtv.android.adapter.BaseRecyclerViewAdapter;
-import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.activity.TVListActivity;
 import cn.dhtv.mobile.entity.TvOverview;
-import cn.dhtv.mobile.fragment.TvFragment;
 
 /**
  * Created by Jack on 2015/5/11.

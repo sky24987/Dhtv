@@ -364,9 +364,13 @@ public class VideoFragment extends SectionFragment implements BasePagerAdapter.P
     }
 
 
-    public void startVideoPlayerActivity(Uri uri){
+    public void startVideoPlayerActivity(Uri videoUrl,String title,String url,String summary,String pic_url){
         Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
-        intent.setData(uri);
+        intent.setData(videoUrl);
+        intent.putExtra(Intent.EXTRA_TITLE, title);
+        intent.putExtra(Intent.EXTRA_ORIGINATING_URI,url);
+        intent.putExtra(Intent.EXTRA_TEXT,summary);
+        intent.putExtra(cn.dhtv.mobile.Contract.INTENT_EXTRA_IMG_URL,pic_url);
         getActivity().startActivity(intent);
 
     }
@@ -464,7 +468,8 @@ public class VideoFragment extends SectionFragment implements BasePagerAdapter.P
         public void onItemClicked(View view) {
             VideoRecyclerViewAdapter.ViewHolder viewHolder = (VideoRecyclerViewAdapter.ViewHolder) mBaseRecyclerView.getChildViewHolder(view);
             Uri videoUri = Uri.parse(viewHolder.videoUrl);
-            startVideoPlayerActivity(videoUri);
+            String title = viewHolder.titleView.getText().toString();
+            startVideoPlayerActivity(videoUri,title,viewHolder.url,viewHolder.summary,viewHolder.pic_url);
         }
 
         /*EmptyView*/
