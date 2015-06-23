@@ -45,6 +45,7 @@ public class FactRecyclerViewAdapter extends BaseRecyclerViewAdapter<FactRecycle
         holder.comment.setText(fact.getComment());
         holder.content.setText(fact.getContent());
         holder.dateline.setText(fact.getDateline());
+        holder.fact = fact;
     }
 
     @Override
@@ -53,6 +54,7 @@ public class FactRecyclerViewAdapter extends BaseRecyclerViewAdapter<FactRecycle
     }
 
     public static class ViewHolder extends BaseRecyclerViewAdapter.ViewHolder{
+        public Fact fact;
         TextView content,comment,dateline;
 
         public ViewHolder(View itemView, int viewType) {

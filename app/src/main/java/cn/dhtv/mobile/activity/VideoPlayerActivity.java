@@ -67,6 +67,11 @@ public class VideoPlayerActivity extends ActionBarActivity {
             public void onCancelButtonClick(View cancelButton) {
                 finish();
             }
+
+            @Override
+            public void onShareButtonClick(View shareButton) {
+
+            }
         });
         videoPlayerFragment.setVideoURI(mVideoUri);
     }

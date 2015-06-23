@@ -22,7 +22,7 @@ public class CommentClient {
 
     public static ArrayList<Comment> toList(JSONObject jsonObject) throws IOException,JSONException{
         ArrayList<Comment> list;
-        list = Singletons.getObjectMapper().readValue(jsonObject.toString(), new TypeReference<List<Comment>>() {
+        list = Singletons.getObjectMapper().readValue(jsonObject.getJSONArray("data").toString(), new TypeReference<List<Comment>>() {
         });
         return list;
     }

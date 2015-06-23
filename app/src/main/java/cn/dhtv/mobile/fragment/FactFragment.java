@@ -24,6 +24,7 @@ import cn.dhtv.android.widget.BaseRecyclerView;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.Singletons;
 import cn.dhtv.mobile.activity.LoginActivity;
+import cn.dhtv.mobile.activity.user.FactDetailActivity;
 import cn.dhtv.mobile.entity.Fact;
 import cn.dhtv.mobile.model.User;
 import cn.dhtv.mobile.model.UserCenter;
@@ -72,6 +73,12 @@ public class FactFragment extends Fragment {
         }
     }
 
+    public void toFactDetailActivity(long msgid){
+        Intent intent = new Intent(getActivity(), FactDetailActivity.class);
+        intent.putExtra("msgid",msgid);
+        startActivity(intent);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,6 +91,19 @@ public class FactFragment extends Fragment {
         mRecyclerViewAdapter.setEmptyView(new FactRecyclerViewAdapter.ViewHolder(mEmptyView, BaseRecyclerViewAdapter.ViewHolder.VIEW_TYPE_EMPTY));
         mBaseRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mBaseRecyclerView.setAdapter(mRecyclerViewAdapter);
+        mRecyclerViewAdapter.setOnItemClickListener(new BaseRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(BaseRecyclerViewAdapter.ViewHolder vh, Object item, int position) {
+
+            }
+
+            @Override
+            public void onItemClicked(View view) {
+                FactRecyclerViewAdapter.ViewHolder viewHolder = (FactRecyclerViewAdapter.ViewHolder) mBaseRecyclerView.getChildViewHolder(view);
+                Fact fact = viewHolder.fact;
+                toFactDetailActivity(fact.getMsgid());
+            }
+        });
         mEmptyView.setOnProcessingListener(new EmptyView.OnProcessingListener() {
             @Override
             public void onProcessing() {

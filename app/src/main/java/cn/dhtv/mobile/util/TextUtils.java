@@ -80,6 +80,14 @@ public class TextUtils {
         return URL_FAVORITE+"?uid="+uid+"&token="+token+"&currentpage="+currentpage+"&pagesize="+Data.FAVORITE_PAGE_SIZE+"&list=1";
     }
 
+    public static String makeFactDetailUrl(long uid,String token,long msgid){
+        return URL_FACT+"?uid="+uid+"&token="+token+"&msgid="+msgid;
+    }
+
+    public static String makeFavoriteDetailUrl(long uid,String token,long id,String idtype ){
+        return URL_FAVORITE+"?uid="+uid+"&token="+token+"&id="+id+"&idtype="+idtype;
+    }
+
     public static boolean validUserName(String username){
         if(StringUtils.isEmpty(username)){
             return false;

@@ -176,6 +176,10 @@
             android:name=".activity.SendFactActivity"
             android:label="@string/title_activity_send_fact" >
         </activity>
+        <activity
+            android:name=".activity.user.FactDetailActivity"
+            android:label="@string/title_activity_fact_detail" >
+        </activity>
     </application>
 
 </manifest>

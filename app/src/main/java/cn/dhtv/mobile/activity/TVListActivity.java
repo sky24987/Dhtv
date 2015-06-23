@@ -120,6 +120,11 @@ public class TVListActivity extends ActionBarActivity {
                 public void onCancelButtonClick(View cancelButton) {
                     finish();
                 }
+
+                @Override
+                public void onShareButtonClick(View shareButton) {
+
+                }
             });
             /*mFullScreenButton = videoPlayerFragment.getScreenCfgButton();
             mFullScreenButton.setOnClickListener(new View.OnClickListener() {

@@ -135,5 +135,6 @@
     <string name="title_activity_favorite">FavoriteActivity</string>
     <string name="title_activity_user_center">UserCenterActivity</string>
     <string name="title_activity_send_fact">SendFactActivity</string>
+    <string name="title_activity_fact_detail">FactDetailActivity</string>
 
 </resources>

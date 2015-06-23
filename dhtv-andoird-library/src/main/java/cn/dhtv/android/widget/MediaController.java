@@ -73,7 +73,7 @@ public class MediaController extends FrameLayout{
     private SeekBar mSeekBar;
     private TextView mCurrentTimeTextView, mTimeTextView;
     private TextView mTitle;
-    private ImageButton mCancelButton;
+    private ImageButton mCancelButton,mShareButton;
     private View mHeader;
 
 
@@ -297,14 +297,14 @@ public class MediaController extends FrameLayout{
     public void setFullScreen(boolean fullScreen){
         mFullScreen = fullScreen;
         if(mFullScreen){
-            //TODO È«ÆÁ
+            //TODO È«ï¿½ï¿½
             switch (mHeaderMode){
                 case HEADER_MODE_AUTO:
                     showHeader();
                     break;
             }
         }else {
-            //TODO ²»È«ÆÁ
+            //TODO ï¿½ï¿½È«ï¿½ï¿½
             switch (mHeaderMode){
                 case HEADER_MODE_AUTO:
                     hideHeader();
@@ -483,6 +483,15 @@ public class MediaController extends FrameLayout{
                 }
             }
         });
+        mShareButton = (ImageButton) parent.findViewById(R.id.share);
+        mShareButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMediaControllerCallBacks != null){
+                    mMediaControllerCallBacks.onShareButtonClick(mShareButton);
+                }
+            }
+        });
     }
 
     private View makeControllerView(Context context){
@@ -591,9 +600,9 @@ public class MediaController extends FrameLayout{
 
         if(mPlayer.isPlaying()){
             mPlayer.pause();
-        }else if(mPlayer.getCurrentPosition() > 0){/*ÔÝÊ±ÓÃÓÚÅÐ¶ÏÊÇ·ñÎª¿É²¥·Å×´Ì¬*/
+        }else if(mPlayer.getCurrentPosition() > 0){/*ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Îªï¿½É²ï¿½ï¿½ï¿½×´Ì¬*/
             mPlayer.start();
-        }else {/*ÔÝÊ±ÓÃÓÚÅÐ¶ÏÊÇ·ñÎª×¼±¸×´Ì¬£¬¼°MediaPlayer is preparing*/
+        }else {/*ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Ç·ï¿½Îª×¼ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½MediaPlayer is preparing*/
             return;
         }
 
@@ -637,6 +646,7 @@ public class MediaController extends FrameLayout{
     public interface MediaControllerCallBacks{
         void onFullScreenButtonClick(View fullScreenButton);
         void onCancelButtonClick(View cancelButton);
+        void onShareButtonClick(View shareButton);
     }
 
 
