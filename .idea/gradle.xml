@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/dhtv-andoird-library" />
             <option value="$PROJECT_DIR$/pulltorefreshlibrary" />
+            <option value="$PROJECT_DIR$/sharesdk" />
           </set>
         </option>
       </GradleProjectSettings>

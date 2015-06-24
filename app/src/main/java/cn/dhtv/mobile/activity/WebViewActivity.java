@@ -17,11 +17,19 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
-import cn.dhtv.mobile.Contract;
+import java.util.HashMap;
+
 import cn.dhtv.mobile.R;
+import cn.dhtv.mobile.fragment.NavigationDrawerFragment;
+import cn.dhtv.mobile.*;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+import cn.sharesdk.onekeyshare.OnekeyShareTheme;
 
 
-public class WebViewActivity extends ActionBarActivity {
+public class WebViewActivity extends ActionBarActivity implements PlatformActionListener {
     private String url;
     private String title;
     private String summary;
@@ -36,9 +44,12 @@ public class WebViewActivity extends ActionBarActivity {
     private ViewGroup mErrorView;
     private TextView mErrorMessage;
     private Button mRetryButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         init();
         View view = getLayoutInflater().inflate(R.layout.activity_web_view,null);
         container = (ViewGroup) view;
@@ -59,14 +70,16 @@ public class WebViewActivity extends ActionBarActivity {
         Intent intent = getIntent();
         Uri uri = intent.getData();
         url = uri.toString();
+        mContentTitle = intent.getStringExtra("title");
         title = intent.getStringExtra(Intent.EXTRA_TITLE);
         summary = intent.getStringExtra(Intent.EXTRA_TEXT);
         picUrl = intent.getStringExtra(Contract.INTENT_EXTRA_IMG_URL);
-        mContentTitle = intent.getStringExtra("title");
         mWebView.loadUrl(url);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(view);
+
+
     }
 
     private void init(){
@@ -144,15 +157,21 @@ public class WebViewActivity extends ActionBarActivity {
     }
 
 
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        /*getMenuInflater().inflate(R.menu.menu_web_view, menu);*/
+        getMenuInflater().inflate(R.menu.menu_web_view, menu);
+
         ActionBar actionBar = getSupportActionBar();
         if(mContentTitle != null) {
             actionBar.setTitle(mContentTitle);
+
         }
         return true;
+
+
     }
 
     @Override
@@ -181,6 +200,48 @@ public class WebViewActivity extends ActionBarActivity {
             finish();
         }
 
+        if(id == R.id.action_share){
+            showShare();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showShare() {
+
+        ShareSDK.initSDK(this);
+
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+        oks.setTitle(title);
+
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(summary);
+
+        oks.setImageUrl(picUrl);
+
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl(url);
+
+
+        oks.show(this);
+    }
+
+    @Override
+    public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+
+    }
+
+    @Override
+    public void onError(Platform platform, int i, Throwable throwable) {
+
+    }
+
+    @Override
+    public void onCancel(Platform platform, int i) {
+
     }
 }

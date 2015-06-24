@@ -1,2 +1,2 @@
-include ':app', ':android', ':dhtv-andoird-library', ':ExoPlayerlibrary', ':SmartTabLayout-library', ':PagerSlidingTabStrip-library'
+include ':app', ':android', ':dhtv-andoird-library', ':ExoPlayerlibrary', ':SmartTabLayout-library', ':PagerSlidingTabStrip-library', ':sharesdk'
 include ':pulltorefreshlibrary'

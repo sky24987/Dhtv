@@ -1,24 +1,27 @@
 package cn.dhtv.mobile.activity;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 
+import java.util.HashMap;
+
 import cn.dhtv.android.widget.MediaController;
 import cn.dhtv.mobile.Contract;
 import cn.dhtv.mobile.R;
 import cn.dhtv.mobile.fragment.VideoPlayerFragment;
+import cn.sharesdk.framework.Platform;
+import cn.sharesdk.framework.PlatformActionListener;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
-public class VideoPlayerActivity extends ActionBarActivity {
+public class VideoPlayerActivity extends ActionBarActivity implements PlatformActionListener {
     private final String LOG_TAG = getClass().getSimpleName();
     private final boolean DEBUG = true;
 
@@ -70,10 +73,11 @@ public class VideoPlayerActivity extends ActionBarActivity {
 
             @Override
             public void onShareButtonClick(View shareButton) {
-
+                showShare();
             }
         });
         videoPlayerFragment.setVideoURI(mVideoUri);
+
     }
 
     @Override
@@ -95,6 +99,50 @@ public class VideoPlayerActivity extends ActionBarActivity {
             return true;
         }
 
+        if(id == R.id.action_share){
+
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showShare() {
+
+        ShareSDK.initSDK(this);
+
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+
+
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+        oks.setTitle(mVideoTitle);
+
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText(mSummary);
+
+        oks.setImageUrl(mPic_url);
+
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl(mWeb_url);
+
+
+        oks.show(this);
+    }
+
+    @Override
+    public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+
+    }
+
+    @Override
+    public void onError(Platform platform, int i, Throwable throwable) {
+
+    }
+
+    @Override
+    public void onCancel(Platform platform, int i) {
+
     }
 }
